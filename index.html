@@ -1,0 +1,1267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KraVe — Complete Gourmet Dessert & Management System</title>
+  <style>
+    /* KraVe Master Styling */
+    :root {
+      --primary-color: #d97706;
+      --primary-hover: #b45309;
+      --secondary-color: #4b5563;
+      --bg-color: #f9fafb;
+      --card-bg: #ffffff;
+      --text-color: #1f2937;
+      --border-color: #e5e7eb;
+      --success-color: #059669;
+      --warning-color: #d97706;
+      --danger-color: #dc2626;
+      --info-color: #2563eb;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
+    body { background-color: var(--bg-color); color: var(--text-color); line-height: 1.6; }
+
+    header { background-color: #ffffff; border-bottom: 1px solid var(--border-color); padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 4px rgba(0,0,0,0.03); }
+    .logo { font-size: 1.5rem; font-weight: 800; color: var(--primary-color); text-decoration: none; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; }
+    .logo span { font-size: 0.85rem; font-weight: 600; color: #6b7280; background: #f3f4f6; padding: 0.1rem 0.5rem; border-radius: 4px; }
+    
+    nav { display: flex; gap: 1rem; align-items: center; }
+    nav button, nav a { color: var(--text-color); text-decoration: none; font-weight: 600; padding: 0.5rem 0.75rem; border-radius: 6px; border: none; background: transparent; cursor: pointer; transition: all 0.2s; }
+    nav button:hover, nav a:hover { color: var(--primary-color); background-color: #fef3c7; }
+    nav button.active { background-color: var(--primary-color); color: white; }
+
+    .container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
+    .card { background: var(--card-bg); border-radius: 10px; border: 1px solid var(--border-color); padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+    .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+
+    .btn { display: inline-block; padding: 0.55rem 1.1rem; border-radius: 6px; border: none; font-weight: 600; cursor: pointer; text-decoration: none; text-align: center; transition: background 0.2s; }
+    .btn-primary { background-color: var(--primary-color); color: white; }
+    .btn-primary:hover { background-color: var(--primary-hover); }
+    .btn-secondary { background-color: var(--secondary-color); color: white; }
+    .btn-secondary:hover { background-color: #374151; }
+    .btn-danger { background-color: var(--danger-color); color: white; }
+    .btn-danger:hover { background-color: #b91c1c; }
+    .btn-success { background-color: var(--success-color); color: white; }
+    .btn-sm { padding: 0.3rem 0.6rem; font-size: 0.85rem; }
+
+    .form-group { margin-bottom: 1rem; }
+    .form-group label { display: block; margin-bottom: 0.4rem; font-weight: 600; font-size: 0.9rem; }
+    .form-control { width: 100%; padding: 0.6rem; border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.95rem; }
+
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.9rem; }
+    th, td { padding: 0.75rem 0.5rem; text-align: left; border-bottom: 1px solid var(--border-color); }
+    th { background-color: #f8fafc; font-weight: 600; color: #475569; }
+
+    .badge { display: inline-block; padding: 0.25rem 0.6rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
+    .badge-success { background-color: #d1fae5; color: #065f46; }
+    .badge-warning { background-color: #fef3c7; color: #92400e; }
+    .badge-danger { background-color: #fee2e2; color: #991b1b; }
+    .badge-secondary { background-color: #f1f5f9; color: #475569; }
+
+    .mov-box { background-color: #eff6ff; border-left: 4px solid var(--info-color); padding: 1.2rem; margin-bottom: 1.5rem; border-radius: 0 8px 8px 0; }
+    .mov-box h4 { color: #1e40af; margin-bottom: 0.4rem; display: flex; justify-content: space-between; align-items: center; }
+    .mov-target { font-weight: 600; color: #1e3a8a; font-size: 0.95rem; }
+
+    .kpi-card { background: white; border-radius: 8px; border: 1px solid var(--border-color); padding: 1.25rem; text-align: center; }
+    .kpi-title { font-size: 0.8rem; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
+    .kpi-value { font-size: 1.6rem; font-weight: bold; color: var(--text-color); margin-top: 0.4rem; }
+
+    .filter-bar { display: flex; gap: 1rem; align-items: flex-end; margin-bottom: 1rem; flex-wrap: wrap; background: #f8fafc; padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color); }
+    .filter-bar .form-group { margin-bottom: 0; min-width: 160px; }
+
+    /* Modals */
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
+    .modal-overlay.active { display: flex; }
+    .modal-content { background: white; border-radius: 10px; max-width: 600px; width: 92%; max-height: 85vh; overflow-y: auto; padding: 1.5rem; box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
+
+    .view-section { display: none; }
+    .view-section.active { display: block; }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER NAVIGATION -->
+  <header>
+    <div class="logo" onclick="switchView('storefront')">
+      KraVe <span>Gourmet Desserts</span>
+    </div>
+    <nav>
+      <button id="nav-storefront" class="active" onclick="switchView('storefront')">Catalogue</button>
+      <button id="nav-cart" onclick="openCartModal()">Cart (<span id="cart-count">0</span>)</button>
+      <button id="nav-portal" onclick="handlePortalClick()">Login Portal</button>
+    </nav>
+  </header>
+
+  <div class="container">
+
+    <!-- 1. PUBLIC STOREFRONT VIEW -->
+    <div id="view-storefront" class="view-section active">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+        <div>
+          <h2>Public Dessert Catalogue</h2>
+          <p style="color:#6b7280; font-size:0.9rem;">Fresh handcrafted desserts from local vendors. Order directly online!</p>
+        </div>
+      </div>
+      <div id="product-grid" class="grid-3"></div>
+    </div>
+
+    <!-- 2. LOGIN VIEW -->
+    <div id="view-login" class="view-section">
+      <div style="max-width: 420px; margin: 3rem auto;">
+        <div class="card">
+          <h2 style="text-align: center; margin-bottom: 1rem; color: var(--primary-color);">KraVe Licious Management Portal</h2>
+          <p style="text-align: center; color:#6b7280; font-size:0.85rem; margin-bottom: 1.5rem;">Access Admin or Vendor Management Features</p>
+
+          <form id="login-form">
+            <div class="form-group">
+              <label>Username</label>
+              <input type="text" id="login-username" class="form-control" placeholder="admin / vendor / vendor2" required>
+            </div>
+            <div class="form-group">
+              <label>Password</label>
+              <input type="password" id="login-password" class="form-control" placeholder="admin123 / vendor123 / vendor2123" required>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width:100%; margin-top:0.5rem;">Sign In</button>
+          </form>
+
+          <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border-color); font-size: 0.8rem; color: #6b7280;">
+            <p><strong>Demo Accounts:</strong></p>
+            <p>• Admin: <code>admin</code> / <code>admin123</code></p>
+            <p>• Vendor A: <code>vendor</code> / <code>vendor123</code> (VND01)</p>
+            <p>• Vendor B: <code>vendor2</code> / <code>vendor2123</code> (VND02)</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. ADMIN DASHBOARD VIEW -->
+    <div id="view-admin" class="view-section">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+        <div>
+          <h2>System Administrator Control Portal</h2>
+          <p style="color:#6b7280; font-size:0.9rem;">Global Management for Payments, Inventory, and Sales Reporting</p>
+        </div>
+        <button onclick="logout()" class="btn btn-secondary btn-sm">Sign Out</button>
+      </div>
+
+      <!-- Budget Card -->
+      <div class="card" style="background:#fef3c7; border-color:#f59e0b;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <h3 style="color:#92400e;">Project Budget Overview</h3>
+            <p style="font-size:0.85rem; color:#b45309;">System Development & Deployment Budget Allocation</p>
+          </div>
+          <div style="font-size:1.75rem; font-weight:800; color:#b45309;">RM 100,000.00</div>
+        </div>
+      </div>
+
+      <!-- MOV 01 Section -->
+      <div class="mov-box">
+        <h4>MOV 01 — PAYMENT TRACKING TARGET <span class="badge badge-secondary">Target: 95% Accuracy</span></h4>
+        <p class="mov-target">"Reduce payment recording errors and improve payment tracking accuracy by 95% within 3 months after the application is implemented."</p>
+      </div>
+
+      <!-- Payment Management Section -->
+      <div class="card">
+        <h3>Payment Management</h3>
+        <div class="grid-4" style="margin: 1rem 0;">
+          <div class="kpi-card"><div class="kpi-title">Total Records</div><div class="kpi-value" id="admin-pay-count">0</div></div>
+          <div class="kpi-card"><div class="kpi-title">Pending</div><div class="kpi-value" id="admin-pay-pending">0</div></div>
+          <div class="kpi-card"><div class="kpi-title">Verified</div><div class="kpi-value" id="admin-pay-verified">0</div></div>
+          <div class="kpi-card"><div class="kpi-title">Total Amount</div><div class="kpi-value" id="admin-pay-amount">RM 0.00</div></div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Payment ID</th>
+              <th>Order ID</th>
+              <th>Customer</th>
+              <th>Amount</th>
+              <th>Method</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="admin-pay-table"></tbody>
+        </table>
+      </div>
+
+      <!-- MOV 02 Section -->
+      <div class="mov-box">
+        <h4>MOV 02 — INVENTORY CONTROL TARGET <span class="badge badge-secondary">Target: 30% Reduction</span></h4>
+        <p class="mov-target">"Reduce food loss, expired stock, returned desserts and inventory discrepancy by 30% within 6 months through a digital inventory management system."</p>
+      </div>
+
+      <!-- Inventory Management Section -->
+      <div class="card">
+        <h3>Global Inventory Management</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Vendor</th>
+              <th>Opening</th>
+              <th>Current</th>
+              <th>Sold</th>
+              <th>Returned</th>
+              <th>Expired</th>
+              <th>Damaged</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="admin-inv-table"></tbody>
+        </table>
+      </div>
+
+      <!-- MOV 03 Section -->
+      <div class="mov-box">
+        <h4>MOV 03 — DIGITAL SALES REPORTING TARGET <span class="badge badge-secondary">Target: 100% Digital</span></h4>
+        <p class="mov-target">"Achieve 100% digital sales reporting and enable the owner to identify the best-selling desserts and vendors within 3 months after implementation."</p>
+      </div>
+
+      <!-- Sales Reporting Section -->
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+          <h3>Sales Reporting Module</h3>
+          <button class="btn btn-primary btn-sm" onclick="exportSalesReport()">Export CSV Report</button>
+        </div>
+
+        <!-- Filters -->
+        <div class="filter-bar">
+          <div class="form-group">
+            <label>Start Date</label>
+            <input type="date" id="sales-filter-start" class="form-control">
+          </div>
+          <div class="form-group">
+            <label>End Date</label>
+            <input type="date" id="sales-filter-end" class="form-control">
+          </div>
+          <div class="form-group">
+            <label>Vendor</label>
+            <select id="sales-filter-vendor" class="form-control">
+              <option value="ALL">All Vendors</option>
+              <option value="VND01">Vendor A (VND01)</option>
+              <option value="VND02">Vendor B (VND02)</option>
+            </select>
+          </div>
+          <button class="btn btn-secondary btn-sm" onclick="applySalesFilter()">Apply Filter</button>
+          <button class="btn btn-sm" style="background:#e2e8f0;" onclick="clearSalesFilter()">Clear</button>
+        </div>
+
+        <div class="grid-4" style="margin: 1rem 0;">
+          <div class="kpi-card"><div class="kpi-title">Total Sales</div><div class="kpi-value" id="sales-total">RM 0.00</div></div>
+          <div class="kpi-card"><div class="kpi-title">Total Orders</div><div class="kpi-value" id="sales-orders">0</div></div>
+          <div class="kpi-card"><div class="kpi-title">Items Sold</div><div class="kpi-value" id="sales-items">0</div></div>
+          <div class="kpi-card"><div class="kpi-title">Avg Order Value</div><div class="kpi-value" id="sales-aov">RM 0.00</div></div>
+        </div>
+
+        <div class="grid-2" style="margin: 1.5rem 0;">
+          <div class="card" style="margin:0; background:#f8fafc;">
+            <h4 style="margin-bottom:0.5rem; color:#3b82f6;">Best-Selling Dessert</h4>
+            <div id="sales-best-dessert" style="font-size:1.4rem; font-weight:bold;">-</div>
+          </div>
+          <div class="card" style="margin:0; background:#f8fafc;">
+            <h4 style="margin-bottom:0.5rem; color:#10b981;">Top Vendor</h4>
+            <div id="sales-top-vendor" style="font-size:1.4rem; font-weight:bold;">-</div>
+          </div>
+        </div>
+
+        <h4 style="margin-top:1.5rem;">Product Sales Performance</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Product ID</th>
+              <th>Product Name</th>
+              <th>Vendor</th>
+              <th>Units Sold</th>
+              <th>Total Sales (RM)</th>
+            </tr>
+          </thead>
+          <tbody id="sales-product-perf-table"></tbody>
+        </table>
+
+        <h4 style="margin-top:1.5rem;">Vendor Sales Performance</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Vendor ID</th>
+              <th>Vendor Name</th>
+              <th>Total Orders</th>
+              <th>Items Sold</th>
+              <th>Total Sales (RM)</th>
+            </tr>
+          </thead>
+          <tbody id="sales-vendor-perf-table"></tbody>
+        </table>
+
+        <h4 style="margin-top:1.5rem;">Line Item Sales Transaction Details</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Date</th>
+              <th>Product</th>
+              <th>Vendor</th>
+              <th>Qty</th>
+              <th>Unit Price</th>
+              <th>Subtotal</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="sales-details-table"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 4. VENDOR DASHBOARD VIEW -->
+    <div id="view-vendor" class="view-section">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+        <div>
+          <h2>Vendor Dashboard — <span id="vendor-title-name"></span></h2>
+          <p style="color:#6b7280; font-size:0.9rem;">Private Vendor Management Portal (Isolated Data View)</p>
+        </div>
+        <button onclick="logout()" class="btn btn-secondary btn-sm">Sign Out</button>
+      </div>
+
+      <!-- Vendor Inventory -->
+      <div class="card">
+        <h3>My Inventory</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Current Stock</th>
+              <th>Sold</th>
+              <th>Returned</th>
+              <th>Expired</th>
+              <th>Damaged</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="vendor-inv-table"></tbody>
+        </table>
+      </div>
+
+      <!-- Vendor Payments -->
+      <div class="card">
+        <h3>My Product Payments</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Payment ID</th>
+              <th>Order ID</th>
+              <th>Customer</th>
+              <th>Amount</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="vendor-pay-table"></tbody>
+        </table>
+      </div>
+
+      <!-- Vendor Sales Report -->
+      <div class="card">
+        <h3>My Sales Report</h3>
+        <div class="grid-3" style="margin: 1rem 0;">
+          <div class="kpi-card"><div class="kpi-title">My Total Sales</div><div class="kpi-value" id="vendor-kpi-sales">RM 0.00</div></div>
+          <div class="kpi-card"><div class="kpi-title">My Items Sold</div><div class="kpi-value" id="vendor-kpi-items">0</div></div>
+          <div class="kpi-card"><div class="kpi-title">My Best-Selling Product</div><div class="kpi-value" id="vendor-kpi-best" style="font-size:1.2rem;">-</div></div>
+        </div>
+
+        <h4 style="margin-top:1.5rem;">Sales Breakdown by Product</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Product ID</th>
+              <th>Product Name</th>
+              <th>Units Sold</th>
+              <th>Total Sales</th>
+            </tr>
+          </thead>
+          <tbody id="vendor-sales-prod-table"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- CART MODAL -->
+  <div id="cart-modal" class="modal-overlay">
+    <div class="modal-content">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+        <h3>Your Shopping Cart</h3>
+        <button onclick="closeCartModal()" class="btn btn-sm" style="background:#e2e8f0;">✕ Close</button>
+      </div>
+      
+      <table>
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Qty</th>
+            <th>Subtotal</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="cart-table-body"></tbody>
+      </table>
+
+      <div style="text-align: right; margin-top:1.5rem;">
+        <h4>Total: <span id="cart-modal-total" style="color:var(--primary-color);">RM 0.00</span></h4>
+        <br>
+        <button id="checkout-btn" class="btn btn-primary" onclick="openCheckoutModal()">Proceed to Checkout</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHECKOUT MODAL -->
+  <div id="checkout-modal" class="modal-overlay">
+    <div class="modal-content">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+        <h3>Checkout</h3>
+        <button onclick="closeCheckoutModal()" class="btn btn-sm" style="background:#e2e8f0;">✕ Close</button>
+      </div>
+
+      <form id="checkout-form">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" id="cust-name" class="form-control" required placeholder="e.g. Sarah Ahmad">
+        </div>
+        <div class="form-group">
+          <label>Phone Number</label>
+          <input type="tel" id="cust-phone" class="form-control" required placeholder="e.g. 012-3456789">
+        </div>
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" id="cust-email" class="form-control" required placeholder="e.g. sarah@example.com">
+        </div>
+        <div class="form-group">
+          <label>Delivery Address</label>
+          <textarea id="cust-address" class="form-control" rows="2" required placeholder="Enter delivery address"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Payment Method</label>
+          <select id="cust-paymethod" class="form-control" required>
+            <option value="Online Banking">Online Banking</option>
+            <option value="E-Wallet (TNG)">E-Wallet (TNG)</option>
+            <option value="Credit/Debit Card">Credit/Debit Card</option>
+            <option value="Cash on Delivery">Cash on Delivery</option>
+          </select>
+        </div>
+
+        <div style="text-align: right; margin-top: 1.5rem;">
+          <h4>Order Total: <span id="checkout-total-amt" style="color:var(--primary-color);">RM 0.00</span></h4>
+          <br>
+          <button type="submit" id="place-order-btn" class="btn btn-primary" style="width:100%;">Confirm & Place Order</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- INVENTORY ACTION MODAL -->
+  <div id="inv-action-modal" class="modal-overlay">
+    <div class="modal-content" style="max-width:450px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+        <h3>Inventory Adjustment</h3>
+        <button onclick="closeInvModal()" class="btn btn-sm" style="background:#e2e8f0;">✕ Close</button>
+      </div>
+
+      <form id="inv-action-form">
+        <input type="hidden" id="inv-prod-id">
+        <div class="form-group">
+          <label>Product</label>
+          <input type="text" id="inv-prod-name" class="form-control" readonly>
+        </div>
+        <div class="form-group">
+          <label>Action Type</label>
+          <select id="inv-action-type" class="form-control" required>
+            <option value="Return">Customer Return</option>
+            <option value="Damaged">Damaged Stock</option>
+            <option value="Expired">Expired Stock</option>
+            <option value="Adjustment">Manual Adjustment (+/-)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Quantity</label>
+          <input type="number" id="inv-action-qty" class="form-control" min="1" required value="1">
+        </div>
+        <div class="form-group">
+          <label>Reason / Note</label>
+          <input type="text" id="inv-action-reason" class="form-control" required placeholder="e.g. Packaging damaged during transit">
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%; margin-top:0.5rem;">Apply Adjustment</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- SCRIPT INTEGRATION (STEPS 1-7) -->
+  <script>
+    /* ===================================================
+       GLOBAL CONSTANTS & DATA STRUCTURES
+       =================================================== */
+    const DEFAULT_PRODUCTS = [
+      { productId: 'P001', name: 'Kek Batik Classic', category: 'Kek Batik', description: 'Rich fudge classic Malaysian biscuit cake.', price: 7.00, vendorId: 'VND01', vendorName: 'Vendor A', stock: 50, expiryDate: '2026-10-15' },
+      { productId: 'P002', name: 'Kek Batik Oreo Crunch', category: 'Kek Batik', description: 'Topped with crushed crunchy Oreo biscuits.', price: 8.00, vendorId: 'VND01', vendorName: 'Vendor A', stock: 40, expiryDate: '2026-10-12' },
+      { productId: 'P003', name: 'Kek Batik Biscoff Deluxe', category: 'Kek Batik', description: 'Layered with caramelized Lotus Biscoff spread.', price: 9.00, vendorId: 'VND01', vendorName: 'Vendor A', stock: 30, expiryDate: '2026-10-10' },
+      { productId: 'P004', name: 'Fudge Chocolate Brownie', category: 'Brownies', description: 'Dense fudgy chocolate brownie square.', price: 8.50, vendorId: 'VND02', vendorName: 'Vendor B', stock: 45, expiryDate: '2026-10-14' },
+      { productId: 'P005', name: 'Matcha Dessert Cup', category: 'Dessert Cups', description: 'Layered authentic Uji green tea dessert cup.', price: 7.50, vendorId: 'VND02', vendorName: 'Vendor B', stock: 35, expiryDate: '2026-10-08' },
+      { productId: 'P006', name: 'Kinder Bueno Cake Slice', category: 'Cakes', description: 'Hazelnut cream mousse cake with Kinder wafers.', price: 9.50, vendorId: 'VND02', vendorName: 'Vendor B', stock: 25, expiryDate: '2026-10-05' }
+    ];
+
+    const USERS = [
+      { username: 'admin', password: 'admin123', role: 'ADMIN', name: 'System Admin' },
+      { username: 'vendor', password: 'vendor123', role: 'VENDOR', vendorId: 'VND01', name: 'Vendor A' },
+      { username: 'vendor2', password: 'vendor2123', role: 'VENDOR', vendorId: 'VND02', name: 'Vendor B' }
+    ];
+
+    /* ===================================================
+       INITIALIZATION
+       =================================================== */
+    document.addEventListener('DOMContentLoaded', () => {
+      initDatabase();
+      renderStorefront();
+      updateCartBadge();
+      checkSession();
+    });
+
+    function initDatabase() {
+      if (!localStorage.getItem('krave_products')) {
+        localStorage.setItem('krave_products', JSON.stringify(DEFAULT_PRODUCTS));
+      }
+      if (!localStorage.getItem('krave_orders')) {
+        localStorage.setItem('krave_orders', JSON.stringify([]));
+      }
+      if (!localStorage.getItem('krave_payments')) {
+        localStorage.setItem('krave_payments', JSON.stringify([]));
+      }
+      if (!localStorage.getItem('krave_inventory')) {
+        const products = JSON.parse(localStorage.getItem('krave_products'));
+        const inv = products.map((p, idx) => ({
+          inventoryId: `INV-2026-${String(idx + 1).padStart(4, '0')}`,
+          productId: p.productId,
+          productName: p.name,
+          vendorId: p.vendorId,
+          vendorName: p.vendorName,
+          openingStock: p.stock,
+          currentStock: p.stock,
+          soldQuantity: 0,
+          returnedQuantity: 0,
+          expiredQuantity: 0,
+          damagedQuantity: 0,
+          adjustmentQuantity: 0,
+          expiryDate: p.expiryDate,
+          reorderLevel: 10,
+          status: 'Available',
+          lastUpdated: new Date().toISOString()
+        }));
+        localStorage.setItem('krave_inventory', JSON.stringify(inv));
+      }
+      if (!localStorage.getItem('krave_inventory_history')) {
+        localStorage.setItem('krave_inventory_history', JSON.stringify([]));
+      }
+    }
+
+    /* ===================================================
+       AUTH MODULE (STEP 2)
+       =================================================== */
+    function getCurrentUser() {
+      const u = localStorage.getItem('krave_currentUser');
+      return u ? JSON.parse(u) : null;
+    }
+
+    function login(username, password) {
+      const user = USERS.find(u => u.username === username && u.password === password);
+      if (user) {
+        const session = { username: user.username, role: user.role, vendorId: user.vendorId || null, name: user.name };
+        localStorage.setItem('krave_currentUser', JSON.stringify(session));
+        return { success: true, user: session };
+      }
+      return { success: false, message: 'Invalid credentials.' };
+    }
+
+    function logout() {
+      localStorage.removeItem('krave_currentUser');
+      document.getElementById('nav-portal').innerText = 'Login Portal';
+      switchView('storefront');
+    }
+
+    function checkSession() {
+      const u = getCurrentUser();
+      const btn = document.getElementById('nav-portal');
+      if (u) {
+        btn.innerText = `${u.name} (${u.role})`;
+      } else {
+        btn.innerText = 'Login Portal';
+      }
+    }
+
+    function handlePortalClick() {
+      const u = getCurrentUser();
+      if (!u) {
+        switchView('login');
+      } else if (u.role === 'ADMIN') {
+        switchView('admin');
+      } else {
+        switchView('vendor');
+      }
+    }
+
+    /* ===================================================
+       VIEW ROUTER
+       =================================================== */
+    function switchView(viewName) {
+      document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('nav button').forEach(el => el.classList.remove('active'));
+
+      if (viewName === 'storefront') {
+        document.getElementById('view-storefront').classList.add('active');
+        document.getElementById('nav-storefront').classList.add('active');
+        renderStorefront();
+      } else if (viewName === 'login') {
+        document.getElementById('view-login').classList.add('active');
+      } else if (viewName === 'admin') {
+        const u = getCurrentUser();
+        if (!u || u.role !== 'ADMIN') { switchView('login'); return; }
+        document.getElementById('view-admin').classList.add('active');
+        renderAdminDashboard();
+      } else if (viewName === 'vendor') {
+        const u = getCurrentUser();
+        if (!u || u.role !== 'VENDOR') { switchView('login'); return; }
+        document.getElementById('view-vendor').classList.add('active');
+        renderVendorDashboard();
+      }
+    }
+
+    /* ===================================================
+       STOREFRONT & CART MODULE (STEP 3 & 4)
+       =================================================== */
+    function getProducts() { return JSON.parse(localStorage.getItem('krave_products') || '[]'); }
+    function getCart() { return JSON.parse(localStorage.getItem('krave_cart') || '[]'); }
+    function saveCart(cart) { localStorage.setItem('krave_cart', JSON.stringify(cart)); updateCartBadge(); }
+
+    function updateCartBadge() {
+      const cart = getCart();
+      const count = cart.reduce((s, i) => s + i.quantity, 0);
+      document.getElementById('cart-count').innerText = count;
+    }
+
+    function renderStorefront() {
+      const products = getProducts();
+      const grid = document.getElementById('product-grid');
+      grid.innerHTML = '';
+
+      products.forEach(p => {
+        const isOut = p.stock <= 0;
+        grid.innerHTML += `
+          <div class="card">
+            <h3>${p.name}</h3>
+            <p style="color:#6b7280; font-size:0.85rem; margin-top:0.2rem;">by ${p.vendorName}</p>
+            <p style="margin: 0.6rem 0; font-size:0.9rem;">${p.description}</p>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:1rem;">
+              <span style="font-size: 1.3rem; font-weight: bold; color: var(--primary-color);">RM ${p.price.toFixed(2)}</span>
+              <span class="badge ${isOut ? 'badge-danger' : 'badge-success'}">${isOut ? 'Out of Stock' : `Stock: ${p.stock}`}</span>
+            </div>
+            <button class="btn btn-primary" style="width:100%; margin-top:1rem;" ${isOut ? 'disabled' : ''} onclick="addToCart('${p.productId}')">
+              ${isOut ? 'Out of Stock' : 'Add to Cart'}
+            </button>
+          </div>
+        `;
+      });
+    }
+
+    function addToCart(productId) {
+      const products = getProducts();
+      const p = products.find(x => x.productId === productId);
+      if (!p || p.stock <= 0) return alert('Item out of stock.');
+
+      let cart = getCart();
+      const exist = cart.find(x => x.productId === productId);
+      if (exist) {
+        if (exist.quantity + 1 > p.stock) return alert('Cannot add more than available stock.');
+        exist.quantity++;
+        exist.subtotal = exist.quantity * exist.price;
+      } else {
+        cart.push({
+          productId: p.productId,
+          name: p.name,
+          price: p.price,
+          quantity: 1,
+          subtotal: p.price,
+          vendorId: p.vendorId,
+          vendorName: p.vendorName
+        });
+      }
+      saveCart(cart);
+      alert(`${p.name} added to cart!`);
+    }
+
+    function openCartModal() {
+      renderCartModal();
+      document.getElementById('cart-modal').classList.add('active');
+    }
+    function closeCartModal() { document.getElementById('cart-modal').classList.remove('active'); }
+
+    function renderCartModal() {
+      const cart = getCart();
+      const tbody = document.getElementById('cart-table-body');
+      tbody.innerHTML = '';
+
+      if (cart.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Your cart is empty.</td></tr>';
+        document.getElementById('cart-modal-total').innerText = 'RM 0.00';
+        document.getElementById('checkout-btn').style.display = 'none';
+        return;
+      }
+
+      document.getElementById('checkout-btn').style.display = 'inline-block';
+      let total = 0;
+      cart.forEach(item => {
+        total += item.subtotal;
+        tbody.innerHTML += `
+          <tr>
+            <td>${item.name}</td>
+            <td>RM ${item.price.toFixed(2)}</td>
+            <td>
+              <input type="number" min="1" value="${item.quantity}" style="width:55px; padding:0.2rem;" onchange="updateCartQty('${item.productId}', this.value)">
+            </td>
+            <td>RM ${item.subtotal.toFixed(2)}</td>
+            <td><button class="btn btn-danger btn-sm" onclick="removeFromCart('${item.productId}')">✕</button></td>
+          </tr>
+        `;
+      });
+      document.getElementById('cart-modal-total').innerText = `RM ${total.toFixed(2)}`;
+    }
+
+    function updateCartQty(productId, qty) {
+      let cart = getCart();
+      const item = cart.find(x => x.productId === productId);
+      const p = getProducts().find(x => x.productId === productId);
+
+      if (item) {
+        const val = parseInt(qty, 10);
+        if (val > p.stock) { alert('Exceeds available stock.'); renderCartModal(); return; }
+        if (val <= 0) { removeFromCart(productId); return; }
+        item.quantity = val;
+        item.subtotal = item.quantity * item.price;
+        saveCart(cart);
+        renderCartModal();
+      }
+    }
+
+    function removeFromCart(productId) {
+      let cart = getCart().filter(x => x.productId !== productId);
+      saveCart(cart);
+      renderCartModal();
+    }
+
+    function openCheckoutModal() {
+      closeCartModal();
+      const cart = getCart();
+      if (cart.length === 0) return alert('Cart is empty.');
+      const total = cart.reduce((s, i) => s + i.subtotal, 0);
+      document.getElementById('checkout-total-amt').innerText = `RM ${total.toFixed(2)}`;
+      document.getElementById('checkout-modal').classList.add('active');
+    }
+    function closeCheckoutModal() { document.getElementById('checkout-modal').classList.remove('active'); }
+
+    /* CHECKOUT SUBMISSION (STEPS 4, 5, 6 INTEGRATION) */
+    document.getElementById('checkout-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const cart = getCart();
+      if (cart.length === 0) return alert('Cart is empty.');
+
+      const customer = {
+        fullName: document.getElementById('cust-name').value,
+        phone: document.getElementById('cust-phone').value,
+        email: document.getElementById('cust-email').value,
+        address: document.getElementById('cust-address').value
+      };
+      const payMethod = document.getElementById('cust-paymethod').value;
+
+      // 1. Create Order
+      const orders = JSON.parse(localStorage.getItem('krave_orders') || '[]');
+      const orderId = `ORD-2026-${String(orders.length + 1).padStart(4, '0')}`;
+      const totalAmount = cart.reduce((s, i) => s + i.subtotal, 0);
+
+      const newOrder = {
+        orderId,
+        orderDate: new Date().toISOString(),
+        customer,
+        items: cart,
+        totalAmount,
+        status: 'Pending'
+      };
+      orders.push(newOrder);
+      localStorage.setItem('krave_orders', JSON.stringify(orders));
+
+      // 2. Create Payment Record (STEP 5)
+      const payments = JSON.parse(localStorage.getItem('krave_payments') || '[]');
+      const paymentId = `PAY-2026-${String(payments.length + 1).padStart(4, '0')}`;
+      const vendorIds = [...new Set(cart.map(i => i.vendorId))];
+
+      payments.push({
+        paymentId,
+        orderId,
+        customerName: customer.fullName,
+        customerEmail: customer.email,
+        amount: totalAmount,
+        paymentMethod: payMethod,
+        paymentStatus: 'Pending',
+        vendorIds,
+        createdAt: new Date().toISOString()
+      });
+      localStorage.setItem('krave_payments', JSON.stringify(payments));
+
+      // 3. Deduct Stock & Update Inventory (STEP 6)
+      const inventory = JSON.parse(localStorage.getItem('krave_inventory'));
+      const products = getProducts();
+
+      cart.forEach(item => {
+        // Update product stock
+        const p = products.find(x => x.productId === item.productId);
+        if (p) p.stock = Math.max(0, p.stock - item.quantity);
+
+        // Update inventory record
+        const inv = inventory.find(x => x.productId === item.productId);
+        if (inv) {
+          inv.currentStock = Math.max(0, inv.currentStock - item.quantity);
+          inv.soldQuantity += item.quantity;
+          inv.status = inv.currentStock <= 0 ? 'Out of Stock' : (inv.currentStock <= inv.reorderLevel ? 'Low Stock' : 'Available');
+          inv.lastUpdated = new Date().toISOString();
+        }
+      });
+
+      localStorage.setItem('krave_products', JSON.stringify(products));
+      localStorage.setItem('krave_inventory', JSON.stringify(inventory));
+
+      // Clear cart & close checkout
+      localStorage.removeItem('krave_cart');
+      updateCartBadge();
+      closeCheckoutModal();
+
+      alert(`Order Placed Successfully!\n\nOrder ID: ${orderId}\nPayment ID: ${paymentId}\nTotal: RM ${totalAmount.toFixed(2)}`);
+      renderStorefront();
+    });
+
+    /* ===================================================
+       ADMIN DASHBOARD MODULE (STEPS 5, 6, 7)
+       =================================================== */
+    function renderAdminDashboard() {
+      renderAdminPayments();
+      renderAdminInventory();
+      renderAdminSales();
+    }
+
+    function renderAdminPayments() {
+      const payments = JSON.parse(localStorage.getItem('krave_payments') || '[]');
+      const tbody = document.getElementById('admin-pay-table');
+      tbody.innerHTML = '';
+
+      let totalAmt = 0, pending = 0, verified = 0;
+      payments.forEach(p => {
+        totalAmt += p.amount;
+        if (p.paymentStatus === 'Pending') pending++;
+        if (p.paymentStatus === 'Verified') verified++;
+
+        tbody.innerHTML += `
+          <tr>
+            <td>${p.paymentId}</td>
+            <td>${p.orderId}</td>
+            <td>${p.customerName}</td>
+            <td>RM ${p.amount.toFixed(2)}</td>
+            <td>${p.paymentMethod}</td>
+            <td><span class="badge ${p.paymentStatus === 'Verified' ? 'badge-success' : 'badge-warning'}">${p.paymentStatus}</span></td>
+            <td>
+              <button class="btn btn-sm btn-secondary" onclick="togglePaymentStatus('${p.paymentId}')">Toggle Status</button>
+            </td>
+          </tr>
+        `;
+      });
+
+      document.getElementById('admin-pay-count').innerText = payments.length;
+      document.getElementById('admin-pay-pending').innerText = pending;
+      document.getElementById('admin-pay-verified').innerText = verified;
+      document.getElementById('admin-pay-amount').innerText = `RM ${totalAmt.toFixed(2)}`;
+    }
+
+    function togglePaymentStatus(paymentId) {
+      const payments = JSON.parse(localStorage.getItem('krave_payments') || '[]');
+      const p = payments.find(x => x.paymentId === paymentId);
+      if (p) {
+        p.paymentStatus = p.paymentStatus === 'Pending' ? 'Verified' : 'Pending';
+        localStorage.setItem('krave_payments', JSON.stringify(payments));
+        renderAdminPayments();
+      }
+    }
+
+    function renderAdminInventory() {
+      const inv = JSON.parse(localStorage.getItem('krave_inventory') || '[]');
+      const tbody = document.getElementById('admin-inv-table');
+      tbody.innerHTML = '';
+
+      inv.forEach(i => {
+        tbody.innerHTML += `
+          <tr>
+            <td>${i.productName}</td>
+            <td>${i.vendorName}</td>
+            <td>${i.openingStock}</td>
+            <td><strong>${i.currentStock}</strong></td>
+            <td>${i.soldQuantity}</td>
+            <td>${i.returnedQuantity}</td>
+            <td>${i.expiredQuantity}</td>
+            <td>${i.damagedQuantity}</td>
+            <td><span class="badge ${i.currentStock <= 0 ? 'badge-danger' : 'badge-success'}">${i.status}</span></td>
+          </tr>
+        `;
+      });
+    }
+
+    /* SALES REPORTING & CALCULATIONS (STEP 7) */
+    function getSalesData() {
+      const orders = JSON.parse(localStorage.getItem('krave_orders') || '[]');
+      const lineItems = [];
+
+      orders.forEach(order => {
+        if (order.status !== 'Cancelled') {
+          order.items.forEach(item => {
+            lineItems.push({
+              orderId: order.orderId,
+              orderDate: order.orderDate,
+              productId: item.productId,
+              productName: item.name,
+              price: item.price,
+              quantity: item.quantity,
+              subtotal: item.subtotal,
+              vendorId: item.vendorId,
+              vendorName: item.vendorName,
+              status: order.status
+            });
+          });
+        }
+      });
+      return lineItems;
+    }
+
+    function renderAdminSales(filteredSales = null) {
+      let sales = filteredSales || getSalesData();
+
+      // Stats
+      const totalSales = sales.reduce((s, i) => s + i.subtotal, 0);
+      const uniqueOrders = new Set(sales.map(i => i.orderId)).size;
+      const totalItems = sales.reduce((s, i) => s + i.quantity, 0);
+      const aov = uniqueOrders > 0 ? totalSales / uniqueOrders : 0;
+
+      document.getElementById('sales-total').innerText = `RM ${totalSales.toFixed(2)}`;
+      document.getElementById('sales-orders').innerText = uniqueOrders;
+      document.getElementById('sales-items').innerText = totalItems;
+      document.getElementById('sales-aov').innerText = `RM ${aov.toFixed(2)}`;
+
+      // Best selling dessert
+      const prodMap = {};
+      sales.forEach(s => {
+        if (!prodMap[s.productName]) prodMap[s.productName] = 0;
+        prodMap[s.productName] += s.quantity;
+      });
+      let bestProd = '-', maxQty = 0;
+      Object.keys(prodMap).forEach(k => {
+        if (prodMap[k] > maxQty) { maxQty = prodMap[k]; bestProd = `${k} (${maxQty} sold)`; }
+      });
+      document.getElementById('sales-best-dessert').innerText = bestProd;
+
+      // Top vendor
+      const vendorMap = {};
+      sales.forEach(s => {
+        if (!vendorMap[s.vendorName]) vendorMap[s.vendorName] = 0;
+        vendorMap[s.vendorName] += s.subtotal;
+      });
+      let topVend = '-', maxVendAmt = 0;
+      Object.keys(vendorMap).forEach(k => {
+        if (vendorMap[k] > maxVendAmt) { maxVendAmt = vendorMap[k]; topVend = `${k} (RM ${maxVendAmt.toFixed(2)})`; }
+      });
+      document.getElementById('sales-top-vendor').innerText = topVend;
+
+      // Product Performance Table
+      const prodPerfMap = {};
+      sales.forEach(s => {
+        if (!prodPerfMap[s.productId]) {
+          prodPerfMap[s.productId] = { name: s.productName, vendor: s.vendorName, units: 0, sales: 0 };
+        }
+        prodPerfMap[s.productId].units += s.quantity;
+        prodPerfMap[s.productId].sales += s.subtotal;
+      });
+
+      const prodTable = document.getElementById('sales-product-perf-table');
+      prodTable.innerHTML = '';
+      Object.keys(prodPerfMap).sort((a,b) => prodPerfMap[b].units - prodPerfMap[a].units).forEach(pid => {
+        const item = prodPerfMap[pid];
+        prodTable.innerHTML += `
+          <tr>
+            <td>${pid}</td>
+            <td>${item.name}</td>
+            <td>${item.vendor}</td>
+            <td>${item.units}</td>
+            <td>RM ${item.sales.toFixed(2)}</td>
+          </tr>
+        `;
+      });
+
+      // Vendor Performance Table
+      const vendPerfMap = {};
+      sales.forEach(s => {
+        if (!vendPerfMap[s.vendorId]) {
+          vendPerfMap[s.vendorId] = { name: s.vendorName, orders: new Set(), units: 0, sales: 0 };
+        }
+        vendPerfMap[s.vendorId].orders.add(s.orderId);
+        vendPerfMap[s.vendorId].units += s.quantity;
+        vendPerfMap[s.vendorId].sales += s.subtotal;
+      });
+
+      const vendTable = document.getElementById('sales-vendor-perf-table');
+      vendTable.innerHTML = '';
+      Object.keys(vendPerfMap).forEach(vid => {
+        const item = vendPerfMap[vid];
+        vendTable.innerHTML += `
+          <tr>
+            <td>${vid}</td>
+            <td>${item.name}</td>
+            <td>${item.orders.size}</td>
+            <td>${item.units}</td>
+            <td>RM ${item.sales.toFixed(2)}</td>
+          </tr>
+        `;
+      });
+
+      // Itemized Table
+      const detailsTable = document.getElementById('sales-details-table');
+      detailsTable.innerHTML = '';
+      sales.forEach(s => {
+        detailsTable.innerHTML += `
+          <tr>
+            <td>${s.orderId}</td>
+            <td>${new Date(s.orderDate).toLocaleDateString()}</td>
+            <td>${s.productName}</td>
+            <td>${s.vendorName}</td>
+            <td>${s.quantity}</td>
+            <td>RM ${s.price.toFixed(2)}</td>
+            <td>RM ${s.subtotal.toFixed(2)}</td>
+            <td><span class="badge badge-success">${s.status}</span></td>
+          </tr>
+        `;
+      });
+    }
+
+    function applySalesFilter() {
+      const start = document.getElementById('sales-filter-start').value;
+      const end = document.getElementById('sales-filter-end').value;
+      const vendorId = document.getElementById('sales-filter-vendor').value;
+
+      let sales = getSalesData();
+
+      if (start) {
+        const sDate = new Date(start);
+        sales = sales.filter(s => new Date(s.orderDate) >= sDate);
+      }
+      if (end) {
+        const eDate = new Date(end);
+        eDate.setHours(23, 59, 59);
+        sales = sales.filter(s => new Date(s.orderDate) <= eDate);
+      }
+      if (vendorId !== 'ALL') {
+        sales = sales.filter(s => s.vendorId === vendorId);
+      }
+
+      renderAdminSales(sales);
+    }
+
+    function clearSalesFilter() {
+      document.getElementById('sales-filter-start').value = '';
+      document.getElementById('sales-filter-end').value = '';
+      document.getElementById('sales-filter-vendor').value = 'ALL';
+      renderAdminSales();
+    }
+
+    function exportSalesReport() {
+      const sales = getSalesData();
+      let csv = 'Order ID,Order Date,Product ID,Product Name,Quantity,Unit Price (RM),Subtotal (RM),Vendor ID,Vendor Name,Status\n';
+
+      sales.forEach(row => {
+        csv += `"${row.orderId}","${row.orderDate}","${row.productId}","${row.productName}",${row.quantity},${row.price.toFixed(2)},${row.subtotal.toFixed(2)},"${row.vendorId}","${row.vendorName}","${row.status}"\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `KraVe_Sales_Report_${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    }
+
+    /* ===================================================
+       VENDOR DASHBOARD MODULE (ISOLATED ROLE VIEW)
+       =================================================== */
+    function renderVendorDashboard() {
+      const user = getCurrentUser();
+      if (!user || user.role !== 'VENDOR') return;
+
+      document.getElementById('vendor-title-name').innerText = `${user.name} (${user.vendorId})`;
+
+      // 1. Isolated Inventory
+      const inv = JSON.parse(localStorage.getItem('krave_inventory') || '[]').filter(i => i.vendorId === user.vendorId);
+      const invBody = document.getElementById('vendor-inv-table');
+      invBody.innerHTML = '';
+      inv.forEach(i => {
+        invBody.innerHTML += `
+          <tr>
+            <td>${i.productName}</td>
+            <td><strong>${i.currentStock}</strong></td>
+            <td>${i.soldQuantity}</td>
+            <td>${i.returnedQuantity}</td>
+            <td>${i.expiredQuantity}</td>
+            <td>${i.damagedQuantity}</td>
+            <td><span class="badge ${i.currentStock <= 0 ? 'badge-danger' : 'badge-success'}">${i.status}</span></td>
+            <td>
+              <button class="btn btn-sm btn-secondary" onclick="openInvModal('${i.productId}', '${i.productName}')">Adjust Stock</button>
+            </td>
+          </tr>
+        `;
+      });
+
+      // 2. Isolated Payments
+      const payments = JSON.parse(localStorage.getItem('krave_payments') || '[]').filter(p => p.vendorIds && p.vendorIds.includes(user.vendorId));
+      const payBody = document.getElementById('vendor-pay-table');
+      payBody.innerHTML = '';
+      payments.forEach(p => {
+        payBody.innerHTML += `
+          <tr>
+            <td>${p.paymentId}</td>
+            <td>${p.orderId}</td>
+            <td>${p.customerName}</td>
+            <td>RM ${p.amount.toFixed(2)}</td>
+            <td><span class="badge badge-warning">${p.paymentStatus}</span></td>
+          </tr>
+        `;
+      });
+
+      // 3. Isolated Sales Report
+      const sales = getSalesData().filter(s => s.vendorId === user.vendorId);
+      const totalSales = sales.reduce((s, i) => s + i.subtotal, 0);
+      const totalItems = sales.reduce((s, i) => s + i.quantity, 0);
+
+      document.getElementById('vendor-kpi-sales').innerText = `RM ${totalSales.toFixed(2)}`;
+      document.getElementById('vendor-kpi-items').innerText = totalItems;
+
+      // Vendor best selling
+      const prodMap = {};
+      sales.forEach(s => {
+        if (!prodMap[s.productName]) prodMap[s.productName] = 0;
+        prodMap[s.productName] += s.quantity;
+      });
+      let best = '-', maxQty = 0;
+      Object.keys(prodMap).forEach(k => {
+        if (prodMap[k] > maxQty) { maxQty = prodMap[k]; best = `${k} (${maxQty} sold)`; }
+      });
+      document.getElementById('vendor-kpi-best').innerText = best;
+
+      // Product breakdown
+      const prodBreakdown = {};
+      sales.forEach(s => {
+        if (!prodBreakdown[s.productId]) prodBreakdown[s.productId] = { name: s.productName, units: 0, sales: 0 };
+        prodBreakdown[s.productId].units += s.quantity;
+        prodBreakdown[s.productId].sales += s.subtotal;
+      });
+
+      const prodTable = document.getElementById('vendor-sales-prod-table');
+      prodTable.innerHTML = '';
+      Object.keys(prodBreakdown).forEach(pid => {
+        const item = prodBreakdown[pid];
+        prodTable.innerHTML += `
+          <tr>
+            <td>${pid}</td>
+            <td>${item.name}</td>
+            <td>${item.units}</td>
+            <td>RM ${item.sales.toFixed(2)}</td>
+          </tr>
+        `;
+      });
+    }
+
+    /* INVENTORY ADJUSTMENT ACTION */
+    function openInvModal(productId, productName) {
+      document.getElementById('inv-prod-id').value = productId;
+      document.getElementById('inv-prod-name').value = productName;
+      document.getElementById('inv-action-modal').classList.add('active');
+    }
+    function closeInvModal() { document.getElementById('inv-action-modal').classList.remove('active'); }
+
+    document.getElementById('inv-action-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const pid = document.getElementById('inv-prod-id').value;
+      const action = document.getElementById('inv-action-type').value;
+      const qty = parseInt(document.getElementById('inv-action-qty').value, 10);
+      const reason = document.getElementById('inv-action-reason').value;
+
+      const inventory = JSON.parse(localStorage.getItem('krave_inventory'));
+      const products = getProducts();
+
+      const item = inventory.find(x => x.productId === pid);
+      const prod = products.find(x => x.productId === pid);
+
+      if (item && prod) {
+        if (action === 'Return') {
+          item.returnedQuantity += qty;
+          item.currentStock += qty;
+        } else if (action === 'Damaged') {
+          if (item.currentStock < qty) return alert('Cannot mark damaged more than available stock.');
+          item.damagedQuantity += qty;
+          item.currentStock -= qty;
+        } else if (action === 'Expired') {
+          item.expiredQuantity += qty;
+          item.currentStock = Math.max(0, item.currentStock - qty);
+        } else if (action === 'Adjustment') {
+          item.adjustmentQuantity += qty;
+          item.currentStock = Math.max(0, item.currentStock + qty);
+        }
+
+        item.status = item.currentStock <= 0 ? 'Out of Stock' : 'Available';
+        item.lastUpdated = new Date().toISOString();
+        prod.stock = item.currentStock;
+
+        localStorage.setItem('krave_inventory', JSON.stringify(inventory));
+        localStorage.setItem('krave_products', JSON.stringify(products));
+
+        closeInvModal();
+        alert('Inventory adjustment recorded.');
+        renderVendorDashboard();
+      }
+    });
+
+    /* LOGIN SUBMISSION */
+    document.getElementById('login-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const u = document.getElementById('login-username').value;
+      const p = document.getElementById('login-password').value;
+
+      const res = login(u, p);
+      if (res.success) {
+        checkSession();
+        if (res.user.role === 'ADMIN') {
+          switchView('admin');
+        } else {
+          switchView('vendor');
+        }
+      } else {
+        alert(res.message);
+      }
+    });
+  </script>
+</body>
+</html>
