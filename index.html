@@ -1,454 +1,925 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full bg-slate-100">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KraVe — Complete Gourmet Dessert & Management System</title>
-  <style>
-    /* KraVe Master Styling */
-    :root {
-      --primary-color: #d97706;
-      --primary-hover: #b45309;
-      --secondary-color: #4b5563;
-      --bg-color: #f9fafb;
-      --card-bg: #ffffff;
-      --text-color: #1f2937;
-      --border-color: #e5e7eb;
-      --success-color: #059669;
-      --warning-color: #d97706;
-      --danger-color: #dc2626;
-      --info-color: #2563eb;
+  <title>KraVe Licious — Gourmet Dessert & Management Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#fbf7ff',
+              100: '#f3e8ff',
+              500: '#8b5cf6',
+              600: '#7c3aed',
+              700: '#6d28d9',
+              800: '#5b21b6',
+              900: '#4c1d95',
+              950: '#1e112a',
+            },
+            amberBrand: {
+              500: '#f59e0b',
+              600: '#d97706',
+            }
+          }
+        }
+      }
     }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
-    body { background-color: var(--bg-color); color: var(--text-color); line-height: 1.6; }
-
-    header { background-color: #ffffff; border-bottom: 1px solid var(--border-color); padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 4px rgba(0,0,0,0.03); }
-    .logo { font-size: 1.5rem; font-weight: 800; color: var(--primary-color); text-decoration: none; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; }
-    .logo span { font-size: 0.85rem; font-weight: 600; color: #6b7280; background: #f3f4f6; padding: 0.1rem 0.5rem; border-radius: 4px; }
-    
-    nav { display: flex; gap: 1rem; align-items: center; }
-    nav button, nav a { color: var(--text-color); text-decoration: none; font-weight: 600; padding: 0.5rem 0.75rem; border-radius: 6px; border: none; background: transparent; cursor: pointer; transition: all 0.2s; }
-    nav button:hover, nav a:hover { color: var(--primary-color); background-color: #fef3c7; }
-    nav button.active { background-color: var(--primary-color); color: white; }
-
-    .container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
-    .card { background: var(--card-bg); border-radius: 10px; border: 1px solid var(--border-color); padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-
-    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; }
-    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
-    .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
-
-    .btn { display: inline-block; padding: 0.55rem 1.1rem; border-radius: 6px; border: none; font-weight: 600; cursor: pointer; text-decoration: none; text-align: center; transition: background 0.2s; }
-    .btn-primary { background-color: var(--primary-color); color: white; }
-    .btn-primary:hover { background-color: var(--primary-hover); }
-    .btn-secondary { background-color: var(--secondary-color); color: white; }
-    .btn-secondary:hover { background-color: #374151; }
-    .btn-danger { background-color: var(--danger-color); color: white; }
-    .btn-danger:hover { background-color: #b91c1c; }
-    .btn-success { background-color: var(--success-color); color: white; }
-    .btn-sm { padding: 0.3rem 0.6rem; font-size: 0.85rem; }
-
-    .form-group { margin-bottom: 1rem; }
-    .form-group label { display: block; margin-bottom: 0.4rem; font-weight: 600; font-size: 0.9rem; }
-    .form-control { width: 100%; padding: 0.6rem; border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.95rem; }
-
-    table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.9rem; }
-    th, td { padding: 0.75rem 0.5rem; text-align: left; border-bottom: 1px solid var(--border-color); }
-    th { background-color: #f8fafc; font-weight: 600; color: #475569; }
-
-    .badge { display: inline-block; padding: 0.25rem 0.6rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
-    .badge-success { background-color: #d1fae5; color: #065f46; }
-    .badge-warning { background-color: #fef3c7; color: #92400e; }
-    .badge-danger { background-color: #fee2e2; color: #991b1b; }
-    .badge-secondary { background-color: #f1f5f9; color: #475569; }
-
-    .mov-box { background-color: #eff6ff; border-left: 4px solid var(--info-color); padding: 1.2rem; margin-bottom: 1.5rem; border-radius: 0 8px 8px 0; }
-    .mov-box h4 { color: #1e40af; margin-bottom: 0.4rem; display: flex; justify-content: space-between; align-items: center; }
-    .mov-target { font-weight: 600; color: #1e3a8a; font-size: 0.95rem; }
-
-    .kpi-card { background: white; border-radius: 8px; border: 1px solid var(--border-color); padding: 1.25rem; text-align: center; }
-    .kpi-title { font-size: 0.8rem; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
-    .kpi-value { font-size: 1.6rem; font-weight: bold; color: var(--text-color); margin-top: 0.4rem; }
-
-    .filter-bar { display: flex; gap: 1rem; align-items: flex-end; margin-bottom: 1rem; flex-wrap: wrap; background: #f8fafc; padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color); }
-    .filter-bar .form-group { margin-bottom: 0; min-width: 160px; }
-
-    /* Modals */
-    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
-    .modal-overlay.active { display: flex; }
-    .modal-content { background: white; border-radius: 10px; max-width: 600px; width: 92%; max-height: 85vh; overflow-y: auto; padding: 1.5rem; box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
-
+  </script>
+  <style>
+    .glass-header {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(12px);
+    }
     .view-section { display: none; }
     .view-section.active { display: block; }
+    
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+    /* Sidebar Smooth Slide for Mobile */
+    @media (max-width: 1023px) {
+      .sidebar-open { transform: translateX(0) !important; }
+    }
   </style>
 </head>
-<body>
+<body class="font-sans antialiased text-slate-800 bg-slate-100 min-h-full flex flex-col lg:flex-row">
 
-  <!-- HEADER NAVIGATION -->
-  <header>
-    <div class="logo" onclick="switchView('storefront')">
-      KraVe <span>Gourmet Desserts</span>
-    </div>
-    <nav>
-      <button id="nav-storefront" class="active" onclick="switchView('storefront')">Catalogue</button>
-      <button id="nav-cart" onclick="openCartModal()">Cart (<span id="cart-count">0</span>)</button>
-      <button id="nav-portal" onclick="handlePortalClick()">Login Portal</button>
-    </nav>
-  </header>
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm pointer-events-none"></div>
 
-  <div class="container">
+  <!-- Mobile Sidebar Overlay Backdrop -->
+  <div id="sidebar-backdrop" onclick="toggleMobileSidebar()" class="fixed inset-0 bg-slate-900/50 z-40 lg:hidden hidden backdrop-blur-sm"></div>
 
-    <!-- 1. PUBLIC STOREFRONT VIEW -->
-    <div id="view-storefront" class="view-section active">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+  <!-- DARK PURPLE SIDEBAR NAVIGATION -->
+  <aside id="main-sidebar" class="fixed lg:static top-0 bottom-0 left-0 z-40 w-64 bg-brand-950 text-slate-300 flex flex-col transition-transform duration-300 -translate-x-full lg:translate-x-0 border-r border-brand-900/50 shadow-2xl shrink-0">
+    
+    <!-- Branding Header -->
+    <div class="p-5 border-b border-purple-900/40 flex items-center justify-between">
+      <div class="flex items-center gap-3 cursor-pointer group" onclick="switchView('storefront')">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-600 via-purple-500 to-amber-500 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-purple-900/50 group-hover:scale-105 transition-transform">
+          K
+        </div>
         <div>
-          <h2>Public Dessert Catalogue</h2>
-          <p style="color:#6b7280; font-size:0.9rem;">Fresh handcrafted desserts from local vendors. Order directly online!</p>
+          <div class="flex items-center gap-1.5">
+            <span class="font-black text-lg tracking-tight text-white">KraVe</span>
+            <span class="text-[9px] font-extrabold uppercase tracking-widest bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded border border-amber-500/30">Licious</span>
+          </div>
+          <p class="text-[10px] text-purple-300/70 font-semibold tracking-wide">Management System</p>
         </div>
       </div>
-      <div id="product-grid" class="grid-3"></div>
+      <button onclick="toggleMobileSidebar()" class="lg:hidden text-slate-400 hover:text-white text-lg p-1">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
     </div>
 
-    <!-- 2. LOGIN VIEW -->
-    <div id="view-login" class="view-section">
-      <div style="max-width: 420px; margin: 3rem auto;">
-        <div class="card">
-          <h2 style="text-align: center; margin-bottom: 1rem; color: var(--primary-color);">KraVe Licious Management Portal</h2>
-          <p style="text-align: center; color:#6b7280; font-size:0.85rem; margin-bottom: 1.5rem;">Access Admin or Vendor Management Features</p>
+    <!-- Sidebar Scrollable Navigation Links -->
+    <div class="flex-1 overflow-y-auto px-3 py-4 space-y-6">
+      
+      <!-- SECTION 1: MAIN MENU -->
+      <div>
+        <p class="px-3 text-[10px] font-extrabold tracking-wider text-purple-400/80 uppercase mb-2">Main Menu</p>
+        <div class="space-y-1">
+          <button id="nav-side-storefront" onclick="switchView('storefront')" class="sidebar-btn active w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-300 hover:bg-purple-900/40 hover:text-white">
+            <i class="fa-solid fa-store w-4 text-center text-purple-400"></i>
+            <span>Catalogue / Store</span>
+          </button>
+          
+          <button id="nav-side-portal" onclick="handlePortalClick()" class="sidebar-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-300 hover:bg-purple-900/40 hover:text-white">
+            <i class="fa-solid fa-gauge-high w-4 text-center text-purple-400"></i>
+            <span id="side-portal-label">Portal / Dashboard</span>
+          </button>
+        </div>
+      </div>
 
-          <form id="login-form">
-            <div class="form-group">
-              <label>Username</label>
-              <input type="text" id="login-username" class="form-control" placeholder="admin / vendor / vendor2" required>
-            </div>
-            <div class="form-group">
-              <label>Password</label>
-              <input type="password" id="login-password" class="form-control" placeholder="admin123 / vendor123 / vendor2123" required>
-            </div>
-            <button type="submit" class="btn btn-primary" style="width:100%; margin-top:0.5rem;">Sign In</button>
-          </form>
+      <!-- SECTION 2: MANAGEMENT -->
+      <div id="sidebar-sec-management">
+        <p class="px-3 text-[10px] font-extrabold tracking-wider text-purple-400/80 uppercase mb-2">Management</p>
+        <div class="space-y-1">
+          <button onclick="handleSideNavTab('payments')" class="sidebar-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition-all text-slate-300 hover:bg-purple-900/40 hover:text-white">
+            <i class="fa-solid fa-credit-card w-4 text-center text-purple-400"></i>
+            <span>Payments & Audit</span>
+          </button>
+          <button onclick="handleDeliveriesClick()" class="sidebar-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition-all text-slate-300 hover:bg-purple-900/40 hover:text-white">
+            <i class="fa-solid fa-truck-fast w-4 text-center text-purple-400"></i>
+            <span>Deliveries</span>
+          </button>
+          <button onclick="handleReturnsClick()" class="sidebar-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition-all text-slate-300 hover:bg-purple-900/40 hover:text-white">
+            <i class="fa-solid fa-rotate-left w-4 text-center text-purple-400"></i>
+            <span>Returns</span>
+          </button>
+          <button onclick="handleSideNavTab('inventory')" class="sidebar-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition-all text-slate-300 hover:bg-purple-900/40 hover:text-white">
+            <i class="fa-solid fa-boxes-stacked w-4 text-center text-purple-400"></i>
+            <span>Master Inventory</span>
+          </button>
+          <button onclick="handleSideNavTab('sales')" class="sidebar-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition-all text-slate-300 hover:bg-purple-900/40 hover:text-white">
+            <i class="fa-solid fa-chart-pie w-4 text-center text-purple-400"></i>
+            <span>Sales Analytics</span>
+          </button>
+        </div>
+      </div>
 
-          <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border-color); font-size: 0.8rem; color: #6b7280;">
-            <p><strong>Demo Accounts:</strong></p>
-            <p>• Admin: <code>admin</code> / <code>admin123</code></p>
-            <p>• Vendor A: <code>vendor</code> / <code>vendor123</code> (VND01)</p>
-            <p>• Vendor B: <code>vendor2</code> / <code>vendor2123</code> (VND02)</p>
+      <!-- SECTION 3: ANALYSIS -->
+      <div>
+        <p class="px-3 text-[10px] font-extrabold tracking-wider text-purple-400/80 uppercase mb-2">Analysis</p>
+        <div class="space-y-1">
+          <button onclick="showToast('Sales Overview & MOV target analysis active on dashboard view.', 'info')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition-all text-slate-400 hover:bg-purple-900/30 hover:text-slate-200">
+            <i class="fa-solid fa-chart-line w-4 text-center text-purple-400"></i>
+            <span>Performance Metrics</span>
+          </button>
+          <button onclick="showToast('Project Budget: RM 100,000 allocated for KraVe System Build.', 'info')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition-all text-slate-400 hover:bg-purple-900/30 hover:text-slate-200">
+            <i class="fa-solid fa-wallet w-4 text-center text-purple-400"></i>
+            <span>Budget Allocation</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- SECTION 4: COMMUNICATION -->
+      <div>
+        <p class="px-3 text-[10px] font-extrabold tracking-wider text-purple-400/80 uppercase mb-2">Communication</p>
+        <div class="space-y-1">
+          <button onclick="handleWhatsAppClick()" class="sidebar-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition-all text-slate-300 hover:bg-purple-900/40 hover:text-white">
+            <i class="fa-brands fa-whatsapp w-4 text-center text-green-400"></i>
+            <span>WhatsApp</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- SECTION 5: ACCOUNT -->
+      <div>
+        <p class="px-3 text-[10px] font-extrabold tracking-wider text-purple-400/80 uppercase mb-2">Account</p>
+        <div class="space-y-1">
+          <button id="side-account-btn" onclick="handlePortalClick()" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition-all text-slate-300 hover:bg-purple-900/40 hover:text-white">
+            <i class="fa-solid fa-user-gear w-4 text-center text-purple-400"></i>
+            <span id="side-account-label">Login Account</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Sidebar Footer / Active User Quick Status -->
+    <div class="p-4 border-t border-purple-900/40 bg-purple-950/60 flex items-center justify-between">
+      <div class="flex items-center gap-2.5 overflow-hidden">
+        <div class="w-8 h-8 rounded-full bg-purple-700/50 border border-purple-500/40 flex items-center justify-center text-purple-200 text-xs font-bold shrink-0">
+          <i class="fa-solid fa-user"></i>
+        </div>
+        <div class="truncate">
+          <p id="side-user-name" class="text-xs font-bold text-white truncate">Guest User</p>
+          <p id="side-user-role" class="text-[10px] text-purple-300/80 truncate">Store Front View</p>
+        </div>
+      </div>
+      <button onclick="logout()" id="side-logout-btn" title="Sign Out" class="hidden text-slate-400 hover:text-red-400 p-1.5 transition-colors">
+        <i class="fa-solid fa-arrow-right-from-bracket text-xs"></i>
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN WORKSPACE CONTENT CONTAINER -->
+  <div class="flex-1 flex flex-col min-w-0 min-h-screen">
+    
+    <!-- TOP HEADER BAR -->
+    <header class="glass-header sticky top-0 z-30 border-b border-slate-200/80 px-4 sm:px-6 py-3.5 flex items-center justify-between shadow-sm">
+      <div class="flex items-center gap-3">
+        <!-- Mobile Sidebar Toggle -->
+        <button onclick="toggleMobileSidebar()" class="lg:hidden w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition-all">
+          <i class="fa-solid fa-bars text-sm"></i>
+        </button>
+
+        <div>
+          <h1 id="top-bar-title" class="text-base sm:text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
+            <span>Catalogue & Storefront</span>
+          </h1>
+          <p id="top-bar-subtitle" class="text-[11px] text-slate-500 hidden sm:block font-medium">KraVe Licious Artisanal Desserts & Management</p>
+        </div>
+      </div>
+
+      <!-- Top Right Actions & User Profile -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        <!-- Shopping Cart Button -->
+        <button id="nav-cart" onclick="openCartModal()" class="px-3 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200/80 shadow-sm">
+          <i class="fa-solid fa-bag-shopping text-purple-600"></i>
+          <span class="hidden sm:inline">Cart</span>
+          <span id="cart-count" class="ml-0.5 px-2 py-0.5 text-[11px] font-black bg-purple-600 text-white rounded-full shadow-sm">0</span>
+        </button>
+
+        <div class="h-5 w-px bg-slate-200 mx-1"></div>
+
+        <!-- Top Profile Badge / Sign-In Button -->
+        <div id="top-profile-container" class="flex items-center gap-2">
+          <button id="top-login-btn" onclick="handlePortalClick()" class="px-3.5 py-2 bg-brand-950 hover:bg-purple-900 text-white font-bold text-xs rounded-xl shadow-sm transition-all flex items-center gap-2">
+            <i class="fa-solid fa-user-lock text-xs text-purple-400"></i>
+            <span>Portal Sign In</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN CONTENT VIEW AREA -->
+    <main class="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto space-y-6">
+
+      <!-- 1. PUBLIC STOREFRONT VIEW -->
+      <div id="view-storefront" class="view-section active space-y-6">
+        <!-- Hero Banner -->
+        <div class="bg-gradient-to-r from-purple-900 via-brand-800 to-amber-600 rounded-2xl p-6 sm:p-8 text-white shadow-xl shadow-purple-950/10 relative overflow-hidden">
+          <div class="relative z-10 max-w-2xl">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-white/20 text-white backdrop-blur-md mb-3">
+              <i class="fa-solid fa-cookie-bite"></i> Freshly Baked Daily
+            </span>
+            <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight">Handcrafted Artisanal Desserts</h1>
+            <p class="mt-2 text-purple-100 text-sm sm:text-base leading-relaxed">Discover sweet creations from independent local vendors. Order directly online for instant delivery dispatch.</p>
+          </div>
+          <div class="absolute -right-8 -bottom-8 opacity-15 text-white pointer-events-none">
+            <i class="fa-solid fa-cake-candles text-9xl"></i>
           </div>
         </div>
-      </div>
-    </div>
 
-    <!-- 3. ADMIN DASHBOARD VIEW -->
-    <div id="view-admin" class="view-section">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
-        <div>
-          <h2>System Administrator Control Portal</h2>
-          <p style="color:#6b7280; font-size:0.9rem;">Global Management for Payments, Inventory, and Sales Reporting</p>
-        </div>
-        <button onclick="logout()" class="btn btn-secondary btn-sm">Sign Out</button>
-      </div>
-
-      <!-- Budget Card -->
-      <div class="card" style="background:#fef3c7; border-color:#f59e0b;">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div class="flex items-center justify-between border-b border-slate-200/80 pb-4">
           <div>
-            <h3 style="color:#92400e;">Project Budget Overview</h3>
-            <p style="font-size:0.85rem; color:#b45309;">System Development & Deployment Budget Allocation</p>
-          </div>
-          <div style="font-size:1.75rem; font-weight:800; color:#b45309;">RM 100,000.00</div>
-        </div>
-      </div>
-
-      <!-- MOV 01 Section -->
-      <div class="mov-box">
-        <h4>MOV 01 — PAYMENT TRACKING TARGET <span class="badge badge-secondary">Target: 95% Accuracy</span></h4>
-        <p class="mov-target">"Reduce payment recording errors and improve payment tracking accuracy by 95% within 3 months after the application is implemented."</p>
-      </div>
-
-      <!-- Payment Management Section -->
-      <div class="card">
-        <h3>Payment Management</h3>
-        <div class="grid-4" style="margin: 1rem 0;">
-          <div class="kpi-card"><div class="kpi-title">Total Records</div><div class="kpi-value" id="admin-pay-count">0</div></div>
-          <div class="kpi-card"><div class="kpi-title">Pending</div><div class="kpi-value" id="admin-pay-pending">0</div></div>
-          <div class="kpi-card"><div class="kpi-title">Verified</div><div class="kpi-value" id="admin-pay-verified">0</div></div>
-          <div class="kpi-card"><div class="kpi-title">Total Amount</div><div class="kpi-value" id="admin-pay-amount">RM 0.00</div></div>
-        </div>
-
-        <table>
-          <thead>
-            <tr>
-              <th>Payment ID</th>
-              <th>Order ID</th>
-              <th>Customer</th>
-              <th>Amount</th>
-              <th>Method</th>
-              <th>Status</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody id="admin-pay-table"></tbody>
-        </table>
-      </div>
-
-      <!-- MOV 02 Section -->
-      <div class="mov-box">
-        <h4>MOV 02 — INVENTORY CONTROL TARGET <span class="badge badge-secondary">Target: 30% Reduction</span></h4>
-        <p class="mov-target">"Reduce food loss, expired stock, returned desserts and inventory discrepancy by 30% within 6 months through a digital inventory management system."</p>
-      </div>
-
-      <!-- Inventory Management Section -->
-      <div class="card">
-        <h3>Global Inventory Management</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Product</th>
-              <th>Vendor</th>
-              <th>Opening</th>
-              <th>Current</th>
-              <th>Sold</th>
-              <th>Returned</th>
-              <th>Expired</th>
-              <th>Damaged</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody id="admin-inv-table"></tbody>
-        </table>
-      </div>
-
-      <!-- MOV 03 Section -->
-      <div class="mov-box">
-        <h4>MOV 03 — DIGITAL SALES REPORTING TARGET <span class="badge badge-secondary">Target: 100% Digital</span></h4>
-        <p class="mov-target">"Achieve 100% digital sales reporting and enable the owner to identify the best-selling desserts and vendors within 3 months after implementation."</p>
-      </div>
-
-      <!-- Sales Reporting Section -->
-      <div class="card">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
-          <h3>Sales Reporting Module</h3>
-          <button class="btn btn-primary btn-sm" onclick="exportSalesReport()">Export CSV Report</button>
-        </div>
-
-        <!-- Filters -->
-        <div class="filter-bar">
-          <div class="form-group">
-            <label>Start Date</label>
-            <input type="date" id="sales-filter-start" class="form-control">
-          </div>
-          <div class="form-group">
-            <label>End Date</label>
-            <input type="date" id="sales-filter-end" class="form-control">
-          </div>
-          <div class="form-group">
-            <label>Vendor</label>
-            <select id="sales-filter-vendor" class="form-control">
-              <option value="ALL">All Vendors</option>
-              <option value="VND01">Vendor A (VND01)</option>
-              <option value="VND02">Vendor B (VND02)</option>
-            </select>
-          </div>
-          <button class="btn btn-secondary btn-sm" onclick="applySalesFilter()">Apply Filter</button>
-          <button class="btn btn-sm" style="background:#e2e8f0;" onclick="clearSalesFilter()">Clear</button>
-        </div>
-
-        <div class="grid-4" style="margin: 1rem 0;">
-          <div class="kpi-card"><div class="kpi-title">Total Sales</div><div class="kpi-value" id="sales-total">RM 0.00</div></div>
-          <div class="kpi-card"><div class="kpi-title">Total Orders</div><div class="kpi-value" id="sales-orders">0</div></div>
-          <div class="kpi-card"><div class="kpi-title">Items Sold</div><div class="kpi-value" id="sales-items">0</div></div>
-          <div class="kpi-card"><div class="kpi-title">Avg Order Value</div><div class="kpi-value" id="sales-aov">RM 0.00</div></div>
-        </div>
-
-        <div class="grid-2" style="margin: 1.5rem 0;">
-          <div class="card" style="margin:0; background:#f8fafc;">
-            <h4 style="margin-bottom:0.5rem; color:#3b82f6;">Best-Selling Dessert</h4>
-            <div id="sales-best-dessert" style="font-size:1.4rem; font-weight:bold;">-</div>
-          </div>
-          <div class="card" style="margin:0; background:#f8fafc;">
-            <h4 style="margin-bottom:0.5rem; color:#10b981;">Top Vendor</h4>
-            <div id="sales-top-vendor" style="font-size:1.4rem; font-weight:bold;">-</div>
+            <h2 class="text-lg sm:text-xl font-extrabold text-slate-900">Featured Gourmet Menu</h2>
+            <p class="text-xs text-slate-500">Live stock synchronized across all vendor kitchens</p>
           </div>
         </div>
 
-        <h4 style="margin-top:1.5rem;">Product Sales Performance</h4>
-        <table>
-          <thead>
-            <tr>
-              <th>Product ID</th>
-              <th>Product Name</th>
-              <th>Vendor</th>
-              <th>Units Sold</th>
-              <th>Total Sales (RM)</th>
-            </tr>
-          </thead>
-          <tbody id="sales-product-perf-table"></tbody>
-        </table>
-
-        <h4 style="margin-top:1.5rem;">Vendor Sales Performance</h4>
-        <table>
-          <thead>
-            <tr>
-              <th>Vendor ID</th>
-              <th>Vendor Name</th>
-              <th>Total Orders</th>
-              <th>Items Sold</th>
-              <th>Total Sales (RM)</th>
-            </tr>
-          </thead>
-          <tbody id="sales-vendor-perf-table"></tbody>
-        </table>
-
-        <h4 style="margin-top:1.5rem;">Line Item Sales Transaction Details</h4>
-        <table>
-          <thead>
-            <tr>
-              <th>Order ID</th>
-              <th>Date</th>
-              <th>Product</th>
-              <th>Vendor</th>
-              <th>Qty</th>
-              <th>Unit Price</th>
-              <th>Subtotal</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody id="sales-details-table"></tbody>
-        </table>
+        <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
       </div>
-    </div>
 
-    <!-- 4. VENDOR DASHBOARD VIEW -->
-    <div id="view-vendor" class="view-section">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
-        <div>
-          <h2>Vendor Dashboard — <span id="vendor-title-name"></span></h2>
-          <p style="color:#6b7280; font-size:0.9rem;">Private Vendor Management Portal (Isolated Data View)</p>
+      <!-- 2. LOGIN VIEW -->
+      <div id="view-login" class="view-section">
+        <div class="max-w-md mx-auto my-8">
+          <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xl overflow-hidden">
+            <div class="bg-gradient-to-b from-purple-50 to-white p-6 border-b border-slate-100 text-center">
+              <div class="w-12 h-12 bg-purple-700 text-white rounded-xl mx-auto flex items-center justify-center font-black text-2xl shadow-lg shadow-purple-700/30 mb-3">K</div>
+              <h2 class="text-xl font-bold text-slate-900">Management Portal</h2>
+              <p class="text-xs text-slate-500 mt-1">Sign in to access Admin or Vendor workspace</p>
+            </div>
+
+            <form id="login-form" class="p-6 space-y-4">
+              <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Username</label>
+                <div class="relative">
+                  <i class="fa-solid fa-user absolute left-3 top-3 text-slate-400 text-sm"></i>
+                  <input type="text" id="login-username" class="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all" placeholder="admin / vendor / vendor2" required>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Password</label>
+                <div class="relative">
+                  <i class="fa-solid fa-lock absolute left-3 top-3 text-slate-400 text-sm"></i>
+                  <input type="password" id="login-password" class="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all" placeholder="Enter password" required>
+                </div>
+              </div>
+
+              <button type="submit" class="w-full py-2.5 bg-purple-700 hover:bg-purple-800 text-white font-bold text-sm rounded-xl shadow-md shadow-purple-700/20 transition-all">
+                Sign In to Workspace
+              </button>
+            </form>
+
+            <div class="bg-slate-50 p-4 border-t border-slate-100 text-xs text-slate-600 space-y-1">
+              <p class="font-bold text-slate-700 mb-1">Demo Quick Accounts:</p>
+              <p><code class="bg-slate-200 px-1 py-0.5 rounded text-slate-800">admin</code> / <code class="bg-slate-200 px-1 py-0.5 rounded text-slate-800">admin123</code> (System Admin)</p>
+              <p><code class="bg-slate-200 px-1 py-0.5 rounded text-slate-800">vendor</code> / <code class="bg-slate-200 px-1 py-0.5 rounded text-slate-800">vendor123</code> (Vendor A)</p>
+              <p><code class="bg-slate-200 px-1 py-0.5 rounded text-slate-800">vendor2</code> / <code class="bg-slate-200 px-1 py-0.5 rounded text-slate-800">vendor2123</code> (Vendor B)</p>
+            </div>
+          </div>
         </div>
-        <button onclick="logout()" class="btn btn-secondary btn-sm">Sign Out</button>
       </div>
 
-      <!-- Vendor Inventory -->
-      <div class="card">
-        <h3>My Inventory</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Product</th>
-              <th>Current Stock</th>
-              <th>Sold</th>
-              <th>Returned</th>
-              <th>Expired</th>
-              <th>Damaged</th>
-              <th>Status</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody id="vendor-inv-table"></tbody>
-        </table>
-      </div>
-
-      <!-- Vendor Payments -->
-      <div class="card">
-        <h3>My Product Payments</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Payment ID</th>
-              <th>Order ID</th>
-              <th>Customer</th>
-              <th>Amount</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody id="vendor-pay-table"></tbody>
-        </table>
-      </div>
-
-      <!-- Vendor Sales Report -->
-      <div class="card">
-        <h3>My Sales Report</h3>
-        <div class="grid-3" style="margin: 1rem 0;">
-          <div class="kpi-card"><div class="kpi-title">My Total Sales</div><div class="kpi-value" id="vendor-kpi-sales">RM 0.00</div></div>
-          <div class="kpi-card"><div class="kpi-title">My Items Sold</div><div class="kpi-value" id="vendor-kpi-items">0</div></div>
-          <div class="kpi-card"><div class="kpi-title">My Best-Selling Product</div><div class="kpi-value" id="vendor-kpi-best" style="font-size:1.2rem;">-</div></div>
+      <!-- 3. ADMIN DASHBOARD VIEW -->
+      <div id="view-admin" class="view-section space-y-6">
+        
+        <!-- Admin Title Banner -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 bg-purple-950 text-amber-400 rounded-xl flex items-center justify-center font-bold text-xl shadow-md">
+              <i class="fa-solid fa-user-shield"></i>
+            </div>
+            <div>
+              <h2 class="text-xl font-bold text-slate-900">Administrator Control Portal</h2>
+              <p class="text-xs text-slate-500">Global System Management • Financials • Global Inventory</p>
+            </div>
+          </div>
+          <button onclick="logout()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-all flex items-center gap-2 self-start sm:self-auto">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out
+          </button>
         </div>
 
-        <h4 style="margin-top:1.5rem;">Sales Breakdown by Product</h4>
-        <table>
-          <thead>
-            <tr>
-              <th>Product ID</th>
-              <th>Product Name</th>
-              <th>Units Sold</th>
-              <th>Total Sales</th>
-            </tr>
-          </thead>
-          <tbody id="vendor-sales-prod-table"></tbody>
-        </table>
-      </div>
-    </div>
+        <!-- Project Budget Card -->
+        <div class="bg-gradient-to-r from-purple-900 via-purple-800 to-indigo-900 border border-purple-700/50 rounded-2xl p-6 text-white shadow-md">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div class="flex items-center gap-3">
+              <div class="w-11 h-11 rounded-xl bg-white/10 backdrop-blur-md text-amber-300 flex items-center justify-center font-bold">
+                <i class="fa-solid fa-sack-dollar text-xl"></i>
+              </div>
+              <div>
+                <h3 class="font-bold text-white text-base">Project Development Budget Allocation</h3>
+                <p class="text-xs text-purple-200">Total System Build & Deployment Capital</p>
+              </div>
+            </div>
+            <div class="text-2xl sm:text-3xl font-black text-amber-300 tracking-tight">
+              RM 100,000.00
+            </div>
+          </div>
+        </div>
 
+        <!-- QUICK ACTIONS & OVERVIEW WIDGETS SECTION -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          
+          <!-- Quick Actions Section -->
+          <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-3">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2">
+              <i class="fa-solid fa-bolt text-amber-500"></i> Quick Actions
+            </h3>
+            <div class="grid grid-cols-2 gap-2.5">
+              <button onclick="switchAdminTab('payments')" class="p-3 rounded-xl bg-purple-50 hover:bg-purple-100 border border-purple-100 text-left transition-all">
+                <i class="fa-solid fa-receipt text-purple-600 text-base mb-1 block"></i>
+                <span class="text-xs font-bold text-slate-800 block">Verify Payments</span>
+                <span class="text-[10px] text-slate-500 block">Manage transactions</span>
+              </button>
+
+              <button onclick="switchAdminTab('inventory')" class="p-3 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-100 text-left transition-all">
+                <i class="fa-solid fa-boxes-stacked text-amber-600 text-base mb-1 block"></i>
+                <span class="text-xs font-bold text-slate-800 block">Stock Levels</span>
+                <span class="text-[10px] text-slate-500 block">Master Inventory</span>
+              </button>
+
+              <button onclick="switchAdminTab('sales')" class="p-3 rounded-xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-100 text-left transition-all">
+                <i class="fa-solid fa-file-csv text-emerald-600 text-base mb-1 block"></i>
+                <span class="text-xs font-bold text-slate-800 block">Export Sales</span>
+                <span class="text-[10px] text-slate-500 block">Download CSV</span>
+              </button>
+
+              <button onclick="switchView('storefront')" class="p-3 rounded-xl bg-blue-50 hover:bg-blue-100 border border-blue-100 text-left transition-all">
+                <i class="fa-solid fa-store text-blue-600 text-base mb-1 block"></i>
+                <span class="text-xs font-bold text-slate-800 block">Store Menu</span>
+                <span class="text-[10px] text-slate-500 block">Customer view</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Sales Overview Bar Chart Widget -->
+          <div class="lg:col-span-2 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
+            <div class="flex justify-between items-center mb-3">
+              <div>
+                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2">
+                  <i class="fa-solid fa-chart-column text-purple-600"></i> Sales Overview Chart
+                </h3>
+                <p class="text-xs text-slate-600 font-semibold mt-0.5">Product Category Revenue Distribution</p>
+              </div>
+              <span class="text-[10px] font-bold bg-purple-100 text-purple-800 px-2.5 py-1 rounded-full">Live Analytics</span>
+            </div>
+
+            <!-- Canvas Bar Chart -->
+            <div class="w-full h-44 relative flex items-center justify-center">
+              <canvas id="salesOverviewChart" class="w-full h-full"></canvas>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Navigation Tabs for Admin Sections -->
+        <div class="flex border-b border-slate-200 gap-2">
+          <button onclick="switchAdminTab('payments')" id="admin-tab-payments" class="admin-tab-btn py-2.5 px-4 font-bold text-xs uppercase tracking-wider border-b-2 border-purple-600 text-purple-700 flex items-center gap-2">
+            <i class="fa-solid fa-credit-card"></i> Payments
+          </button>
+          <button onclick="switchAdminTab('inventory')" id="admin-tab-inventory" class="admin-tab-btn py-2.5 px-4 font-bold text-xs uppercase tracking-wider border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2">
+            <i class="fa-solid fa-boxes-stacked"></i> Inventory
+          </button>
+          <button onclick="switchAdminTab('sales')" id="admin-tab-sales" class="admin-tab-btn py-2.5 px-4 font-bold text-xs uppercase tracking-wider border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2">
+            <i class="fa-solid fa-chart-line"></i> Sales Reports
+          </button>
+        </div>
+
+        <!-- ADMIN TAB 1: PAYMENTS -->
+        <div id="admin-sec-payments" class="admin-sec space-y-6">
+          <!-- MOV 01 Section -->
+          <div class="bg-blue-50/70 border-l-4 border-blue-600 p-4 rounded-r-xl">
+            <div class="flex justify-between items-center mb-1">
+              <h4 class="font-bold text-blue-900 text-xs uppercase tracking-wider flex items-center gap-2">
+                <i class="fa-solid fa-bullseye"></i> MOV 01 — Payment Tracking Target
+              </h4>
+              <span class="text-[10px] font-bold uppercase bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">Target: 95% Accuracy</span>
+            </div>
+            <p class="text-xs text-blue-800 font-medium">"Reduce payment recording errors and improve payment tracking accuracy by 95% within 3 months after the application is implemented."</p>
+          </div>
+
+          <!-- Payment KPIs -->
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm">
+              <div class="text-xs font-bold uppercase text-slate-400">Total Records</div>
+              <div class="text-2xl font-black text-slate-800 mt-1" id="admin-pay-count">0</div>
+            </div>
+            <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm">
+              <div class="text-xs font-bold uppercase text-amber-500">Pending</div>
+              <div class="text-2xl font-black text-amber-600 mt-1" id="admin-pay-pending">0</div>
+            </div>
+            <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm">
+              <div class="text-xs font-bold uppercase text-emerald-600">Verified</div>
+              <div class="text-2xl font-black text-emerald-600 mt-1" id="admin-pay-verified">0</div>
+            </div>
+            <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm">
+              <div class="text-xs font-bold uppercase text-purple-600">Total Amount</div>
+              <div class="text-2xl font-black text-purple-700 mt-1" id="admin-pay-amount">RM 0.00</div>
+            </div>
+          </div>
+
+          <!-- Payments Table -->
+          <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+            <div class="p-4 border-b border-slate-100 font-bold text-slate-800 text-sm">
+              Payment Transactions Master List
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-50 text-slate-500 uppercase font-bold border-b border-slate-100">
+                  <tr>
+                    <th class="p-3.5">Payment ID</th>
+                    <th class="p-3.5">Order ID</th>
+                    <th class="p-3.5">Customer</th>
+                    <th class="p-3.5">Amount</th>
+                    <th class="p-3.5">Method</th>
+                    <th class="p-3.5">Status</th>
+                    <th class="p-3.5">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-pay-table" class="divide-y divide-slate-100 font-medium"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ADMIN TAB 2: INVENTORY -->
+        <div id="admin-sec-inventory" class="admin-sec space-y-6 hidden">
+          <!-- MOV 02 Section -->
+          <div class="bg-amber-50/70 border-l-4 border-amber-600 p-4 rounded-r-xl">
+            <div class="flex justify-between items-center mb-1">
+              <h4 class="font-bold text-amber-900 text-xs uppercase tracking-wider flex items-center gap-2">
+                <i class="fa-solid fa-bullseye"></i> MOV 02 — Inventory Control Target
+              </h4>
+              <span class="text-[10px] font-bold uppercase bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">Target: 30% Loss Reduction</span>
+            </div>
+            <p class="text-xs text-amber-800 font-medium">"Reduce food loss, expired stock, returned desserts and inventory discrepancy by 30% within 6 months through a digital inventory management system."</p>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+            <div class="p-4 border-b border-slate-100 font-bold text-slate-800 text-sm">
+              Global Master Inventory
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-50 text-slate-500 uppercase font-bold border-b border-slate-100">
+                  <tr>
+                    <th class="p-3.5">Product</th>
+                    <th class="p-3.5">Vendor</th>
+                    <th class="p-3.5">Opening</th>
+                    <th class="p-3.5">Current</th>
+                    <th class="p-3.5">Sold</th>
+                    <th class="p-3.5">Returned</th>
+                    <th class="p-3.5">Expired</th>
+                    <th class="p-3.5">Damaged</th>
+                    <th class="p-3.5">Status</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-inv-table" class="divide-y divide-slate-100 font-medium"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ADMIN TAB 3: SALES -->
+        <div id="admin-sec-sales" class="admin-sec space-y-6 hidden">
+          <!-- MOV 03 Section -->
+          <div class="bg-emerald-50/70 border-l-4 border-emerald-600 p-4 rounded-r-xl">
+            <div class="flex justify-between items-center mb-1">
+              <h4 class="font-bold text-emerald-900 text-xs uppercase tracking-wider flex items-center gap-2">
+                <i class="fa-solid fa-bullseye"></i> MOV 03 — Digital Sales Reporting Target
+              </h4>
+              <span class="text-[10px] font-bold uppercase bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">Target: 100% Digital</span>
+            </div>
+            <p class="text-xs text-emerald-800 font-medium">"Achieve 100% digital sales reporting and enable the owner to identify the best-selling desserts and vendors within 3 months after implementation."</p>
+          </div>
+
+          <!-- Filters -->
+          <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm space-y-3">
+            <div class="text-xs font-bold uppercase tracking-wider text-slate-500">Filter Reports</div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Start Date</label>
+                <input type="date" id="sales-filter-start" class="w-full text-xs p-2 bg-slate-50 border border-slate-200 rounded-lg">
+              </div>
+              <div>
+                <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">End Date</label>
+                <input type="date" id="sales-filter-end" class="w-full text-xs p-2 bg-slate-50 border border-slate-200 rounded-lg">
+              </div>
+              <div>
+                <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Vendor</label>
+                <select id="sales-filter-vendor" class="w-full text-xs p-2 bg-slate-50 border border-slate-200 rounded-lg">
+                  <option value="ALL">All Vendors</option>
+                  <option value="VND01">Vendor A (VND01)</option>
+                  <option value="VND02">Vendor B (VND02)</option>
+                </select>
+              </div>
+            </div>
+            <div class="flex gap-2 justify-between items-center pt-2">
+              <div class="flex gap-2">
+                <button onclick="applySalesFilter()" class="px-3 py-1.5 bg-purple-700 text-white text-xs font-bold rounded-lg hover:bg-purple-800 transition-all">Apply Filter</button>
+                <button onclick="clearSalesFilter()" class="px-3 py-1.5 bg-slate-100 text-slate-600 text-xs font-bold rounded-lg hover:bg-slate-200 transition-all">Clear</button>
+              </div>
+              <button onclick="exportSalesReport()" class="px-3 py-1.5 bg-slate-900 text-white text-xs font-bold rounded-lg hover:bg-slate-800 transition-all flex items-center gap-1.5">
+                <i class="fa-solid fa-file-csv"></i> Export CSV
+              </button>
+            </div>
+          </div>
+
+          <!-- Sales KPIs -->
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm">
+              <div class="text-xs font-bold uppercase text-slate-400">Total Sales</div>
+              <div class="text-xl font-black text-emerald-600 mt-1" id="sales-total">RM 0.00</div>
+            </div>
+            <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm">
+              <div class="text-xs font-bold uppercase text-slate-400">Total Orders</div>
+              <div class="text-xl font-black text-slate-800 mt-1" id="sales-orders">0</div>
+            </div>
+            <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm">
+              <div class="text-xs font-bold uppercase text-slate-400">Items Sold</div>
+              <div class="text-xl font-black text-slate-800 mt-1" id="sales-items">0</div>
+            </div>
+            <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm">
+              <div class="text-xs font-bold uppercase text-slate-400">Avg Order Value</div>
+              <div class="text-xl font-black text-purple-600 mt-1" id="sales-aov">RM 0.00</div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm">
+              <div class="text-xs font-bold uppercase text-purple-600 mb-1">Best-Selling Dessert</div>
+              <div id="sales-best-dessert" class="text-lg font-extrabold text-slate-800">-</div>
+            </div>
+            <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm">
+              <div class="text-xs font-bold uppercase text-emerald-600 mb-1">Top Performing Vendor</div>
+              <div id="sales-top-vendor" class="text-lg font-extrabold text-slate-800">-</div>
+            </div>
+          </div>
+
+          <!-- Product Performance Table -->
+          <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+            <div class="p-4 border-b border-slate-100 font-bold text-slate-800 text-xs uppercase tracking-wider">Product Sales Performance</div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-50 text-slate-500 font-bold border-b border-slate-100">
+                  <tr>
+                    <th class="p-3">Product ID</th>
+                    <th class="p-3">Product Name</th>
+                    <th class="p-3">Vendor</th>
+                    <th class="p-3">Units Sold</th>
+                    <th class="p-3">Total Revenue</th>
+                  </tr>
+                </thead>
+                <tbody id="sales-product-perf-table" class="divide-y divide-slate-100"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Vendor Performance Table -->
+          <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+            <div class="p-4 border-b border-slate-100 font-bold text-slate-800 text-xs uppercase tracking-wider">Vendor Performance Overview</div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-50 text-slate-500 font-bold border-b border-slate-100">
+                  <tr>
+                    <th class="p-3">Vendor ID</th>
+                    <th class="p-3">Vendor Name</th>
+                    <th class="p-3">Total Orders</th>
+                    <th class="p-3">Items Sold</th>
+                    <th class="p-3">Total Revenue</th>
+                  </tr>
+                </thead>
+                <tbody id="sales-vendor-perf-table" class="divide-y divide-slate-100"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Transaction Details Table -->
+          <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+            <div class="p-4 border-b border-slate-100 font-bold text-slate-800 text-xs uppercase tracking-wider">Line Item Sales Transaction Log</div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-50 text-slate-500 font-bold border-b border-slate-100">
+                  <tr>
+                    <th class="p-3">Order ID</th>
+                    <th class="p-3">Date</th>
+                    <th class="p-3">Product</th>
+                    <th class="p-3">Vendor</th>
+                    <th class="p-3">Qty</th>
+                    <th class="p-3">Unit Price</th>
+                    <th class="p-3">Subtotal</th>
+                    <th class="p-3">Status</th>
+                  </tr>
+                </thead>
+                <tbody id="sales-details-table" class="divide-y divide-slate-100"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. DELIVERIES MANAGEMENT VIEW -->
+      <div id="view-deliveries" class="view-section space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 bg-purple-700 text-white rounded-xl flex items-center justify-center font-bold text-xl shadow-md shadow-purple-700/20"><i class="fa-solid fa-truck-fast"></i></div>
+            <div><h2 class="text-xl font-bold text-slate-900">Deliveries Management</h2><p id="deliveries-subtitle" class="text-xs text-slate-500">Track customer orders and delivery progress</p></div>
+          </div>
+          <div class="px-3 py-2 bg-purple-50 text-purple-700 rounded-xl text-xs font-bold border border-purple-100"><i class="fa-solid fa-database mr-1"></i> Digital Delivery Tracking</div>
+        </div>
+        <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
+          <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm"><div class="text-xs font-bold uppercase text-slate-400">Total</div><div id="delivery-kpi-total" class="text-2xl font-black text-slate-800 mt-1">0</div></div>
+          <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm"><div class="text-xs font-bold uppercase text-amber-500">Pending</div><div id="delivery-kpi-pending" class="text-2xl font-black text-amber-600 mt-1">0</div></div>
+          <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm"><div class="text-xs font-bold uppercase text-blue-500">Preparing</div><div id="delivery-kpi-preparing" class="text-2xl font-black text-blue-600 mt-1">0</div></div>
+          <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm"><div class="text-xs font-bold uppercase text-purple-500">Out for Delivery</div><div id="delivery-kpi-out" class="text-2xl font-black text-purple-600 mt-1">0</div></div>
+          <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm"><div class="text-xs font-bold uppercase text-emerald-600">Delivered</div><div id="delivery-kpi-delivered" class="text-2xl font-black text-emerald-600 mt-1">0</div></div>
+        </div>
+        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+          <div class="p-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3"><div><h3 class="font-bold text-slate-800 text-sm">Delivery Tracking List</h3><p class="text-[10px] text-slate-500 mt-0.5">Admin sees all deliveries; vendors see only deliveries linked to their vendor ID.</p></div><select id="delivery-filter-status" onchange="renderDeliveries()" class="text-xs p-2 bg-slate-50 border border-slate-200 rounded-lg"><option value="ALL">All Statuses</option><option value="Pending">Pending</option><option value="Preparing">Preparing</option><option value="Out for Delivery">Out for Delivery</option><option value="Delivered">Delivered</option><option value="Cancelled">Cancelled</option></select></div>
+          <div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead class="bg-slate-50 text-slate-500 uppercase font-bold border-b border-slate-100"><tr><th class="p-3.5">Delivery ID</th><th class="p-3.5">Order ID</th><th class="p-3.5">Customer</th><th class="p-3.5">Phone</th><th class="p-3.5">Delivery Address</th><th class="p-3.5">Vendor</th><th class="p-3.5">Order Date</th><th class="p-3.5">Delivery Date</th><th class="p-3.5">Status</th><th class="p-3.5">Action</th></tr></thead><tbody id="deliveries-table" class="divide-y divide-slate-100 font-medium"></tbody></table></div>
+        </div>
+      </div>
+
+
+      <!-- 5. RETURNS MANAGEMENT VIEW -->
+      <div id="view-returns" class="view-section space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 bg-amber-500 text-white rounded-xl flex items-center justify-center font-bold text-xl shadow-md shadow-amber-500/20"><i class="fa-solid fa-rotate-left"></i></div>
+            <div><h2 class="text-xl font-bold text-slate-900">Returns Management</h2><p id="returns-subtitle" class="text-xs text-slate-500">Track and process customer return requests.</p></div>
+          </div>
+          <button id="record-return-btn" onclick="openRecordReturnModal()" class="px-4 py-2 bg-purple-700 hover:bg-purple-800 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center gap-2">
+            <i class="fa-solid fa-plus"></i> Record Return
+          </button>
+        </div>
+
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm"><div class="text-xs font-bold uppercase text-slate-400">Total Returns</div><div id="returns-kpi-total" class="text-2xl font-black text-slate-800 mt-1">0</div></div>
+          <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm"><div class="text-xs font-bold uppercase text-amber-500">Pending</div><div id="returns-kpi-pending" class="text-2xl font-black text-amber-600 mt-1">0</div></div>
+          <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm"><div class="text-xs font-bold uppercase text-blue-500">Approved</div><div id="returns-kpi-approved" class="text-2xl font-black text-blue-600 mt-1">0</div></div>
+          <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm"><div class="text-xs font-bold uppercase text-emerald-600">Completed</div><div id="returns-kpi-completed" class="text-2xl font-black text-emerald-600 mt-1">0</div></div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+          <div class="p-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div><h3 class="font-bold text-slate-800 text-sm">Return Records</h3><p class="text-[10px] text-slate-500 mt-0.5">Admin sees all returns; vendors see only returns linked to their vendor ID.</p></div>
+            <select id="returns-filter-status" onchange="renderReturns()" class="text-xs p-2 bg-slate-50 border border-slate-200 rounded-lg"><option value="ALL">All Statuses</option><option value="Pending">Pending</option><option value="Approved">Approved</option><option value="Rejected">Rejected</option><option value="Completed">Completed</option></select>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs"><thead class="bg-slate-50 text-slate-500 uppercase font-bold border-b border-slate-100"><tr>
+              <th class="p-3.5">Return ID</th><th class="p-3.5">Order ID</th><th class="p-3.5">Product</th><th class="p-3.5">Vendor</th><th class="p-3.5">Customer</th><th class="p-3.5">Qty</th><th class="p-3.5">Reason</th><th class="p-3.5">Status</th><th class="p-3.5">Date</th><th class="p-3.5">Action</th>
+            </tr></thead><tbody id="returns-table" class="divide-y divide-slate-100 font-medium"></tbody></table>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6. WHATSAPP COMMUNICATION VIEW -->
+      <div id="view-whatsapp" class="view-section space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 bg-green-600 text-white rounded-xl flex items-center justify-center font-bold text-xl shadow-md shadow-green-600/20">
+              <i class="fa-brands fa-whatsapp"></i>
+            </div>
+            <div>
+              <h2 class="text-xl font-bold text-slate-900">WhatsApp Communication</h2>
+              <p id="whatsapp-subtitle" class="text-xs text-slate-500">Send order and delivery updates directly to customers.</p>
+            </div>
+          </div>
+          <div class="px-3 py-2 bg-green-50 text-green-700 rounded-xl text-xs font-bold border border-green-100">
+            <i class="fa-brands fa-whatsapp mr-1"></i> WhatsApp Dispatch
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+          <div class="p-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h3 class="font-bold text-slate-800 text-sm">Customer Communication</h3>
+              <p class="text-[10px] text-slate-500 mt-0.5">Prepare a message and open WhatsApp with the customer's phone number.</p>
+            </div>
+            <span id="whatsapp-record-count" class="px-2.5 py-1 bg-slate-100 text-slate-600 rounded-full text-[10px] font-bold">0 records</span>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-50 text-slate-500 uppercase font-bold border-b border-slate-100">
+                <tr>
+                  <th class="p-3.5">Order ID</th>
+                  <th class="p-3.5">Customer</th>
+                  <th class="p-3.5">Phone</th>
+                  <th class="p-3.5">Vendor</th>
+                  <th class="p-3.5">Delivery Status</th>
+                  <th class="p-3.5">Message</th>
+                  <th class="p-3.5">Action</th>
+                </tr>
+              </thead>
+              <tbody id="whatsapp-table" class="divide-y divide-slate-100 font-medium"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. VENDOR DASHBOARD VIEW -->
+      <div id="view-vendor" class="view-section space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 bg-purple-700 text-white rounded-xl flex items-center justify-center font-bold text-xl shadow-md shadow-purple-700/20">
+              <i class="fa-solid fa-shop"></i>
+            </div>
+            <div>
+              <h2 class="text-xl font-bold text-slate-900">Vendor Portal — <span id="vendor-title-name" class="text-purple-700"></span></h2>
+              <p class="text-xs text-slate-500">Isolated Kitchen Operations & Product Management</p>
+            </div>
+          </div>
+          <button onclick="logout()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-all flex items-center gap-2 self-start sm:self-auto">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out
+          </button>
+        </div>
+
+        <!-- Navigation Tabs for Vendor Sections -->
+        <div class="flex border-b border-slate-200 gap-2">
+          <button onclick="switchVendorTab('inventory')" id="vendor-tab-inventory" class="vendor-tab-btn py-2.5 px-4 font-bold text-xs uppercase tracking-wider border-b-2 border-purple-600 text-purple-700 flex items-center gap-2">
+            <i class="fa-solid fa-boxes-stacked"></i> My Inventory
+          </button>
+          <button onclick="switchVendorTab('payments')" id="vendor-tab-payments" class="vendor-tab-btn py-2.5 px-4 font-bold text-xs uppercase tracking-wider border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2">
+            <i class="fa-solid fa-file-invoice-dollar"></i> My Product Payments
+          </button>
+          <button onclick="switchVendorTab('sales')" id="vendor-tab-sales" class="vendor-tab-btn py-2.5 px-4 font-bold text-xs uppercase tracking-wider border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2">
+            <i class="fa-solid fa-chart-line"></i> My Sales
+          </button>
+        </div>
+
+        <!-- VENDOR TAB 1: INVENTORY -->
+        <div id="vendor-sec-inventory" class="vendor-sec space-y-6">
+          <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+            <div class="p-4 border-b border-slate-100 font-bold text-slate-800 text-sm">
+              My Product Inventory & Stock Adjustments
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-50 text-slate-500 uppercase font-bold border-b border-slate-100">
+                  <tr>
+                    <th class="p-3.5">Product</th>
+                    <th class="p-3.5">Current Stock</th>
+                    <th class="p-3.5">Sold</th>
+                    <th class="p-3.5">Returned</th>
+                    <th class="p-3.5">Expired</th>
+                    <th class="p-3.5">Damaged</th>
+                    <th class="p-3.5">Status</th>
+                    <th class="p-3.5">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="vendor-inv-table" class="divide-y divide-slate-100 font-medium"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- VENDOR TAB 2: PAYMENTS -->
+        <div id="vendor-sec-payments" class="vendor-sec space-y-6 hidden">
+          <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+            <div class="p-4 border-b border-slate-100 font-bold text-slate-800 text-sm">
+              Payments Received for My Products
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-50 text-slate-500 uppercase font-bold border-b border-slate-100">
+                  <tr>
+                    <th class="p-3.5">Payment ID</th>
+                    <th class="p-3.5">Order ID</th>
+                    <th class="p-3.5">Customer</th>
+                    <th class="p-3.5">Amount</th>
+                    <th class="p-3.5">Status</th>
+                  </tr>
+                </thead>
+                <tbody id="vendor-pay-table" class="divide-y divide-slate-100 font-medium"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- VENDOR TAB 3: SALES -->
+        <div id="vendor-sec-sales" class="vendor-sec space-y-6 hidden">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm">
+              <div class="text-xs font-bold uppercase text-slate-400">My Total Revenue</div>
+              <div class="text-2xl font-black text-purple-700 mt-1" id="vendor-kpi-sales">RM 0.00</div>
+            </div>
+            <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm">
+              <div class="text-xs font-bold uppercase text-slate-400">My Items Sold</div>
+              <div class="text-2xl font-black text-slate-800 mt-1" id="vendor-kpi-items">0</div>
+            </div>
+            <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm">
+              <div class="text-xs font-bold uppercase text-slate-400">My Top Product</div>
+              <div class="text-base font-extrabold text-slate-800 mt-1 truncate" id="vendor-kpi-best">-</div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+            <div class="p-4 border-b border-slate-100 font-bold text-slate-800 text-xs uppercase tracking-wider">Product Performance Breakdown</div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-50 text-slate-500 font-bold border-b border-slate-100">
+                  <tr>
+                    <th class="p-3">Product ID</th>
+                    <th class="p-3">Product Name</th>
+                    <th class="p-3">Units Sold</th>
+                    <th class="p-3">Total Sales</th>
+                  </tr>
+                </thead>
+                <tbody id="vendor-sales-prod-table" class="divide-y divide-slate-100"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
   </div>
 
   <!-- CART MODAL -->
-  <div id="cart-modal" class="modal-overlay">
-    <div class="modal-content">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
-        <h3>Your Shopping Cart</h3>
-        <button onclick="closeCartModal()" class="btn btn-sm" style="background:#e2e8f0;">✕ Close</button>
+  <div id="cart-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl max-w-lg w-full max-h-[85vh] flex flex-col shadow-2xl overflow-hidden border border-slate-100">
+      <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+        <h3 class="font-bold text-slate-900 flex items-center gap-2">
+          <i class="fa-solid fa-cart-shopping text-purple-600"></i> Your Shopping Basket
+        </h3>
+        <button onclick="closeCartModal()" class="w-8 h-8 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-600 flex items-center justify-center font-bold text-xs transition-all">✕</button>
       </div>
-      
-      <table>
-        <thead>
-          <tr>
-            <th>Product</th>
-            <th>Price</th>
-            <th>Qty</th>
-            <th>Subtotal</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody id="cart-table-body"></tbody>
-      </table>
 
-      <div style="text-align: right; margin-top:1.5rem;">
-        <h4>Total: <span id="cart-modal-total" style="color:var(--primary-color);">RM 0.00</span></h4>
-        <br>
-        <button id="checkout-btn" class="btn btn-primary" onclick="openCheckoutModal()">Proceed to Checkout</button>
+      <div class="p-4 overflow-y-auto flex-1">
+        <table class="w-full text-left text-xs">
+          <thead class="text-slate-400 uppercase font-bold border-b border-slate-100">
+            <tr>
+              <th class="pb-2">Product</th>
+              <th class="pb-2">Price</th>
+              <th class="pb-2">Qty</th>
+              <th class="pb-2">Subtotal</th>
+              <th class="pb-2 text-right">Action</th>
+            </tr>
+          </thead>
+          <tbody id="cart-table-body" class="divide-y divide-slate-100"></tbody>
+        </table>
+      </div>
+
+      <div class="p-4 border-t border-slate-100 bg-slate-50 flex items-center justify-between">
+        <div>
+          <span class="text-xs text-slate-500 block font-semibold">Total Amount</span>
+          <span id="cart-modal-total" class="text-xl font-black text-purple-700">RM 0.00</span>
+        </div>
+        <button id="checkout-btn" onclick="openCheckoutModal()" class="px-5 py-2.5 bg-purple-700 hover:bg-purple-800 text-white font-bold text-xs rounded-xl shadow-md shadow-purple-700/20 transition-all flex items-center gap-2">
+          Proceed to Checkout <i class="fa-solid fa-arrow-right"></i>
+        </button>
       </div>
     </div>
   </div>
 
   <!-- CHECKOUT MODAL -->
-  <div id="checkout-modal" class="modal-overlay">
-    <div class="modal-content">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
-        <h3>Checkout</h3>
-        <button onclick="closeCheckoutModal()" class="btn btn-sm" style="background:#e2e8f0;">✕ Close</button>
+  <div id="checkout-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-100">
+      <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50 sticky top-0">
+        <h3 class="font-bold text-slate-900">Order Checkout & Payment</h3>
+        <button onclick="closeCheckoutModal()" class="w-8 h-8 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-600 flex items-center justify-center font-bold text-xs transition-all">✕</button>
       </div>
 
-      <form id="checkout-form">
-        <div class="form-group">
-          <label>Full Name</label>
-          <input type="text" id="cust-name" class="form-control" required placeholder="e.g. Sarah Ahmad">
+      <form id="checkout-form" class="p-5 space-y-4">
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Full Name</label>
+          <input type="text" id="cust-name" class="w-full text-xs p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-purple-500 focus:outline-none" required placeholder="e.g. Sarah Ahmad">
         </div>
-        <div class="form-group">
-          <label>Phone Number</label>
-          <input type="tel" id="cust-phone" class="form-control" required placeholder="e.g. 012-3456789">
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Phone Number</label>
+          <input type="tel" id="cust-phone" class="w-full text-xs p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-purple-500 focus:outline-none" required placeholder="e.g. 012-3456789">
         </div>
-        <div class="form-group">
-          <label>Email Address</label>
-          <input type="email" id="cust-email" class="form-control" required placeholder="e.g. sarah@example.com">
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Email Address</label>
+          <input type="email" id="cust-email" class="w-full text-xs p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-purple-500 focus:outline-none" required placeholder="e.g. sarah@example.com">
         </div>
-        <div class="form-group">
-          <label>Delivery Address</label>
-          <textarea id="cust-address" class="form-control" rows="2" required placeholder="Enter delivery address"></textarea>
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Delivery Address</label>
+          <textarea id="cust-address" rows="2" class="w-full text-xs p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-purple-500 focus:outline-none" required placeholder="Enter full delivery address"></textarea>
         </div>
-        <div class="form-group">
-          <label>Payment Method</label>
-          <select id="cust-paymethod" class="form-control" required>
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Payment Method</label>
+          <select id="cust-paymethod" class="w-full text-xs p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-purple-500 focus:outline-none" required>
             <option value="Online Banking">Online Banking</option>
             <option value="E-Wallet (TNG)">E-Wallet (TNG)</option>
             <option value="Credit/Debit Card">Credit/Debit Card</option>
@@ -456,52 +927,73 @@
           </select>
         </div>
 
-        <div style="text-align: right; margin-top: 1.5rem;">
-          <h4>Order Total: <span id="checkout-total-amt" style="color:var(--primary-color);">RM 0.00</span></h4>
-          <br>
-          <button type="submit" id="place-order-btn" class="btn btn-primary" style="width:100%;">Confirm & Place Order</button>
+        <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
+          <div>
+            <span class="text-[10px] uppercase font-bold text-slate-400 block">Order Total</span>
+            <span id="checkout-total-amt" class="text-xl font-black text-purple-700">RM 0.00</span>
+          </div>
+          <button type="submit" id="place-order-btn" class="px-5 py-2.5 bg-purple-700 hover:bg-purple-800 text-white font-bold text-xs rounded-xl shadow-md shadow-purple-700/20 transition-all">
+            Confirm & Place Order
+          </button>
         </div>
       </form>
     </div>
   </div>
 
   <!-- INVENTORY ACTION MODAL -->
-  <div id="inv-action-modal" class="modal-overlay">
-    <div class="modal-content" style="max-width:450px;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
-        <h3>Inventory Adjustment</h3>
-        <button onclick="closeInvModal()" class="btn btn-sm" style="background:#e2e8f0;">✕ Close</button>
+  <div id="inv-action-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl max-w-sm w-full shadow-2xl border border-slate-100 overflow-hidden">
+      <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+        <h3 class="font-bold text-slate-900 text-sm">Inventory Adjustment</h3>
+        <button onclick="closeInvModal()" class="w-7 h-7 rounded-lg bg-slate-200 text-slate-600 flex items-center justify-center font-bold text-xs">✕</button>
       </div>
 
-      <form id="inv-action-form">
+      <form id="inv-action-form" class="p-4 space-y-3">
         <input type="hidden" id="inv-prod-id">
-        <div class="form-group">
-          <label>Product</label>
-          <input type="text" id="inv-prod-name" class="form-control" readonly>
+        <div>
+          <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Product</label>
+          <input type="text" id="inv-prod-name" class="w-full text-xs p-2 bg-slate-100 border border-slate-200 rounded-lg text-slate-700 font-bold" readonly>
         </div>
-        <div class="form-group">
-          <label>Action Type</label>
-          <select id="inv-action-type" class="form-control" required>
-            <option value="Return">Customer Return</option>
-            <option value="Damaged">Damaged Stock</option>
-            <option value="Expired">Expired Stock</option>
+        <div>
+          <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Action Type</label>
+          <select id="inv-action-type" class="w-full text-xs p-2 bg-slate-50 border border-slate-200 rounded-lg" required>
+            <option value="Return">Customer Return (+)</option>
+            <option value="Damaged">Damaged Stock (-)</option>
+            <option value="Expired">Expired Stock (-)</option>
             <option value="Adjustment">Manual Adjustment (+/-)</option>
           </select>
         </div>
-        <div class="form-group">
-          <label>Quantity</label>
-          <input type="number" id="inv-action-qty" class="form-control" min="1" required value="1">
+        <div>
+          <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Quantity</label>
+          <input type="number" id="inv-action-qty" class="w-full text-xs p-2 bg-slate-50 border border-slate-200 rounded-lg" min="1" required value="1">
         </div>
-        <div class="form-group">
-          <label>Reason / Note</label>
-          <input type="text" id="inv-action-reason" class="form-control" required placeholder="e.g. Packaging damaged during transit">
+        <div>
+          <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Reason / Note</label>
+          <input type="text" id="inv-action-reason" class="w-full text-xs p-2 bg-slate-50 border border-slate-200 rounded-lg" required placeholder="e.g. Returned unopened">
         </div>
-        <button type="submit" class="btn btn-primary" style="width:100%; margin-top:0.5rem;">Apply Adjustment</button>
+        <button type="submit" class="w-full py-2 bg-purple-700 hover:bg-purple-800 text-white font-bold text-xs rounded-lg shadow-sm transition-all mt-2">
+          Apply Adjustment
+        </button>
       </form>
     </div>
   </div>
 
-  <!-- SCRIPT INTEGRATION (STEPS 1-7) -->
+  <!-- RETURNS MODAL -->
+  <div id="record-return-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl relative">
+      <button onclick="closeRecordReturnModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+      <div class="flex items-center gap-3 mb-5"><div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-lg"><i class="fa-solid fa-rotate-left"></i></div><div><h3 class="text-lg font-extrabold text-slate-900">Record Return</h3><p class="text-xs text-slate-500">Create a customer return record.</p></div></div>
+      <form id="record-return-form" onsubmit="saveReturn(event)" class="space-y-4">
+        <div><label class="block text-xs font-bold text-slate-700 mb-1">Order *</label><select id="return-order" onchange="populateReturnProducts()" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold"><option value="">-- Select Order --</option></select></div>
+        <div><label class="block text-xs font-bold text-slate-700 mb-1">Product *</label><select id="return-product" required disabled class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold"><option value="">-- Select Product --</option></select></div>
+        <div class="grid grid-cols-2 gap-3"><div><label class="block text-xs font-bold text-slate-700 mb-1">Quantity *</label><input id="return-qty" type="number" min="1" value="1" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold"></div><div><label class="block text-xs font-bold text-slate-700 mb-1">Status *</label><select id="return-status" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold"><option>Pending</option><option>Approved</option><option>Rejected</option><option>Completed</option></select></div></div>
+        <div><label class="block text-xs font-bold text-slate-700 mb-1">Return Reason *</label><select id="return-reason" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold"><option>Quality Issue / Spoiled</option><option>Packaging Damaged</option><option>Wrong Item Delivered</option><option>Customer Cancellation</option><option>Expired Product</option></select></div>
+        <div class="flex justify-end gap-2 pt-3 border-t border-slate-100"><button type="button" onclick="closeRecordReturnModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl">Cancel</button><button type="submit" class="px-5 py-2 bg-purple-700 hover:bg-purple-800 text-white font-bold text-xs rounded-xl">Save Return</button></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- SCRIPT INTEGRATION -->
   <script>
     /* ===================================================
        GLOBAL CONSTANTS & DATA STRUCTURES
@@ -521,14 +1013,39 @@
       { username: 'vendor2', password: 'vendor2123', role: 'VENDOR', vendorId: 'VND02', name: 'Vendor B' }
     ];
 
-    /* ===================================================
-       INITIALIZATION
-       =================================================== */
+    /* UI Toast Helper */
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      
+      let bg = 'bg-slate-900 text-white';
+      if (type === 'success') bg = 'bg-emerald-600 text-white';
+      if (type === 'error') bg = 'bg-rose-600 text-white';
+
+      toast.className = `${bg} px-4 py-3 rounded-xl shadow-lg text-xs font-bold transition-all duration-300 transform translate-y-2 pointer-events-auto flex items-center justify-between gap-3`;
+      toast.innerHTML = `<span>${message}</span><button onclick="this.parentElement.remove()" class="opacity-70 hover:opacity-100">✕</button>`;
+      
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    /* Mobile Sidebar Toggle Logic */
+    function toggleMobileSidebar() {
+      const sidebar = document.getElementById('main-sidebar');
+      const backdrop = document.getElementById('sidebar-backdrop');
+      sidebar.classList.toggle('sidebar-open');
+      backdrop.classList.toggle('hidden');
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
       initDatabase();
       renderStorefront();
       updateCartBadge();
       checkSession();
+      renderSalesOverviewChart();
     });
 
     function initDatabase() {
@@ -566,11 +1083,73 @@
       if (!localStorage.getItem('krave_inventory_history')) {
         localStorage.setItem('krave_inventory_history', JSON.stringify([]));
       }
+      if (!localStorage.getItem('krave_deliveries')) {
+        localStorage.setItem('krave_deliveries', JSON.stringify([]));
+      }
+      if (!localStorage.getItem('krave_returns')) {
+        localStorage.setItem('krave_returns', JSON.stringify([]));
+      }
+      migrateExistingOrdersToDeliveries();
     }
 
-    /* ===================================================
-       AUTH MODULE (STEP 2)
-       =================================================== */
+    /* DELIVERIES MODULE */
+    function getDeliveries() { return JSON.parse(localStorage.getItem('krave_deliveries') || '[]'); }
+    function saveDeliveries(deliveries) { localStorage.setItem('krave_deliveries', JSON.stringify(deliveries)); }
+
+    function migrateExistingOrdersToDeliveries() {
+      const orders = JSON.parse(localStorage.getItem('krave_orders') || '[]');
+      const deliveries = getDeliveries(); let changed = false;
+      orders.forEach(order => {
+        if (deliveries.some(d => d.orderId === order.orderId)) return;
+        const vendorIds = [...new Set((order.items || []).map(i => i.vendorId).filter(Boolean))];
+        const vendorNames = [...new Set((order.items || []).map(i => i.vendorName).filter(Boolean))];
+        deliveries.push({ deliveryId:`DEL-2026-${String(deliveries.length+1).padStart(4,'0')}`, orderId:order.orderId,
+          customerName:order.customer?.fullName || 'Customer', phone:order.customer?.phone || '-',
+          deliveryAddress:order.customer?.address || '-', vendorIds, vendorNames, orderDate:order.orderDate,
+          deliveryDate:'', status:'Pending', updatedAt:new Date().toISOString() }); changed = true;
+      });
+      if (changed) saveDeliveries(deliveries);
+    }
+
+    function handleDeliveriesClick() {
+      const u = getCurrentUser();
+      if (!u) { showToast('Please sign in to access delivery management.', 'info'); switchView('login'); return; }
+      if (u.role !== 'ADMIN' && u.role !== 'VENDOR') { showToast('You do not have permission to access deliveries.', 'error'); return; }
+      switchView('deliveries');
+    }
+
+    function updateDeliveryStatus(deliveryId, newStatus) {
+      const user=getCurrentUser(); if (!user) return;
+      const deliveries=getDeliveries(); const d=deliveries.find(x=>x.deliveryId===deliveryId); if(!d) return;
+      if(user.role==='VENDOR' && !(d.vendorIds||[]).includes(user.vendorId)){ showToast('You can only update deliveries for your own vendor.','error'); return; }
+      d.status=newStatus; d.updatedAt=new Date().toISOString();
+      d.deliveryDate = newStatus==='Delivered' ? (d.deliveryDate || new Date().toISOString()) : '';
+      saveDeliveries(deliveries); renderDeliveries(); if (document.getElementById('view-whatsapp')?.classList.contains('active')) renderWhatsApp(); showToast(`Delivery ${deliveryId} updated to ${newStatus}.`,'success');
+    }
+
+    function renderDeliveries() {
+      const user=getCurrentUser(), tbody=document.getElementById('deliveries-table'); if(!tbody || !user) return;
+      let all=getDeliveries(); if(user.role==='VENDOR') all=all.filter(d=>(d.vendorIds||[]).includes(user.vendorId));
+      const filter=document.getElementById('delivery-filter-status')?.value || 'ALL';
+      const visible=filter==='ALL' ? all : all.filter(d=>d.status===filter);
+      const counts={Pending:0,Preparing:0,'Out for Delivery':0,Delivered:0}; all.forEach(d=>{if(counts[d.status]!==undefined)counts[d.status]++;});
+      document.getElementById('delivery-kpi-total').innerText=all.length;
+      document.getElementById('delivery-kpi-pending').innerText=counts.Pending;
+      document.getElementById('delivery-kpi-preparing').innerText=counts.Preparing;
+      document.getElementById('delivery-kpi-out').innerText=counts['Out for Delivery'];
+      document.getElementById('delivery-kpi-delivered').innerText=counts.Delivered;
+      tbody.innerHTML='';
+      if(!visible.length){tbody.innerHTML='<tr><td colspan="10" class="p-8 text-center text-slate-400">No delivery records found.</td></tr>';return;}
+      visible.forEach(d=>{
+        const cls=d.status==='Delivered'?'bg-emerald-100 text-emerald-700':d.status==='Cancelled'?'bg-rose-100 text-rose-700':d.status==='Out for Delivery'?'bg-purple-100 text-purple-700':d.status==='Preparing'?'bg-blue-100 text-blue-700':'bg-amber-100 text-amber-700';
+        const od=d.orderDate?new Date(d.orderDate).toLocaleDateString('en-MY'):'-'; const dd=d.deliveryDate?new Date(d.deliveryDate).toLocaleDateString('en-MY'):'-';
+        const vendors=(d.vendorNames||[]).join(', ')||'-';
+        const opts=['Pending','Preparing','Out for Delivery','Delivered','Cancelled'].map(st=>`<option value="${st}" ${d.status===st?'selected':''}>${st}</option>`).join('');
+        tbody.innerHTML+=`<tr><td class="p-3.5 font-bold text-slate-800">${d.deliveryId}</td><td class="p-3.5 text-slate-600">${d.orderId}</td><td class="p-3.5">${d.customerName}</td><td class="p-3.5">${d.phone}</td><td class="p-3.5 max-w-xs">${d.deliveryAddress}</td><td class="p-3.5">${vendors}</td><td class="p-3.5 whitespace-nowrap">${od}</td><td class="p-3.5 whitespace-nowrap">${dd}</td><td class="p-3.5"><span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${cls}">${d.status}</span></td><td class="p-3.5"><select onchange="updateDeliveryStatus('${d.deliveryId}',this.value)" class="text-[10px] p-1.5 bg-slate-50 border border-slate-200 rounded-lg font-bold">${opts}</select></td></tr>`;
+      });
+    }
+
+    /* AUTH MODULE */
     function getCurrentUser() {
       const u = localStorage.getItem('krave_currentUser');
       return u ? JSON.parse(u) : null;
@@ -583,22 +1162,59 @@
         localStorage.setItem('krave_currentUser', JSON.stringify(session));
         return { success: true, user: session };
       }
-      return { success: false, message: 'Invalid credentials.' };
+      return { success: false, message: 'Invalid credentials. Please verify your login details.' };
     }
 
     function logout() {
       localStorage.removeItem('krave_currentUser');
-      document.getElementById('nav-portal').innerText = 'Login Portal';
+      checkSession();
       switchView('storefront');
+      showToast('You have signed out successfully.', 'info');
     }
 
     function checkSession() {
       const u = getCurrentUser();
-      const btn = document.getElementById('nav-portal');
+      const topBtnContainer = document.getElementById('top-profile-container');
+      const sideUserName = document.getElementById('side-user-name');
+      const sideUserRole = document.getElementById('side-user-role');
+      const sideLogoutBtn = document.getElementById('side-logout-btn');
+      const sidePortalLabel = document.getElementById('side-portal-label');
+      const sideAccountLabel = document.getElementById('side-account-label');
+
       if (u) {
-        btn.innerText = `${u.name} (${u.role})`;
+        sideUserName.innerText = u.name;
+        sideUserRole.innerText = `${u.role} Account`;
+        sideLogoutBtn.classList.remove('hidden');
+        sidePortalLabel.innerText = `${u.role} Portal`;
+        sideAccountLabel.innerText = `Sign Out (${u.name})`;
+
+        topBtnContainer.innerHTML = `
+          <div class="flex items-center gap-2 bg-purple-50 px-3 py-1.5 rounded-xl border border-purple-200/80">
+            <div class="w-7 h-7 rounded-lg bg-purple-700 text-white font-bold text-xs flex items-center justify-center">
+              ${u.name.charAt(0)}
+            </div>
+            <div class="hidden md:block text-left">
+              <span class="text-xs font-bold text-purple-900 block leading-none">${u.name}</span>
+              <span class="text-[10px] text-purple-600 font-semibold uppercase">${u.role}</span>
+            </div>
+            <button onclick="logout()" class="ml-1 text-slate-400 hover:text-red-500 text-xs p-1" title="Logout">
+              <i class="fa-solid fa-right-from-bracket"></i>
+            </button>
+          </div>
+        `;
       } else {
-        btn.innerText = 'Login Portal';
+        sideUserName.innerText = 'Guest Customer';
+        sideUserRole.innerText = 'Public Storefront';
+        sideLogoutBtn.classList.add('hidden');
+        sidePortalLabel.innerText = 'Portal Login';
+        sideAccountLabel.innerText = 'Login Account';
+
+        topBtnContainer.innerHTML = `
+          <button id="top-login-btn" onclick="handlePortalClick()" class="px-3.5 py-2 bg-brand-950 hover:bg-purple-900 text-white font-bold text-xs rounded-xl shadow-sm transition-all flex items-center gap-2">
+            <i class="fa-solid fa-user-lock text-xs text-purple-400"></i>
+            <span>Portal Sign In</span>
+          </button>
+        `;
       }
     }
 
@@ -613,35 +1229,315 @@
       }
     }
 
-    /* ===================================================
-       VIEW ROUTER
-       =================================================== */
+    function handleSideNavTab(tab) {
+      const u = getCurrentUser();
+      if (!u) {
+        showToast('Please sign in to access management controls.', 'info');
+        switchView('login');
+        return;
+      }
+      if (u.role === 'ADMIN') {
+        switchView('admin');
+        switchAdminTab(tab);
+      } else if (u.role === 'VENDOR') {
+        switchView('vendor');
+        switchVendorTab(tab);
+      }
+    }
+
+    /* VIEW ROUTER */
     function switchView(viewName) {
       document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-      document.querySelectorAll('nav button').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.sidebar-btn').forEach(el => el.classList.remove('bg-purple-700', 'text-white', 'shadow-lg'));
+
+      const topTitle = document.getElementById('top-bar-title');
+      const topSubtitle = document.getElementById('top-bar-subtitle');
+
+      // Close mobile sidebar if open
+      document.getElementById('main-sidebar').classList.remove('sidebar-open');
+      document.getElementById('sidebar-backdrop').classList.add('hidden');
 
       if (viewName === 'storefront') {
         document.getElementById('view-storefront').classList.add('active');
-        document.getElementById('nav-storefront').classList.add('active');
+        document.getElementById('nav-side-storefront').classList.add('bg-purple-700', 'text-white', 'shadow-lg');
+        topTitle.innerHTML = `<i class="fa-solid fa-store text-purple-600"></i> <span>Gourmet Dessert Storefront</span>`;
+        topSubtitle.innerText = 'Browse artisanal desserts & place instant online orders';
         renderStorefront();
       } else if (viewName === 'login') {
         document.getElementById('view-login').classList.add('active');
+        topTitle.innerHTML = `<i class="fa-solid fa-user-shield text-purple-600"></i> <span>Workspace Sign In</span>`;
+        topSubtitle.innerText = 'Enter your credentials to manage products, sales & inventory';
       } else if (viewName === 'admin') {
         const u = getCurrentUser();
         if (!u || u.role !== 'ADMIN') { switchView('login'); return; }
         document.getElementById('view-admin').classList.add('active');
+        document.getElementById('nav-side-portal').classList.add('bg-purple-700', 'text-white', 'shadow-lg');
+        topTitle.innerHTML = `<i class="fa-solid fa-crown text-amber-500"></i> <span>System Admin Workspace</span>`;
+        topSubtitle.innerText = 'Global operations, payments verification & MOV progress targets';
         renderAdminDashboard();
+      } else if (viewName === 'deliveries') {
+        const u = getCurrentUser();
+        if (!u || (u.role !== 'ADMIN' && u.role !== 'VENDOR')) { switchView('login'); return; }
+        document.getElementById('view-deliveries').classList.add('active');
+        document.querySelector('[onclick="handleDeliveriesClick()"]')?.classList.add('bg-purple-700', 'text-white', 'shadow-lg');
+        topTitle.innerHTML = `<i class="fa-solid fa-truck-fast text-purple-600"></i> <span>Deliveries Management</span>`;
+        topSubtitle.innerText = u.role === 'ADMIN' ? 'Global delivery tracking and status management' : `${u.name} delivery tracking`;
+        document.getElementById('deliveries-subtitle').innerText = u.role === 'ADMIN' ? 'Track and manage all customer deliveries across vendors' : `Track deliveries linked to ${u.name} (${u.vendorId})`;
+        renderDeliveries();
+      } else if (viewName === 'returns') {
+        const u = getCurrentUser();
+        if (!u || (u.role !== 'ADMIN' && u.role !== 'VENDOR')) { switchView('login'); return; }
+        document.getElementById('view-returns').classList.add('active');
+        document.querySelector('[onclick="handleReturnsClick()"]')?.classList.add('bg-purple-700', 'text-white', 'shadow-lg');
+        topTitle.innerHTML = `<i class="fa-solid fa-rotate-left text-amber-500"></i> <span>Returns Management</span>`;
+        topSubtitle.innerText = u.role === 'ADMIN' ? 'Global return tracking and processing' : `${u.name} return tracking`;
+        document.getElementById('returns-subtitle').innerText = u.role === 'ADMIN' ? 'Track and process all customer returns across vendors.' : `Track returns linked to ${u.name} (${u.vendorId}).`;
+        document.getElementById('record-return-btn').classList.toggle('hidden', u.role !== 'ADMIN');
+        renderReturns();
+      } else if (viewName === 'whatsapp') {
+        const u = getCurrentUser();
+        if (!u || (u.role !== 'ADMIN' && u.role !== 'VENDOR')) { switchView('login'); return; }
+        document.getElementById('view-whatsapp').classList.add('active');
+        document.querySelector('[onclick="handleWhatsAppClick()"]')?.classList.add('bg-purple-700', 'text-white', 'shadow-lg');
+        topTitle.innerHTML = `<i class="fa-brands fa-whatsapp text-green-600"></i> <span>WhatsApp Communication</span>`;
+        topSubtitle.innerText = u.role === 'ADMIN' ? 'Customer communication for all orders' : `${u.name} customer communication`;
+        document.getElementById('whatsapp-subtitle').innerText = u.role === 'ADMIN'
+          ? 'Send order and delivery updates directly to customers.'
+          : `Send updates for orders linked to ${u.name} (${u.vendorId}).`;
+        renderWhatsApp();
       } else if (viewName === 'vendor') {
         const u = getCurrentUser();
         if (!u || u.role !== 'VENDOR') { switchView('login'); return; }
         document.getElementById('view-vendor').classList.add('active');
+        document.getElementById('nav-side-portal').classList.add('bg-purple-700', 'text-white', 'shadow-lg');
+        topTitle.innerHTML = `<i class="fa-solid fa-shop text-purple-600"></i> <span>${u.name} Kitchen Dashboard</span>`;
+        topSubtitle.innerText = 'Isolated vendor inventory adjustments & sales tracking';
         renderVendorDashboard();
       }
     }
 
-    /* ===================================================
-       STOREFRONT & CART MODULE (STEP 3 & 4)
-       =================================================== */
+    function switchAdminTab(tab) {
+      document.querySelectorAll('.admin-sec').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.admin-tab-btn').forEach(el => {
+        el.classList.remove('border-purple-600', 'text-purple-700');
+        el.classList.add('border-transparent', 'text-slate-500');
+      });
+      
+      document.getElementById(`admin-sec-${tab}`).classList.remove('hidden');
+      const activeBtn = document.getElementById(`admin-tab-${tab}`);
+      if (activeBtn) {
+        activeBtn.classList.remove('border-transparent', 'text-slate-500');
+        activeBtn.classList.add('border-purple-600', 'text-purple-700');
+      }
+    }
+
+    function switchVendorTab(tab) {
+      document.querySelectorAll('.vendor-sec').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.vendor-tab-btn').forEach(el => {
+        el.classList.remove('border-purple-600', 'text-purple-700');
+        el.classList.add('border-transparent', 'text-slate-500');
+      });
+
+      document.getElementById(`vendor-sec-${tab}`).classList.remove('hidden');
+      const activeBtn = document.getElementById(`vendor-tab-${tab}`);
+      if (activeBtn) {
+        activeBtn.classList.remove('border-transparent', 'text-slate-500');
+        activeBtn.classList.add('border-purple-600', 'text-purple-700');
+      }
+    }
+
+
+    /* RETURNS MANAGEMENT MODULE */
+    function getReturns() { return JSON.parse(localStorage.getItem('krave_returns') || '[]'); }
+    function saveReturns(items) { localStorage.setItem('krave_returns', JSON.stringify(items)); }
+
+    function handleReturnsClick() {
+      const u = getCurrentUser();
+      if (!u) { showToast('Please sign in to access returns management.', 'info'); switchView('login'); return; }
+      if (u.role !== 'ADMIN' && u.role !== 'VENDOR') { showToast('You do not have permission to access returns.', 'error'); return; }
+      switchView('returns');
+    }
+
+    function renderReturns() {
+      const tbody = document.getElementById('returns-table');
+      if (!tbody) return;
+      const user = getCurrentUser();
+      if (!user) return;
+      let records = getReturns();
+      if (user.role === 'VENDOR') records = records.filter(r => r.vendorId === user.vendorId);
+      const filter = document.getElementById('returns-filter-status')?.value || 'ALL';
+      if (filter !== 'ALL') records = records.filter(r => r.status === filter);
+      const all = user.role === 'VENDOR' ? getReturns().filter(r => r.vendorId === user.vendorId) : getReturns();
+      document.getElementById('returns-kpi-total').innerText = all.length;
+      document.getElementById('returns-kpi-pending').innerText = all.filter(r => r.status === 'Pending').length;
+      document.getElementById('returns-kpi-approved').innerText = all.filter(r => r.status === 'Approved').length;
+      document.getElementById('returns-kpi-completed').innerText = all.filter(r => r.status === 'Completed').length;
+      tbody.innerHTML = '';
+      if (!records.length) { tbody.innerHTML = '<tr><td colspan="10" class="p-8 text-center text-slate-400">No return records found.</td></tr>'; return; }
+      records.forEach(r => {
+        const cls = r.status === 'Completed' ? 'bg-emerald-100 text-emerald-700' : r.status === 'Rejected' ? 'bg-rose-100 text-rose-700' : r.status === 'Approved' ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700';
+        const action = user.role === 'ADMIN' ? `<select onchange="updateReturnStatus('${r.returnId}', this.value)" class="text-[10px] p-1.5 bg-white border border-slate-200 rounded-lg"><option value="Pending" ${r.status==='Pending'?'selected':''}>Pending</option><option value="Approved" ${r.status==='Approved'?'selected':''}>Approved</option><option value="Rejected" ${r.status==='Rejected'?'selected':''}>Rejected</option><option value="Completed" ${r.status==='Completed'?'selected':''}>Completed</option></select>` : '<span class="text-slate-400">View only</span>';
+        tbody.innerHTML += `<tr><td class="p-3.5 font-bold text-slate-800">${r.returnId}</td><td class="p-3.5">${r.orderId}</td><td class="p-3.5 font-semibold">${r.productName}</td><td class="p-3.5">${r.vendorName}</td><td class="p-3.5">${r.customerName}</td><td class="p-3.5 font-bold">${r.quantity}</td><td class="p-3.5 text-slate-500">${r.reason}</td><td class="p-3.5"><span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${cls}">${r.status}</span></td><td class="p-3.5">${r.date || '-'}</td><td class="p-3.5">${action}</td></tr>`;
+      });
+    }
+
+    function openRecordReturnModal() {
+      const u = getCurrentUser();
+      if (!u || u.role !== 'ADMIN') { showToast('Only Admin can record returns.', 'error'); return; }
+      const select = document.getElementById('return-order');
+      const orders = JSON.parse(localStorage.getItem('krave_orders') || '[]');
+      select.innerHTML = '<option value="">-- Select Order --</option>' + orders.map(o => `<option value="${o.orderId}">${o.orderId} - ${o.customer?.fullName || o.customerName || 'Customer'}</option>`).join('');
+      document.getElementById('return-product').innerHTML = '<option value="">-- Select Product --</option>';
+      document.getElementById('return-product').disabled = true;
+      document.getElementById('record-return-form').reset();
+      document.getElementById('return-product').innerHTML = '<option value="">-- Select Product --</option>';
+      document.getElementById('return-product').disabled = true;
+      document.getElementById('record-return-modal').classList.remove('hidden');
+    }
+    function closeRecordReturnModal() { document.getElementById('record-return-modal').classList.add('hidden'); }
+    function populateReturnProducts() {
+      const orderId = document.getElementById('return-order').value;
+      const orders = JSON.parse(localStorage.getItem('krave_orders') || '[]');
+      const order = orders.find(o => o.orderId === orderId);
+      const select = document.getElementById('return-product');
+      select.innerHTML = '<option value="">-- Select Product --</option>';
+      if (!order) { select.disabled = true; return; }
+      (order.items || []).forEach((item, idx) => { select.innerHTML += `<option value="${idx}">${item.name}</option>`; });
+      select.disabled = false;
+    }
+    function saveReturn(e) {
+      e.preventDefault();
+      const orderId = document.getElementById('return-order').value;
+      const idx = parseInt(document.getElementById('return-product').value, 10);
+      const qty = parseInt(document.getElementById('return-qty').value, 10);
+      const orders = JSON.parse(localStorage.getItem('krave_orders') || '[]');
+      const order = orders.find(o => o.orderId === orderId);
+      const item = order?.items?.[idx];
+      if (!order || !item || qty < 1 || qty > item.quantity) { showToast('Please select a valid order, product and quantity.', 'error'); return; }
+      const returns = getReturns();
+      const next = returns.length + 1;
+      returns.push({ returnId:`RET-2026-${String(next).padStart(4,'0')}`, orderId, productId:item.productId, productName:item.name, vendorId:item.vendorId, vendorName:item.vendorName, customerName:order.customer?.fullName || order.customerName || 'Customer', quantity:qty, reason:document.getElementById('return-reason').value, status:document.getElementById('return-status').value, date:new Date().toISOString().slice(0,10) });
+      saveReturns(returns);
+      closeRecordReturnModal();
+      renderReturns();
+      showToast('Return record saved successfully.', 'success');
+    }
+    function updateReturnStatus(returnId, status) {
+      const u = getCurrentUser(); if (!u || u.role !== 'ADMIN') return;
+      const records = getReturns(); const record = records.find(r => r.returnId === returnId); if (!record) return;
+      record.status = status; saveReturns(records); renderReturns(); showToast(`${returnId} updated to ${status}.`, 'success');
+    }
+
+    /* WHATSAPP COMMUNICATION MODULE */
+    function handleWhatsAppClick() {
+      const u = getCurrentUser();
+      if (!u) {
+        showToast('Please sign in to access WhatsApp communication.', 'info');
+        switchView('login');
+        return;
+      }
+      if (u.role !== 'ADMIN' && u.role !== 'VENDOR') {
+        showToast('You do not have permission to access WhatsApp communication.', 'error');
+        return;
+      }
+      switchView('whatsapp');
+    }
+
+    function getWhatsAppRecords() {
+      const deliveries = getDeliveries();
+      const orders = JSON.parse(localStorage.getItem('krave_orders') || '[]');
+      const user = getCurrentUser();
+
+      let records = deliveries.map(d => {
+        const order = orders.find(o => o.orderId === d.orderId);
+        return {
+          deliveryId: d.deliveryId,
+          orderId: d.orderId,
+          customerName: d.customerName || order?.customer?.fullName || 'Customer',
+          phone: d.phone || order?.customer?.phone || '',
+          vendorIds: d.vendorIds || [],
+          vendorNames: d.vendorNames || [],
+          status: d.status || 'Pending'
+        };
+      });
+
+      if (user?.role === 'VENDOR') {
+        records = records.filter(r => r.vendorIds.includes(user.vendorId));
+      }
+      return records;
+    }
+
+    function buildWhatsAppMessage(record) {
+      return `Hello ${record.customerName}, your KraVe Licious order ${record.orderId} is currently ${record.status}. Thank you for ordering with us!`;
+    }
+
+    function openWhatsApp(record) {
+      if (!record.phone) {
+        showToast('Customer phone number is not available.', 'error');
+        return;
+      }
+      const phone = String(record.phone).replace(/[^0-9]/g, '');
+      if (!phone) {
+        showToast('Customer phone number is invalid.', 'error');
+        return;
+      }
+
+      // Malaysia-friendly handling: 0123456789 -> 60123456789.
+      const normalizedPhone = phone.startsWith('60')
+        ? phone
+        : (phone.startsWith('0') ? `6${phone}` : phone);
+
+      const message = buildWhatsAppMessage(record);
+      const url = `https://wa.me/${normalizedPhone}?text=${encodeURIComponent(message)}`;
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
+
+    function renderWhatsApp() {
+      const tbody = document.getElementById('whatsapp-table');
+      const count = document.getElementById('whatsapp-record-count');
+      if (!tbody) return;
+
+      const records = getWhatsAppRecords();
+      count.innerText = `${records.length} record${records.length === 1 ? '' : 's'}`;
+      tbody.innerHTML = '';
+
+      if (!records.length) {
+        tbody.innerHTML = '<tr><td colspan="7" class="p-8 text-center text-slate-400">No customer order records available.</td></tr>';
+        return;
+      }
+
+      records.forEach(record => {
+        const vendors = record.vendorNames.join(', ') || '-';
+        const message = buildWhatsAppMessage(record);
+        const statusClass =
+          record.status === 'Delivered' ? 'bg-emerald-100 text-emerald-700' :
+          record.status === 'Cancelled' ? 'bg-rose-100 text-rose-700' :
+          record.status === 'Out for Delivery' ? 'bg-purple-100 text-purple-700' :
+          record.status === 'Preparing' ? 'bg-blue-100 text-blue-700' :
+          'bg-amber-100 text-amber-700';
+
+        tbody.innerHTML += `
+          <tr>
+            <td class="p-3.5 font-bold text-slate-800">${record.orderId}</td>
+            <td class="p-3.5">${record.customerName}</td>
+            <td class="p-3.5">${record.phone || '-'}</td>
+            <td class="p-3.5">${vendors}</td>
+            <td class="p-3.5">
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${statusClass}">${record.status}</span>
+            </td>
+            <td class="p-3.5 max-w-sm text-slate-500">${message}</td>
+            <td class="p-3.5">
+              <button onclick='openWhatsApp(${JSON.stringify(record).replace(/'/g, "&#39;")})'
+                class="px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg text-[10px] transition-all flex items-center gap-1.5">
+                <i class="fa-brands fa-whatsapp"></i> Open WhatsApp
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    /* STOREFRONT & CART MODULE */
     function getProducts() { return JSON.parse(localStorage.getItem('krave_products') || '[]'); }
     function getCart() { return JSON.parse(localStorage.getItem('krave_cart') || '[]'); }
     function saveCart(cart) { localStorage.setItem('krave_cart', JSON.stringify(cart)); updateCartBadge(); }
@@ -660,17 +1556,33 @@
       products.forEach(p => {
         const isOut = p.stock <= 0;
         grid.innerHTML += `
-          <div class="card">
-            <h3>${p.name}</h3>
-            <p style="color:#6b7280; font-size:0.85rem; margin-top:0.2rem;">by ${p.vendorName}</p>
-            <p style="margin: 0.6rem 0; font-size:0.9rem;">${p.description}</p>
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:1rem;">
-              <span style="font-size: 1.3rem; font-weight: bold; color: var(--primary-color);">RM ${p.price.toFixed(2)}</span>
-              <span class="badge ${isOut ? 'badge-danger' : 'badge-success'}">${isOut ? 'Out of Stock' : `Stock: ${p.stock}`}</span>
+          <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden hover:shadow-md transition-all flex flex-col group">
+            <div class="p-5 flex-1 flex flex-col justify-between">
+              <div>
+                <div class="flex justify-between items-start gap-2 mb-2">
+                  <span class="text-[10px] font-bold uppercase tracking-wider bg-purple-50 text-purple-700 px-2.5 py-1 rounded-md border border-purple-100">
+                    <i class="fa-solid fa-cookie"></i> ${p.category}
+                  </span>
+                  <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${isOut ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700'}">
+                    ${isOut ? 'Out of Stock' : `Stock: ${p.stock}`}
+                  </span>
+                </div>
+                <h3 class="font-bold text-slate-900 text-base group-hover:text-purple-700 transition-colors">${p.name}</h3>
+                <p class="text-xs text-amber-600 font-semibold mb-2">by ${p.vendorName}</p>
+                <p class="text-xs text-slate-500 leading-relaxed">${p.description}</p>
+              </div>
+
+              <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+                <div>
+                  <span class="text-[10px] text-slate-400 block font-bold uppercase">Price</span>
+                  <span class="text-lg font-black text-slate-900">RM ${p.price.toFixed(2)}</span>
+                </div>
+                <button ${isOut ? 'disabled' : ''} onclick="addToCart('${p.productId}')" 
+                        class="px-4 py-2 bg-purple-700 hover:bg-purple-800 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed text-white font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 shadow-sm">
+                  <i class="fa-solid fa-cart-plus"></i> ${isOut ? 'Sold Out' : 'Add to Cart'}
+                </button>
+              </div>
             </div>
-            <button class="btn btn-primary" style="width:100%; margin-top:1rem;" ${isOut ? 'disabled' : ''} onclick="addToCart('${p.productId}')">
-              ${isOut ? 'Out of Stock' : 'Add to Cart'}
-            </button>
           </div>
         `;
       });
@@ -679,12 +1591,12 @@
     function addToCart(productId) {
       const products = getProducts();
       const p = products.find(x => x.productId === productId);
-      if (!p || p.stock <= 0) return alert('Item out of stock.');
+      if (!p || p.stock <= 0) return showToast('Item is currently out of stock.', 'error');
 
       let cart = getCart();
       const exist = cart.find(x => x.productId === productId);
       if (exist) {
-        if (exist.quantity + 1 > p.stock) return alert('Cannot add more than available stock.');
+        if (exist.quantity + 1 > p.stock) return showToast('Cannot add more than available stock limit.', 'error');
         exist.quantity++;
         exist.subtotal = exist.quantity * exist.price;
       } else {
@@ -699,14 +1611,14 @@
         });
       }
       saveCart(cart);
-      alert(`${p.name} added to cart!`);
+      showToast(`Added "${p.name}" to cart!`, 'success');
     }
 
     function openCartModal() {
       renderCartModal();
-      document.getElementById('cart-modal').classList.add('active');
+      document.getElementById('cart-modal').classList.remove('hidden');
     }
-    function closeCartModal() { document.getElementById('cart-modal').classList.remove('active'); }
+    function closeCartModal() { document.getElementById('cart-modal').classList.add('hidden'); }
 
     function renderCartModal() {
       const cart = getCart();
@@ -714,25 +1626,27 @@
       tbody.innerHTML = '';
 
       if (cart.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Your cart is empty.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="5" class="p-6 text-center text-slate-400 font-medium">Your shopping basket is empty.</td></tr>';
         document.getElementById('cart-modal-total').innerText = 'RM 0.00';
         document.getElementById('checkout-btn').style.display = 'none';
         return;
       }
 
-      document.getElementById('checkout-btn').style.display = 'inline-block';
+      document.getElementById('checkout-btn').style.display = 'inline-flex';
       let total = 0;
       cart.forEach(item => {
         total += item.subtotal;
         tbody.innerHTML += `
-          <tr>
-            <td>${item.name}</td>
-            <td>RM ${item.price.toFixed(2)}</td>
-            <td>
-              <input type="number" min="1" value="${item.quantity}" style="width:55px; padding:0.2rem;" onchange="updateCartQty('${item.productId}', this.value)">
+          <tr class="font-medium">
+            <td class="py-3 font-semibold text-slate-800">${item.name}</td>
+            <td class="py-3">RM ${item.price.toFixed(2)}</td>
+            <td class="py-3">
+              <input type="number" min="1" value="${item.quantity}" class="w-12 text-center p-1 bg-slate-100 border border-slate-200 rounded text-xs font-bold" onchange="updateCartQty('${item.productId}', this.value)">
             </td>
-            <td>RM ${item.subtotal.toFixed(2)}</td>
-            <td><button class="btn btn-danger btn-sm" onclick="removeFromCart('${item.productId}')">✕</button></td>
+            <td class="py-3 font-bold text-slate-900">RM ${item.subtotal.toFixed(2)}</td>
+            <td class="py-3 text-right">
+              <button class="text-rose-500 hover:text-rose-700 p-1" onclick="removeFromCart('${item.productId}')"><i class="fa-solid fa-trash-can"></i></button>
+            </td>
           </tr>
         `;
       });
@@ -746,7 +1660,7 @@
 
       if (item) {
         const val = parseInt(qty, 10);
-        if (val > p.stock) { alert('Exceeds available stock.'); renderCartModal(); return; }
+        if (val > p.stock) { showToast('Exceeds available kitchen stock.', 'error'); renderCartModal(); return; }
         if (val <= 0) { removeFromCart(productId); return; }
         item.quantity = val;
         item.subtotal = item.quantity * item.price;
@@ -764,19 +1678,19 @@
     function openCheckoutModal() {
       closeCartModal();
       const cart = getCart();
-      if (cart.length === 0) return alert('Cart is empty.');
+      if (cart.length === 0) return showToast('Cart is empty.', 'error');
       const total = cart.reduce((s, i) => s + i.subtotal, 0);
       document.getElementById('checkout-total-amt').innerText = `RM ${total.toFixed(2)}`;
-      document.getElementById('checkout-modal').classList.add('active');
+      document.getElementById('checkout-modal').classList.remove('hidden');
     }
-    function closeCheckoutModal() { document.getElementById('checkout-modal').classList.remove('active'); }
+    function closeCheckoutModal() { document.getElementById('checkout-modal').classList.add('hidden'); }
 
-    /* CHECKOUT SUBMISSION (STEPS 4, 5, 6 INTEGRATION) */
+    /* CHECKOUT SUBMISSION */
     document.getElementById('checkout-form').addEventListener('submit', function(e) {
       e.preventDefault();
       
       const cart = getCart();
-      if (cart.length === 0) return alert('Cart is empty.');
+      if (cart.length === 0) return showToast('Cart is empty.', 'error');
 
       const customer = {
         fullName: document.getElementById('cust-name').value,
@@ -802,7 +1716,18 @@
       orders.push(newOrder);
       localStorage.setItem('krave_orders', JSON.stringify(orders));
 
-      // 2. Create Payment Record (STEP 5)
+      // 1B. Create Delivery Record
+      const deliveries = getDeliveries();
+      const deliveryId = `DEL-2026-${String(deliveries.length + 1).padStart(4, '0')}`;
+      deliveries.push({
+        deliveryId, orderId, customerName: customer.fullName, phone: customer.phone, deliveryAddress: customer.address,
+        vendorIds: [...new Set(cart.map(i => i.vendorId).filter(Boolean))],
+        vendorNames: [...new Set(cart.map(i => i.vendorName).filter(Boolean))],
+        orderDate: newOrder.orderDate, deliveryDate: '', status: 'Pending', updatedAt: new Date().toISOString()
+      });
+      saveDeliveries(deliveries);
+
+      // 2. Create Payment Record
       const payments = JSON.parse(localStorage.getItem('krave_payments') || '[]');
       const paymentId = `PAY-2026-${String(payments.length + 1).padStart(4, '0')}`;
       const vendorIds = [...new Set(cart.map(i => i.vendorId))];
@@ -820,16 +1745,14 @@
       });
       localStorage.setItem('krave_payments', JSON.stringify(payments));
 
-      // 3. Deduct Stock & Update Inventory (STEP 6)
+      // 3. Deduct Stock & Update Inventory
       const inventory = JSON.parse(localStorage.getItem('krave_inventory'));
       const products = getProducts();
 
       cart.forEach(item => {
-        // Update product stock
         const p = products.find(x => x.productId === item.productId);
         if (p) p.stock = Math.max(0, p.stock - item.quantity);
 
-        // Update inventory record
         const inv = inventory.find(x => x.productId === item.productId);
         if (inv) {
           inv.currentStock = Math.max(0, inv.currentStock - item.quantity);
@@ -847,17 +1770,17 @@
       updateCartBadge();
       closeCheckoutModal();
 
-      alert(`Order Placed Successfully!\n\nOrder ID: ${orderId}\nPayment ID: ${paymentId}\nTotal: RM ${totalAmount.toFixed(2)}`);
+      showToast(`Order ${orderId} placed successfully!`, 'success');
       renderStorefront();
+      renderSalesOverviewChart();
     });
 
-    /* ===================================================
-       ADMIN DASHBOARD MODULE (STEPS 5, 6, 7)
-       =================================================== */
+    /* ADMIN DASHBOARD MODULE */
     function renderAdminDashboard() {
       renderAdminPayments();
       renderAdminInventory();
       renderAdminSales();
+      renderSalesOverviewChart();
     }
 
     function renderAdminPayments() {
@@ -871,16 +1794,24 @@
         if (p.paymentStatus === 'Pending') pending++;
         if (p.paymentStatus === 'Verified') verified++;
 
+        const isVerified = p.paymentStatus === 'Verified';
+
         tbody.innerHTML += `
           <tr>
-            <td>${p.paymentId}</td>
-            <td>${p.orderId}</td>
-            <td>${p.customerName}</td>
-            <td>RM ${p.amount.toFixed(2)}</td>
-            <td>${p.paymentMethod}</td>
-            <td><span class="badge ${p.paymentStatus === 'Verified' ? 'badge-success' : 'badge-warning'}">${p.paymentStatus}</span></td>
-            <td>
-              <button class="btn btn-sm btn-secondary" onclick="togglePaymentStatus('${p.paymentId}')">Toggle Status</button>
+            <td class="p-3.5 font-bold text-slate-800">${p.paymentId}</td>
+            <td class="p-3.5 text-slate-600">${p.orderId}</td>
+            <td class="p-3.5">${p.customerName}</td>
+            <td class="p-3.5 font-bold">RM ${p.amount.toFixed(2)}</td>
+            <td class="p-3.5">${p.paymentMethod}</td>
+            <td class="p-3.5">
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${isVerified ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">
+                ${p.paymentStatus}
+              </span>
+            </td>
+            <td class="p-3.5">
+              <button class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded text-[10px] transition-all" onclick="togglePaymentStatus('${p.paymentId}')">
+                Toggle Status
+              </button>
             </td>
           </tr>
         `;
@@ -899,6 +1830,7 @@
         p.paymentStatus = p.paymentStatus === 'Pending' ? 'Verified' : 'Pending';
         localStorage.setItem('krave_payments', JSON.stringify(payments));
         renderAdminPayments();
+        showToast(`Payment ${paymentId} status updated.`, 'info');
       }
     }
 
@@ -908,23 +1840,28 @@
       tbody.innerHTML = '';
 
       inv.forEach(i => {
+        const isLow = i.currentStock <= 0;
         tbody.innerHTML += `
           <tr>
-            <td>${i.productName}</td>
-            <td>${i.vendorName}</td>
-            <td>${i.openingStock}</td>
-            <td><strong>${i.currentStock}</strong></td>
-            <td>${i.soldQuantity}</td>
-            <td>${i.returnedQuantity}</td>
-            <td>${i.expiredQuantity}</td>
-            <td>${i.damagedQuantity}</td>
-            <td><span class="badge ${i.currentStock <= 0 ? 'badge-danger' : 'badge-success'}">${i.status}</span></td>
+            <td class="p-3.5 font-bold text-slate-800">${i.productName}</td>
+            <td class="p-3.5 text-slate-600">${i.vendorName}</td>
+            <td class="p-3.5">${i.openingStock}</td>
+            <td class="p-3.5 font-black text-slate-900">${i.currentStock}</td>
+            <td class="p-3.5">${i.soldQuantity}</td>
+            <td class="p-3.5 text-blue-600">${i.returnedQuantity}</td>
+            <td class="p-3.5 text-rose-600">${i.expiredQuantity}</td>
+            <td class="p-3.5 text-amber-600">${i.damagedQuantity}</td>
+            <td class="p-3.5">
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${isLow ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700'}">
+                ${i.status}
+              </span>
+            </td>
           </tr>
         `;
       });
     }
 
-    /* SALES REPORTING & CALCULATIONS (STEP 7) */
+    /* SALES REPORTING & CALCULATIONS */
     function getSalesData() {
       const orders = JSON.parse(localStorage.getItem('krave_orders') || '[]');
       const lineItems = [];
@@ -953,7 +1890,6 @@
     function renderAdminSales(filteredSales = null) {
       let sales = filteredSales || getSalesData();
 
-      // Stats
       const totalSales = sales.reduce((s, i) => s + i.subtotal, 0);
       const uniqueOrders = new Set(sales.map(i => i.orderId)).size;
       const totalItems = sales.reduce((s, i) => s + i.quantity, 0);
@@ -964,7 +1900,6 @@
       document.getElementById('sales-items').innerText = totalItems;
       document.getElementById('sales-aov').innerText = `RM ${aov.toFixed(2)}`;
 
-      // Best selling dessert
       const prodMap = {};
       sales.forEach(s => {
         if (!prodMap[s.productName]) prodMap[s.productName] = 0;
@@ -976,7 +1911,6 @@
       });
       document.getElementById('sales-best-dessert').innerText = bestProd;
 
-      // Top vendor
       const vendorMap = {};
       sales.forEach(s => {
         if (!vendorMap[s.vendorName]) vendorMap[s.vendorName] = 0;
@@ -988,7 +1922,6 @@
       });
       document.getElementById('sales-top-vendor').innerText = topVend;
 
-      // Product Performance Table
       const prodPerfMap = {};
       sales.forEach(s => {
         if (!prodPerfMap[s.productId]) {
@@ -1003,17 +1936,16 @@
       Object.keys(prodPerfMap).sort((a,b) => prodPerfMap[b].units - prodPerfMap[a].units).forEach(pid => {
         const item = prodPerfMap[pid];
         prodTable.innerHTML += `
-          <tr>
-            <td>${pid}</td>
-            <td>${item.name}</td>
-            <td>${item.vendor}</td>
-            <td>${item.units}</td>
-            <td>RM ${item.sales.toFixed(2)}</td>
+          <tr class="font-medium">
+            <td class="p-3 font-bold text-slate-800">${pid}</td>
+            <td class="p-3">${item.name}</td>
+            <td class="p-3 text-slate-500">${item.vendor}</td>
+            <td class="p-3 font-bold">${item.units}</td>
+            <td class="p-3 font-bold text-emerald-600">RM ${item.sales.toFixed(2)}</td>
           </tr>
         `;
       });
 
-      // Vendor Performance Table
       const vendPerfMap = {};
       sales.forEach(s => {
         if (!vendPerfMap[s.vendorId]) {
@@ -1029,30 +1961,29 @@
       Object.keys(vendPerfMap).forEach(vid => {
         const item = vendPerfMap[vid];
         vendTable.innerHTML += `
-          <tr>
-            <td>${vid}</td>
-            <td>${item.name}</td>
-            <td>${item.orders.size}</td>
-            <td>${item.units}</td>
-            <td>RM ${item.sales.toFixed(2)}</td>
+          <tr class="font-medium">
+            <td class="p-3 font-bold text-slate-800">${vid}</td>
+            <td class="p-3">${item.name}</td>
+            <td class="p-3">${item.orders.size}</td>
+            <td class="p-3 font-bold">${item.units}</td>
+            <td class="p-3 font-bold text-emerald-600">RM ${item.sales.toFixed(2)}</td>
           </tr>
         `;
       });
 
-      // Itemized Table
       const detailsTable = document.getElementById('sales-details-table');
       detailsTable.innerHTML = '';
       sales.forEach(s => {
         detailsTable.innerHTML += `
-          <tr>
-            <td>${s.orderId}</td>
-            <td>${new Date(s.orderDate).toLocaleDateString()}</td>
-            <td>${s.productName}</td>
-            <td>${s.vendorName}</td>
-            <td>${s.quantity}</td>
-            <td>RM ${s.price.toFixed(2)}</td>
-            <td>RM ${s.subtotal.toFixed(2)}</td>
-            <td><span class="badge badge-success">${s.status}</span></td>
+          <tr class="font-medium">
+            <td class="p-3 font-bold text-slate-800">${s.orderId}</td>
+            <td class="p-3 text-slate-500">${new Date(s.orderDate).toLocaleDateString()}</td>
+            <td class="p-3">${s.productName}</td>
+            <td class="p-3 text-slate-500">${s.vendorName}</td>
+            <td class="p-3">${s.quantity}</td>
+            <td class="p-3">RM ${s.price.toFixed(2)}</td>
+            <td class="p-3 font-bold">RM ${s.subtotal.toFixed(2)}</td>
+            <td class="p-3"><span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded-full text-[10px] font-bold uppercase">${s.status}</span></td>
           </tr>
         `;
       });
@@ -1079,6 +2010,7 @@
       }
 
       renderAdminSales(sales);
+      showToast('Sales filter applied.', 'info');
     }
 
     function clearSalesFilter() {
@@ -1086,6 +2018,7 @@
       document.getElementById('sales-filter-end').value = '';
       document.getElementById('sales-filter-vendor').value = 'ALL';
       renderAdminSales();
+      showToast('Sales filter cleared.', 'info');
     }
 
     function exportSalesReport() {
@@ -1103,11 +2036,117 @@
       a.download = `KraVe_Sales_Report_${new Date().toISOString().split('T')[0]}.csv`;
       a.click();
       window.URL.revokeObjectURL(url);
+      showToast('Sales CSV exported successfully!', 'success');
     }
 
-    /* ===================================================
-       VENDOR DASHBOARD MODULE (ISOLATED ROLE VIEW)
-       =================================================== */
+    /* Interactive Canvas Bar Chart Renderer for Sales Overview */
+    function renderSalesOverviewChart() {
+      const canvas = document.getElementById('salesOverviewChart');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+
+      // Set resolution
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = (rect.width || 400) * dpr;
+      canvas.height = (rect.height || 180) * dpr;
+      ctx.scale(dpr, dpr);
+
+      const w = rect.width || 400;
+      const h = rect.height || 180;
+
+      ctx.clearRect(0, 0, w, h);
+
+      // Aggregate category data from products or sales
+      const products = getProducts();
+      const sales = getSalesData();
+      const categories = ['Kek Batik', 'Brownies', 'Dessert Cups', 'Cakes'];
+      
+      const catTotals = { 'Kek Batik': 0, 'Brownies': 0, 'Dessert Cups': 0, 'Cakes': 0 };
+
+      // Add base product stock value + live sales subtotal
+      sales.forEach(s => {
+        const p = products.find(prod => prod.productId === s.productId);
+        const cat = p ? p.category : 'Kek Batik';
+        if (catTotals[cat] !== undefined) catTotals[cat] += s.subtotal;
+      });
+
+      // Default visual demo values if sales are zero
+      if (Object.values(catTotals).reduce((a,b)=>a+b, 0) === 0) {
+        catTotals['Kek Batik'] = 140;
+        catTotals['Brownies'] = 85;
+        catTotals['Dessert Cups'] = 110;
+        catTotals['Cakes'] = 95;
+      }
+
+      const maxVal = Math.max(...Object.values(catTotals), 100);
+      const padding = { top: 20, bottom: 30, left: 40, right: 20 };
+      const chartW = w - padding.left - padding.right;
+      const chartH = h - padding.top - padding.bottom;
+
+      // Draw Grid Lines
+      ctx.strokeStyle = '#f1f5f9';
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= 3; i++) {
+        const y = padding.top + (chartH / 3) * i;
+        ctx.beginPath();
+        ctx.moveTo(padding.left, y);
+        ctx.lineTo(w - padding.right, y);
+        ctx.stroke();
+
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '10px Plus Jakarta Sans';
+        ctx.textAlign = 'right';
+        const labelVal = Math.round(maxVal - (maxVal / 3) * i);
+        ctx.fillText(`RM ${labelVal}`, padding.left - 6, y + 3);
+      }
+
+      // Draw Bars
+      const barWidth = Math.min(45, (chartW / categories.length) - 16);
+      const barGradients = [
+        ['#8b5cf6', '#6d28d9'], // Kek Batik
+        ['#f59e0b', '#d97706'], // Brownies
+        ['#10b981', '#059669'], // Dessert Cups
+        ['#3b82f6', '#2563eb']  // Cakes
+      ];
+
+      categories.forEach((cat, idx) => {
+        const val = catTotals[cat] || 0;
+        const barHeight = (val / maxVal) * chartH;
+        const x = padding.left + (idx * (chartW / categories.length)) + ((chartW / categories.length) - barWidth) / 2;
+        const y = padding.top + (chartH - barHeight);
+
+        // Bar Gradient
+        const grad = ctx.createLinearGradient(0, y, 0, y + barHeight);
+        grad.addColorStop(0, barGradients[idx % barGradients.length][0]);
+        grad.addColorStop(1, barGradients[idx % barGradients.length][1]);
+
+        ctx.fillStyle = grad;
+        // Rounded top corners
+        const radius = 6;
+        ctx.beginPath();
+        ctx.moveTo(x, y + radius);
+        ctx.arcTo(x, y, x + radius, y, radius);
+        ctx.arcTo(x + barWidth, y, x + barWidth, y + radius, radius);
+        ctx.lineTo(x + barWidth, padding.top + chartH);
+        ctx.lineTo(x, padding.top + chartH);
+        ctx.closePath();
+        ctx.fill();
+
+        // Value Label on top
+        ctx.fillStyle = '#334155';
+        ctx.font = 'bold 10px Plus Jakarta Sans';
+        ctx.textAlign = 'center';
+        ctx.fillText(`RM ${val.toFixed(0)}`, x + barWidth / 2, y - 5);
+
+        // Category X Label
+        ctx.fillStyle = '#64748b';
+        ctx.font = '500 10px Plus Jakarta Sans';
+        ctx.fillText(cat, x + barWidth / 2, padding.top + chartH + 16);
+      });
+    }
+
+    /* VENDOR DASHBOARD MODULE */
     function renderVendorDashboard() {
       const user = getCurrentUser();
       if (!user || user.role !== 'VENDOR') return;
@@ -1121,15 +2160,21 @@
       inv.forEach(i => {
         invBody.innerHTML += `
           <tr>
-            <td>${i.productName}</td>
-            <td><strong>${i.currentStock}</strong></td>
-            <td>${i.soldQuantity}</td>
-            <td>${i.returnedQuantity}</td>
-            <td>${i.expiredQuantity}</td>
-            <td>${i.damagedQuantity}</td>
-            <td><span class="badge ${i.currentStock <= 0 ? 'badge-danger' : 'badge-success'}">${i.status}</span></td>
-            <td>
-              <button class="btn btn-sm btn-secondary" onclick="openInvModal('${i.productId}', '${i.productName}')">Adjust Stock</button>
+            <td class="p-3.5 font-bold text-slate-800">${i.productName}</td>
+            <td class="p-3.5 font-black text-slate-900">${i.currentStock}</td>
+            <td class="p-3.5">${i.soldQuantity}</td>
+            <td class="p-3.5 text-blue-600">${i.returnedQuantity}</td>
+            <td class="p-3.5 text-rose-600">${i.expiredQuantity}</td>
+            <td class="p-3.5 text-amber-600">${i.damagedQuantity}</td>
+            <td class="p-3.5">
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${i.currentStock <= 0 ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700'}">
+                ${i.status}
+              </span>
+            </td>
+            <td class="p-3.5">
+              <button class="px-2.5 py-1 bg-purple-700 hover:bg-purple-800 text-white font-bold rounded text-[10px] transition-all" onclick="openInvModal('${i.productId}', '${i.productName}')">
+                Adjust Stock
+              </button>
             </td>
           </tr>
         `;
@@ -1142,11 +2187,15 @@
       payments.forEach(p => {
         payBody.innerHTML += `
           <tr>
-            <td>${p.paymentId}</td>
-            <td>${p.orderId}</td>
-            <td>${p.customerName}</td>
-            <td>RM ${p.amount.toFixed(2)}</td>
-            <td><span class="badge badge-warning">${p.paymentStatus}</span></td>
+            <td class="p-3.5 font-bold text-slate-800">${p.paymentId}</td>
+            <td class="p-3.5 text-slate-600">${p.orderId}</td>
+            <td class="p-3.5">${p.customerName}</td>
+            <td class="p-3.5 font-bold">RM ${p.amount.toFixed(2)}</td>
+            <td class="p-3.5">
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${p.paymentStatus === 'Verified' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">
+                ${p.paymentStatus}
+              </span>
+            </td>
           </tr>
         `;
       });
@@ -1159,7 +2208,6 @@
       document.getElementById('vendor-kpi-sales').innerText = `RM ${totalSales.toFixed(2)}`;
       document.getElementById('vendor-kpi-items').innerText = totalItems;
 
-      // Vendor best selling
       const prodMap = {};
       sales.forEach(s => {
         if (!prodMap[s.productName]) prodMap[s.productName] = 0;
@@ -1171,7 +2219,6 @@
       });
       document.getElementById('vendor-kpi-best').innerText = best;
 
-      // Product breakdown
       const prodBreakdown = {};
       sales.forEach(s => {
         if (!prodBreakdown[s.productId]) prodBreakdown[s.productId] = { name: s.productName, units: 0, sales: 0 };
@@ -1184,11 +2231,11 @@
       Object.keys(prodBreakdown).forEach(pid => {
         const item = prodBreakdown[pid];
         prodTable.innerHTML += `
-          <tr>
-            <td>${pid}</td>
-            <td>${item.name}</td>
-            <td>${item.units}</td>
-            <td>RM ${item.sales.toFixed(2)}</td>
+          <tr class="font-medium">
+            <td class="p-3 font-bold text-slate-800">${pid}</td>
+            <td class="p-3">${item.name}</td>
+            <td class="p-3 font-bold">${item.units}</td>
+            <td class="p-3 font-bold text-emerald-600">RM ${item.sales.toFixed(2)}</td>
           </tr>
         `;
       });
@@ -1198,16 +2245,15 @@
     function openInvModal(productId, productName) {
       document.getElementById('inv-prod-id').value = productId;
       document.getElementById('inv-prod-name').value = productName;
-      document.getElementById('inv-action-modal').classList.add('active');
+      document.getElementById('inv-action-modal').classList.remove('hidden');
     }
-    function closeInvModal() { document.getElementById('inv-action-modal').classList.remove('active'); }
+    function closeInvModal() { document.getElementById('inv-action-modal').classList.add('hidden'); }
 
     document.getElementById('inv-action-form').addEventListener('submit', function(e) {
       e.preventDefault();
       const pid = document.getElementById('inv-prod-id').value;
       const action = document.getElementById('inv-action-type').value;
       const qty = parseInt(document.getElementById('inv-action-qty').value, 10);
-      const reason = document.getElementById('inv-action-reason').value;
 
       const inventory = JSON.parse(localStorage.getItem('krave_inventory'));
       const products = getProducts();
@@ -1220,7 +2266,7 @@
           item.returnedQuantity += qty;
           item.currentStock += qty;
         } else if (action === 'Damaged') {
-          if (item.currentStock < qty) return alert('Cannot mark damaged more than available stock.');
+          if (item.currentStock < qty) return showToast('Cannot mark damaged more than available stock.', 'error');
           item.damagedQuantity += qty;
           item.currentStock -= qty;
         } else if (action === 'Expired') {
@@ -1239,8 +2285,9 @@
         localStorage.setItem('krave_products', JSON.stringify(products));
 
         closeInvModal();
-        alert('Inventory adjustment recorded.');
+        showToast('Inventory adjustment successfully recorded.', 'success');
         renderVendorDashboard();
+        renderSalesOverviewChart();
       }
     });
 
@@ -1253,13 +2300,10 @@
       const res = login(u, p);
       if (res.success) {
         checkSession();
-        if (res.user.role === 'ADMIN') {
-          switchView('admin');
-        } else {
-          switchView('vendor');
-        }
+        handlePortalClick();
+        showToast(`Welcome back, ${res.user.name}!`, 'success');
       } else {
-        alert(res.message);
+        showToast(res.message, 'error');
       }
     });
   </script>
