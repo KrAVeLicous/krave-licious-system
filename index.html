@@ -240,9 +240,25 @@ const mine=()=>me.r==='a'?S.O:S.O.filter(x=>x.v===me.i);
 const dk=()=>Object.keys(S.C);
 const opts=()=>VN.map((v,i)=>`<optgroup label="${v[0]}">${dk().filter(k=>S.C[k].v===i).map(k=>`<option value="${k}">${S.C[k].n}</option>`).join('')}</optgroup>`).join('');
 const itx=x=>Object.keys(x.items).map(k=>S.C[k].n+': '+x.items[k]+(x.st!=='ordered'?' sent '+x.sent[k]:'')+(x.st==='received'?', got '+x.got[k]+(x.ret[k]?', returned '+x.ret[k]:''):'')).join('<br>');
-const TB={a:[['dash','Dashboard'],['ord','Orders'],['shop','Suppliers'],['prod','Products'],['pay','Payments'],['ret','Sold vs returned'],['stk','Inventory'],['aud','Audit log']],v:[['ord','Orders'],['menu','Menu'],['pay','Payments'],['ret','Sold vs returned']]};
+const TB={a:[['dash','Dashboard'],['ord','Orders'],['shop','Suppliers'],['prod','Products'],['pay','Payments'],['ret','Sold vs returned'],['stk','Inventory'],['aud','Audit log'],['reports','Reports'],['mov','MOV & Budget']],v:[['vdash','Dashboard'],['ord','Orders'],['menu','Menu'],['pay','Payments'],['ret','Sold vs returned']]};
 const FIX=[['Missing delivery records','Orders are tracked from placed to dispatched to received, with quantities from both sides.','ord'],['Payment disputes','Invoices use the price locked at order time, and either side can flag a dispute.','pay'],['Sold vs returned items','Received, sold, returned and wasted counts for every dessert.','ret'],['Food losses','Expiry warnings and a write-off log valued at cost.','stk'],['No sales visibility','Daily sales, best-selling desserts and top vendors.','dash']];
 const V={
+vdash(){const mineOrders=S.O.filter(x=>x.v===me.i),received=mineOrders.filter(x=>x.st==='received'),sales=S.Sa.filter(x=>S.C[x.k]&&S.C[x.k].v===me.i).reduce((a,x)=>a+x.q*x.p,0),returned=received.reduce((a,x)=>a+sum(x.ret),0),stock=dk().filter(k=>S.C[k].v===me.i).reduce((a,k)=>a+S.T[k].q,0),outstanding=received.reduce((a,x)=>a+due(x),0);
+return `<h1>Vendor Dashboard</h1><p class="sub">Overview of your own orders, sales, returns, payments and current stock.</p>
+<div class="kg"><div class="kc"><em>🧾</em><span>Total orders</span><b>${mineOrders.length}</b></div><div class="kc"><em>💰</em><span>Sales</span><b>${rm(sales)}</b></div><div class="kc"><em>↩️</em><span>Returned units</span><b>${returned}</b></div><div class="kc"><em>📦</em><span>Current stock</span><b>${stock}</b></div></div>
+<div class="kp"><div><span>Outstanding payment</span><b>${rm(outstanding)}</b></div><div><span>Received orders</span><b>${received.length}</b></div></div>
+<h2>My desserts</h2><div class="tw"><table><tr><th>Dessert</th><th>Price</th><th>Stock</th></tr>${dk().filter(k=>S.C[k].v===me.i).map(k=>`<tr><td>${S.C[k].n}</td><td>${rm(S.C[k].p)}</td><td>${S.T[k].q}</td></tr>`).join('')||`<tr><td colspan="3">No dessert records</td></tr>`}</table></div>`},
+reports(){const rc=S.O.filter(x=>x.st==='received'),sales=rc.reduce((a,x)=>a+bill(x),0),units=rc.reduce((a,x)=>a+sum(x.got),0),returned=rc.reduce((a,x)=>a+sum(x.ret),0),loss=S.L.reduce((a,x)=>a+x.q*S.C[x.k].c,0),bp=dk().map(k=>[S.C[k].n,S.Sa.filter(x=>x.k===k).reduce((a,x)=>a+x.q,0)]).sort((a,b)=>b[1]-a[1]).slice(0,8);
+return `<h1>Reports</h1><p class="sub">Management reports for sales, units, returns, food loss and best-selling desserts.</p>
+<div class="kg"><div class="kc"><em>💰</em><span>Total sales</span><b>${rm(sales)}</b></div><div class="kc"><em>🍰</em><span>Units received</span><b>${units}</b></div><div class="kc"><em>↩️</em><span>Returned units</span><b>${returned}</b></div><div class="kc"><em>🗑️</em><span>Food loss cost</span><b>${rm(loss)}</b></div></div>
+<div class="two"><div><h2>Best-selling desserts</h2><div class="box">${bars(bp,v=>v+' units')}</div></div><div><h2>Sales by vendor</h2><div class="box">${bars(VN.map((v,i)=>[v[0],S.Sa.filter(x=>S.C[x.k].v===i).reduce((a,x)=>a+x.q*x.p,0)]),rm)}</div></div></div>`},
+mov(){return `<h1>MOV & Project Budget</h1><p class="sub">Management performance targets for the KraVe Licious project. This section is visible to Admin only.</p>
+<div class="kg"><div class="kc"><em>💼</em><span>Project Budget</span><b>RM 100,000.00</b></div><div class="kc"><em>01</em><span>Payment tracking</span><b>95%</b></div><div class="kc"><em>02</em><span>Food loss reduction</span><b>30%</b></div><div class="kc"><em>03</em><span>Digital sales reporting</span><b>100%</b></div></div>
+<h2>MOV Targets</h2><div class="tw"><table><tr><th>MOV</th><th>Target</th><th>Timeframe</th><th>System area</th></tr>
+<tr><td>MOV 01</td><td>Reduce payment recording errors and improve payment tracking accuracy by 95%</td><td>Within 3 months</td><td>Payment Management</td></tr>
+<tr><td>MOV 02</td><td>Reduce food loss, expired stock, returned desserts and inventory discrepancies by 30%</td><td>Within 6 months</td><td>Inventory & Sold vs returned</td></tr>
+<tr><td>MOV 03</td><td>Achieve 100% digital sales reporting and identify best-selling desserts and vendors</td><td>Within 3 months</td><td>Sales Dashboard & Reports</td></tr>
+</table></div>`},
 login(){return `<p class="brand" style="margin:16px 0 0">KraVe Licious</p><h1>Dessert supply, tracked from vendor to shelf.</h1><p class="sub">Sign in as the KraVe admin or as a vendor shop. Vendors see only their own menu, orders and payments. The admin sees everything, including a full audit log.</p>
 <div class="box" style="max-width:420px"><div class="g"><label>Username<input id="lu" autocomplete="username"></label><label>Password<input id="lp" type="password" autocomplete="current-password"></label><button class="btn p" data-a="login">Sign in</button></div></div>
 <h2>Demo accounts</h2><div class="tw"><table><tr><th>Account</th><th>Username</th><th>Password</th><th></th></tr>${[['KraVe admin','admin','krave123'],...VN.map(v=>[v[0],v[1],v[2]])].map(a=>`<tr><td>${a[0]}</td><td>${a[1]}</td><td>${a[2]}</td><td><button class="btn s" data-a="fill" data-u="${a[1]}" data-p="${a[2]}">Fill in</button></td></tr>`).join('')}</table></div>
@@ -376,7 +392,7 @@ fill:d=>{$('lu').value=d.u;$('lp').value=d.p},
 login:()=>{const u=cl($('lu').value),p=$('lp').value,v=VN.findIndex(x=>x[1]===u&&x[2]===p);
 if(u==='admin'&&p==='krave123')me={u,r:'a',n:'KraVe Licious'};else if(v>=0)me={u,r:'v',i:v,n:VN[v][0]};
 else{lg('Failed sign-in as "'+u+'"','in','guest');save();return msg('Wrong username or password')}
-cur=me.r==='a'?'dash':'ord';lg('Signed in');save();busy(render)},
+cur=me.r==='a'?'dash':'vdash';lg('Signed in');save();busy(render)},
 out:()=>{lg('Signed out');save();me=null;render()},
 reset:()=>{S=seed();save();render();msg('Sample data restored')},
 log:d=>{lg(d.m,'out');save()},
