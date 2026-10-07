@@ -1,2311 +1,445 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-slate-100">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KraVe Licious — Gourmet Dessert & Management Portal</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Plus Jakarta Sans', 'sans-serif'],
-          },
-          colors: {
-            brand: {
-              50: '#fbf7ff',
-              100: '#f3e8ff',
-              500: '#8b5cf6',
-              600: '#7c3aed',
-              700: '#6d28d9',
-              800: '#5b21b6',
-              900: '#4c1d95',
-              950: '#1e112a',
-            },
-            amberBrand: {
-              500: '#f59e0b',
-              600: '#d97706',
-            }
-          }
-        }
-      }
-    }
-  </script>
-  <style>
-    .glass-header {
-      background: rgba(255, 255, 255, 0.92);
-      backdrop-filter: blur(12px);
-    }
-    .view-section { display: none; }
-    .view-section.active { display: block; }
-    
-    /* Custom Scrollbars */
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #f1f5f9; }
-    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
-    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-
-    /* Sidebar Smooth Slide for Mobile */
-    @media (max-width: 1023px) {
-      .sidebar-open { transform: translateX(0) !important; }
-    }
-  </style>
-</head>
-<body class="font-sans antialiased text-slate-800 bg-slate-100 min-h-full flex flex-col lg:flex-row">
-
-  <!-- Toast Notification Container -->
-  <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm pointer-events-none"></div>
-
-  <!-- Mobile Sidebar Overlay Backdrop -->
-  <div id="sidebar-backdrop" onclick="toggleMobileSidebar()" class="fixed inset-0 bg-slate-900/50 z-40 lg:hidden hidden backdrop-blur-sm"></div>
-
-  <!-- DARK PURPLE SIDEBAR NAVIGATION -->
-  <aside id="main-sidebar" class="fixed lg:static top-0 bottom-0 left-0 z-40 w-64 bg-brand-950 text-slate-300 flex flex-col transition-transform duration-300 -translate-x-full lg:translate-x-0 border-r border-brand-900/50 shadow-2xl shrink-0">
-    
-    <!-- Branding Header -->
-    <div class="p-5 border-b border-purple-900/40 flex items-center justify-between">
-      <div class="flex items-center gap-3 cursor-pointer group" onclick="switchView('storefront')">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-600 via-purple-500 to-amber-500 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-purple-900/50 group-hover:scale-105 transition-transform">
-          K
-        </div>
-        <div>
-          <div class="flex items-center gap-1.5">
-            <span class="font-black text-lg tracking-tight text-white">KraVe</span>
-            <span class="text-[9px] font-extrabold uppercase tracking-widest bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded border border-amber-500/30">Licious</span>
-          </div>
-          <p class="text-[10px] text-purple-300/70 font-semibold tracking-wide">Management System</p>
-        </div>
-      </div>
-      <button onclick="toggleMobileSidebar()" class="lg:hidden text-slate-400 hover:text-white text-lg p-1">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-    </div>
-
-    <!-- Sidebar Scrollable Navigation Links -->
-    <div class="flex-1 overflow-y-auto px-3 py-4 space-y-6">
-      
-      <!-- SECTION 1: MAIN MENU -->
-      <div>
-        <p class="px-3 text-[10px] font-extrabold tracking-wider text-purple-400/80 uppercase mb-2">Main Menu</p>
-        <div class="space-y-1">
-          <button id="nav-side-storefront" onclick="switchView('storefront')" class="sidebar-btn active w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-300 hover:bg-purple-900/40 hover:text-white">
-            <i class="fa-solid fa-store w-4 text-center text-purple-400"></i>
-            <span>Catalogue / Store</span>
-          </button>
-          
-          <button id="nav-side-portal" onclick="handlePortalClick()" class="sidebar-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-300 hover:bg-purple-900/40 hover:text-white">
-            <i class="fa-solid fa-gauge-high w-4 text-center text-purple-400"></i>
-            <span id="side-portal-label">Portal / Dashboard</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- SECTION 2: MANAGEMENT -->
-      <div id="sidebar-sec-management">
-        <p class="px-3 text-[10px] font-extrabold tracking-wider text-purple-400/80 uppercase mb-2">Management</p>
-        <div class="space-y-1">
-          <button onclick="handleSideNavTab('payments')" class="sidebar-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition-all text-slate-300 hover:bg-purple-900/40 hover:text-white">
-            <i class="fa-solid fa-credit-card w-4 text-center text-purple-400"></i>
-            <span>Payments & Audit</span>
-          </button>
-          <button onclick="handleDeliveriesClick()" class="sidebar-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition-all text-slate-300 hover:bg-purple-900/40 hover:text-white">
-            <i class="fa-solid fa-truck-fast w-4 text-center text-purple-400"></i>
-            <span>Deliveries</span>
-          </button>
-          <button onclick="handleReturnsClick()" class="sidebar-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition-all text-slate-300 hover:bg-purple-900/40 hover:text-white">
-            <i class="fa-solid fa-rotate-left w-4 text-center text-purple-400"></i>
-            <span>Returns</span>
-          </button>
-          <button onclick="handleSideNavTab('inventory')" class="sidebar-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition-all text-slate-300 hover:bg-purple-900/40 hover:text-white">
-            <i class="fa-solid fa-boxes-stacked w-4 text-center text-purple-400"></i>
-            <span>Master Inventory</span>
-          </button>
-          <button onclick="handleSideNavTab('sales')" class="sidebar-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition-all text-slate-300 hover:bg-purple-900/40 hover:text-white">
-            <i class="fa-solid fa-chart-pie w-4 text-center text-purple-400"></i>
-            <span>Sales Analytics</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- SECTION 3: ANALYSIS -->
-      <div>
-        <p class="px-3 text-[10px] font-extrabold tracking-wider text-purple-400/80 uppercase mb-2">Analysis</p>
-        <div class="space-y-1">
-          <button onclick="showToast('Sales Overview & MOV target analysis active on dashboard view.', 'info')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition-all text-slate-400 hover:bg-purple-900/30 hover:text-slate-200">
-            <i class="fa-solid fa-chart-line w-4 text-center text-purple-400"></i>
-            <span>Performance Metrics</span>
-          </button>
-          <button onclick="showToast('Project Budget: RM 100,000 allocated for KraVe System Build.', 'info')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition-all text-slate-400 hover:bg-purple-900/30 hover:text-slate-200">
-            <i class="fa-solid fa-wallet w-4 text-center text-purple-400"></i>
-            <span>Budget Allocation</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- SECTION 4: COMMUNICATION -->
-      <div>
-        <p class="px-3 text-[10px] font-extrabold tracking-wider text-purple-400/80 uppercase mb-2">Communication</p>
-        <div class="space-y-1">
-          <button onclick="handleWhatsAppClick()" class="sidebar-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition-all text-slate-300 hover:bg-purple-900/40 hover:text-white">
-            <i class="fa-brands fa-whatsapp w-4 text-center text-green-400"></i>
-            <span>WhatsApp</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- SECTION 5: ACCOUNT -->
-      <div>
-        <p class="px-3 text-[10px] font-extrabold tracking-wider text-purple-400/80 uppercase mb-2">Account</p>
-        <div class="space-y-1">
-          <button id="side-account-btn" onclick="handlePortalClick()" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition-all text-slate-300 hover:bg-purple-900/40 hover:text-white">
-            <i class="fa-solid fa-user-gear w-4 text-center text-purple-400"></i>
-            <span id="side-account-label">Login Account</span>
-          </button>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- Sidebar Footer / Active User Quick Status -->
-    <div class="p-4 border-t border-purple-900/40 bg-purple-950/60 flex items-center justify-between">
-      <div class="flex items-center gap-2.5 overflow-hidden">
-        <div class="w-8 h-8 rounded-full bg-purple-700/50 border border-purple-500/40 flex items-center justify-center text-purple-200 text-xs font-bold shrink-0">
-          <i class="fa-solid fa-user"></i>
-        </div>
-        <div class="truncate">
-          <p id="side-user-name" class="text-xs font-bold text-white truncate">Guest User</p>
-          <p id="side-user-role" class="text-[10px] text-purple-300/80 truncate">Store Front View</p>
-        </div>
-      </div>
-      <button onclick="logout()" id="side-logout-btn" title="Sign Out" class="hidden text-slate-400 hover:text-red-400 p-1.5 transition-colors">
-        <i class="fa-solid fa-arrow-right-from-bracket text-xs"></i>
-      </button>
-    </div>
-  </aside>
-
-  <!-- MAIN WORKSPACE CONTENT CONTAINER -->
-  <div class="flex-1 flex flex-col min-w-0 min-h-screen">
-    
-    <!-- TOP HEADER BAR -->
-    <header class="glass-header sticky top-0 z-30 border-b border-slate-200/80 px-4 sm:px-6 py-3.5 flex items-center justify-between shadow-sm">
-      <div class="flex items-center gap-3">
-        <!-- Mobile Sidebar Toggle -->
-        <button onclick="toggleMobileSidebar()" class="lg:hidden w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition-all">
-          <i class="fa-solid fa-bars text-sm"></i>
-        </button>
-
-        <div>
-          <h1 id="top-bar-title" class="text-base sm:text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
-            <span>Catalogue & Storefront</span>
-          </h1>
-          <p id="top-bar-subtitle" class="text-[11px] text-slate-500 hidden sm:block font-medium">KraVe Licious Artisanal Desserts & Management</p>
-        </div>
-      </div>
-
-      <!-- Top Right Actions & User Profile -->
-      <div class="flex items-center gap-2 sm:gap-3">
-        <!-- Shopping Cart Button -->
-        <button id="nav-cart" onclick="openCartModal()" class="px-3 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200/80 shadow-sm">
-          <i class="fa-solid fa-bag-shopping text-purple-600"></i>
-          <span class="hidden sm:inline">Cart</span>
-          <span id="cart-count" class="ml-0.5 px-2 py-0.5 text-[11px] font-black bg-purple-600 text-white rounded-full shadow-sm">0</span>
-        </button>
-
-        <div class="h-5 w-px bg-slate-200 mx-1"></div>
-
-        <!-- Top Profile Badge / Sign-In Button -->
-        <div id="top-profile-container" class="flex items-center gap-2">
-          <button id="top-login-btn" onclick="handlePortalClick()" class="px-3.5 py-2 bg-brand-950 hover:bg-purple-900 text-white font-bold text-xs rounded-xl shadow-sm transition-all flex items-center gap-2">
-            <i class="fa-solid fa-user-lock text-xs text-purple-400"></i>
-            <span>Portal Sign In</span>
-          </button>
-        </div>
-      </div>
-    </header>
-
-    <!-- MAIN CONTENT VIEW AREA -->
-    <main class="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto space-y-6">
-
-      <!-- 1. PUBLIC STOREFRONT VIEW -->
-      <div id="view-storefront" class="view-section active space-y-6">
-        <!-- Hero Banner -->
-        <div class="bg-gradient-to-r from-purple-900 via-brand-800 to-amber-600 rounded-2xl p-6 sm:p-8 text-white shadow-xl shadow-purple-950/10 relative overflow-hidden">
-          <div class="relative z-10 max-w-2xl">
-            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-white/20 text-white backdrop-blur-md mb-3">
-              <i class="fa-solid fa-cookie-bite"></i> Freshly Baked Daily
-            </span>
-            <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight">Handcrafted Artisanal Desserts</h1>
-            <p class="mt-2 text-purple-100 text-sm sm:text-base leading-relaxed">Discover sweet creations from independent local vendors. Order directly online for instant delivery dispatch.</p>
-          </div>
-          <div class="absolute -right-8 -bottom-8 opacity-15 text-white pointer-events-none">
-            <i class="fa-solid fa-cake-candles text-9xl"></i>
-          </div>
-        </div>
-
-        <div class="flex items-center justify-between border-b border-slate-200/80 pb-4">
-          <div>
-            <h2 class="text-lg sm:text-xl font-extrabold text-slate-900">Featured Gourmet Menu</h2>
-            <p class="text-xs text-slate-500">Live stock synchronized across all vendor kitchens</p>
-          </div>
-        </div>
-
-        <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-      </div>
-
-      <!-- 2. LOGIN VIEW -->
-      <div id="view-login" class="view-section">
-        <div class="max-w-md mx-auto my-8">
-          <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xl overflow-hidden">
-            <div class="bg-gradient-to-b from-purple-50 to-white p-6 border-b border-slate-100 text-center">
-              <div class="w-12 h-12 bg-purple-700 text-white rounded-xl mx-auto flex items-center justify-center font-black text-2xl shadow-lg shadow-purple-700/30 mb-3">K</div>
-              <h2 class="text-xl font-bold text-slate-900">Management Portal</h2>
-              <p class="text-xs text-slate-500 mt-1">Sign in to access Admin or Vendor workspace</p>
-            </div>
-
-            <form id="login-form" class="p-6 space-y-4">
-              <div>
-                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Username</label>
-                <div class="relative">
-                  <i class="fa-solid fa-user absolute left-3 top-3 text-slate-400 text-sm"></i>
-                  <input type="text" id="login-username" class="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all" placeholder="admin / vendor / vendor2" required>
-                </div>
-              </div>
-
-              <div>
-                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Password</label>
-                <div class="relative">
-                  <i class="fa-solid fa-lock absolute left-3 top-3 text-slate-400 text-sm"></i>
-                  <input type="password" id="login-password" class="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all" placeholder="Enter password" required>
-                </div>
-              </div>
-
-              <button type="submit" class="w-full py-2.5 bg-purple-700 hover:bg-purple-800 text-white font-bold text-sm rounded-xl shadow-md shadow-purple-700/20 transition-all">
-                Sign In to Workspace
-              </button>
-            </form>
-
-            <div class="bg-slate-50 p-4 border-t border-slate-100 text-xs text-slate-600 space-y-1">
-              <p class="font-bold text-slate-700 mb-1">Demo Quick Accounts:</p>
-              <p><code class="bg-slate-200 px-1 py-0.5 rounded text-slate-800">admin</code> / <code class="bg-slate-200 px-1 py-0.5 rounded text-slate-800">admin123</code> (System Admin)</p>
-              <p><code class="bg-slate-200 px-1 py-0.5 rounded text-slate-800">vendor</code> / <code class="bg-slate-200 px-1 py-0.5 rounded text-slate-800">vendor123</code> (Vendor A)</p>
-              <p><code class="bg-slate-200 px-1 py-0.5 rounded text-slate-800">vendor2</code> / <code class="bg-slate-200 px-1 py-0.5 rounded text-slate-800">vendor2123</code> (Vendor B)</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 3. ADMIN DASHBOARD VIEW -->
-      <div id="view-admin" class="view-section space-y-6">
-        
-        <!-- Admin Title Banner -->
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
-          <div class="flex items-center gap-3">
-            <div class="w-12 h-12 bg-purple-950 text-amber-400 rounded-xl flex items-center justify-center font-bold text-xl shadow-md">
-              <i class="fa-solid fa-user-shield"></i>
-            </div>
-            <div>
-              <h2 class="text-xl font-bold text-slate-900">Administrator Control Portal</h2>
-              <p class="text-xs text-slate-500">Global System Management • Financials • Global Inventory</p>
-            </div>
-          </div>
-          <button onclick="logout()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-all flex items-center gap-2 self-start sm:self-auto">
-            <i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out
-          </button>
-        </div>
-
-        <!-- Project Budget Card -->
-        <div class="bg-gradient-to-r from-purple-900 via-purple-800 to-indigo-900 border border-purple-700/50 rounded-2xl p-6 text-white shadow-md">
-          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div class="flex items-center gap-3">
-              <div class="w-11 h-11 rounded-xl bg-white/10 backdrop-blur-md text-amber-300 flex items-center justify-center font-bold">
-                <i class="fa-solid fa-sack-dollar text-xl"></i>
-              </div>
-              <div>
-                <h3 class="font-bold text-white text-base">Project Development Budget Allocation</h3>
-                <p class="text-xs text-purple-200">Total System Build & Deployment Capital</p>
-              </div>
-            </div>
-            <div class="text-2xl sm:text-3xl font-black text-amber-300 tracking-tight">
-              RM 100,000.00
-            </div>
-          </div>
-        </div>
-
-        <!-- QUICK ACTIONS & OVERVIEW WIDGETS SECTION -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          
-          <!-- Quick Actions Section -->
-          <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-3">
-            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2">
-              <i class="fa-solid fa-bolt text-amber-500"></i> Quick Actions
-            </h3>
-            <div class="grid grid-cols-2 gap-2.5">
-              <button onclick="switchAdminTab('payments')" class="p-3 rounded-xl bg-purple-50 hover:bg-purple-100 border border-purple-100 text-left transition-all">
-                <i class="fa-solid fa-receipt text-purple-600 text-base mb-1 block"></i>
-                <span class="text-xs font-bold text-slate-800 block">Verify Payments</span>
-                <span class="text-[10px] text-slate-500 block">Manage transactions</span>
-              </button>
-
-              <button onclick="switchAdminTab('inventory')" class="p-3 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-100 text-left transition-all">
-                <i class="fa-solid fa-boxes-stacked text-amber-600 text-base mb-1 block"></i>
-                <span class="text-xs font-bold text-slate-800 block">Stock Levels</span>
-                <span class="text-[10px] text-slate-500 block">Master Inventory</span>
-              </button>
-
-              <button onclick="switchAdminTab('sales')" class="p-3 rounded-xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-100 text-left transition-all">
-                <i class="fa-solid fa-file-csv text-emerald-600 text-base mb-1 block"></i>
-                <span class="text-xs font-bold text-slate-800 block">Export Sales</span>
-                <span class="text-[10px] text-slate-500 block">Download CSV</span>
-              </button>
-
-              <button onclick="switchView('storefront')" class="p-3 rounded-xl bg-blue-50 hover:bg-blue-100 border border-blue-100 text-left transition-all">
-                <i class="fa-solid fa-store text-blue-600 text-base mb-1 block"></i>
-                <span class="text-xs font-bold text-slate-800 block">Store Menu</span>
-                <span class="text-[10px] text-slate-500 block">Customer view</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Sales Overview Bar Chart Widget -->
-          <div class="lg:col-span-2 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
-            <div class="flex justify-between items-center mb-3">
-              <div>
-                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2">
-                  <i class="fa-solid fa-chart-column text-purple-600"></i> Sales Overview Chart
-                </h3>
-                <p class="text-xs text-slate-600 font-semibold mt-0.5">Product Category Revenue Distribution</p>
-              </div>
-              <span class="text-[10px] font-bold bg-purple-100 text-purple-800 px-2.5 py-1 rounded-full">Live Analytics</span>
-            </div>
-
-            <!-- Canvas Bar Chart -->
-            <div class="w-full h-44 relative flex items-center justify-center">
-              <canvas id="salesOverviewChart" class="w-full h-full"></canvas>
-            </div>
-          </div>
-
-        </div>
-
-        <!-- Navigation Tabs for Admin Sections -->
-        <div class="flex border-b border-slate-200 gap-2">
-          <button onclick="switchAdminTab('payments')" id="admin-tab-payments" class="admin-tab-btn py-2.5 px-4 font-bold text-xs uppercase tracking-wider border-b-2 border-purple-600 text-purple-700 flex items-center gap-2">
-            <i class="fa-solid fa-credit-card"></i> Payments
-          </button>
-          <button onclick="switchAdminTab('inventory')" id="admin-tab-inventory" class="admin-tab-btn py-2.5 px-4 font-bold text-xs uppercase tracking-wider border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2">
-            <i class="fa-solid fa-boxes-stacked"></i> Inventory
-          </button>
-          <button onclick="switchAdminTab('sales')" id="admin-tab-sales" class="admin-tab-btn py-2.5 px-4 font-bold text-xs uppercase tracking-wider border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2">
-            <i class="fa-solid fa-chart-line"></i> Sales Reports
-          </button>
-        </div>
-
-        <!-- ADMIN TAB 1: PAYMENTS -->
-        <div id="admin-sec-payments" class="admin-sec space-y-6">
-          <!-- MOV 01 Section -->
-          <div class="bg-blue-50/70 border-l-4 border-blue-600 p-4 rounded-r-xl">
-            <div class="flex justify-between items-center mb-1">
-              <h4 class="font-bold text-blue-900 text-xs uppercase tracking-wider flex items-center gap-2">
-                <i class="fa-solid fa-bullseye"></i> MOV 01 — Payment Tracking Target
-              </h4>
-              <span class="text-[10px] font-bold uppercase bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">Target: 95% Accuracy</span>
-            </div>
-            <p class="text-xs text-blue-800 font-medium">"Reduce payment recording errors and improve payment tracking accuracy by 95% within 3 months after the application is implemented."</p>
-          </div>
-
-          <!-- Payment KPIs -->
-          <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm">
-              <div class="text-xs font-bold uppercase text-slate-400">Total Records</div>
-              <div class="text-2xl font-black text-slate-800 mt-1" id="admin-pay-count">0</div>
-            </div>
-            <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm">
-              <div class="text-xs font-bold uppercase text-amber-500">Pending</div>
-              <div class="text-2xl font-black text-amber-600 mt-1" id="admin-pay-pending">0</div>
-            </div>
-            <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm">
-              <div class="text-xs font-bold uppercase text-emerald-600">Verified</div>
-              <div class="text-2xl font-black text-emerald-600 mt-1" id="admin-pay-verified">0</div>
-            </div>
-            <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm">
-              <div class="text-xs font-bold uppercase text-purple-600">Total Amount</div>
-              <div class="text-2xl font-black text-purple-700 mt-1" id="admin-pay-amount">RM 0.00</div>
-            </div>
-          </div>
-
-          <!-- Payments Table -->
-          <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-            <div class="p-4 border-b border-slate-100 font-bold text-slate-800 text-sm">
-              Payment Transactions Master List
-            </div>
-            <div class="overflow-x-auto">
-              <table class="w-full text-left text-xs">
-                <thead class="bg-slate-50 text-slate-500 uppercase font-bold border-b border-slate-100">
-                  <tr>
-                    <th class="p-3.5">Payment ID</th>
-                    <th class="p-3.5">Order ID</th>
-                    <th class="p-3.5">Customer</th>
-                    <th class="p-3.5">Amount</th>
-                    <th class="p-3.5">Method</th>
-                    <th class="p-3.5">Status</th>
-                    <th class="p-3.5">Action</th>
-                  </tr>
-                </thead>
-                <tbody id="admin-pay-table" class="divide-y divide-slate-100 font-medium"></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <!-- ADMIN TAB 2: INVENTORY -->
-        <div id="admin-sec-inventory" class="admin-sec space-y-6 hidden">
-          <!-- MOV 02 Section -->
-          <div class="bg-amber-50/70 border-l-4 border-amber-600 p-4 rounded-r-xl">
-            <div class="flex justify-between items-center mb-1">
-              <h4 class="font-bold text-amber-900 text-xs uppercase tracking-wider flex items-center gap-2">
-                <i class="fa-solid fa-bullseye"></i> MOV 02 — Inventory Control Target
-              </h4>
-              <span class="text-[10px] font-bold uppercase bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">Target: 30% Loss Reduction</span>
-            </div>
-            <p class="text-xs text-amber-800 font-medium">"Reduce food loss, expired stock, returned desserts and inventory discrepancy by 30% within 6 months through a digital inventory management system."</p>
-          </div>
-
-          <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-            <div class="p-4 border-b border-slate-100 font-bold text-slate-800 text-sm">
-              Global Master Inventory
-            </div>
-            <div class="overflow-x-auto">
-              <table class="w-full text-left text-xs">
-                <thead class="bg-slate-50 text-slate-500 uppercase font-bold border-b border-slate-100">
-                  <tr>
-                    <th class="p-3.5">Product</th>
-                    <th class="p-3.5">Vendor</th>
-                    <th class="p-3.5">Opening</th>
-                    <th class="p-3.5">Current</th>
-                    <th class="p-3.5">Sold</th>
-                    <th class="p-3.5">Returned</th>
-                    <th class="p-3.5">Expired</th>
-                    <th class="p-3.5">Damaged</th>
-                    <th class="p-3.5">Status</th>
-                  </tr>
-                </thead>
-                <tbody id="admin-inv-table" class="divide-y divide-slate-100 font-medium"></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <!-- ADMIN TAB 3: SALES -->
-        <div id="admin-sec-sales" class="admin-sec space-y-6 hidden">
-          <!-- MOV 03 Section -->
-          <div class="bg-emerald-50/70 border-l-4 border-emerald-600 p-4 rounded-r-xl">
-            <div class="flex justify-between items-center mb-1">
-              <h4 class="font-bold text-emerald-900 text-xs uppercase tracking-wider flex items-center gap-2">
-                <i class="fa-solid fa-bullseye"></i> MOV 03 — Digital Sales Reporting Target
-              </h4>
-              <span class="text-[10px] font-bold uppercase bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">Target: 100% Digital</span>
-            </div>
-            <p class="text-xs text-emerald-800 font-medium">"Achieve 100% digital sales reporting and enable the owner to identify the best-selling desserts and vendors within 3 months after implementation."</p>
-          </div>
-
-          <!-- Filters -->
-          <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm space-y-3">
-            <div class="text-xs font-bold uppercase tracking-wider text-slate-500">Filter Reports</div>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div>
-                <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Start Date</label>
-                <input type="date" id="sales-filter-start" class="w-full text-xs p-2 bg-slate-50 border border-slate-200 rounded-lg">
-              </div>
-              <div>
-                <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">End Date</label>
-                <input type="date" id="sales-filter-end" class="w-full text-xs p-2 bg-slate-50 border border-slate-200 rounded-lg">
-              </div>
-              <div>
-                <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Vendor</label>
-                <select id="sales-filter-vendor" class="w-full text-xs p-2 bg-slate-50 border border-slate-200 rounded-lg">
-                  <option value="ALL">All Vendors</option>
-                  <option value="VND01">Vendor A (VND01)</option>
-                  <option value="VND02">Vendor B (VND02)</option>
-                </select>
-              </div>
-            </div>
-            <div class="flex gap-2 justify-between items-center pt-2">
-              <div class="flex gap-2">
-                <button onclick="applySalesFilter()" class="px-3 py-1.5 bg-purple-700 text-white text-xs font-bold rounded-lg hover:bg-purple-800 transition-all">Apply Filter</button>
-                <button onclick="clearSalesFilter()" class="px-3 py-1.5 bg-slate-100 text-slate-600 text-xs font-bold rounded-lg hover:bg-slate-200 transition-all">Clear</button>
-              </div>
-              <button onclick="exportSalesReport()" class="px-3 py-1.5 bg-slate-900 text-white text-xs font-bold rounded-lg hover:bg-slate-800 transition-all flex items-center gap-1.5">
-                <i class="fa-solid fa-file-csv"></i> Export CSV
-              </button>
-            </div>
-          </div>
-
-          <!-- Sales KPIs -->
-          <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm">
-              <div class="text-xs font-bold uppercase text-slate-400">Total Sales</div>
-              <div class="text-xl font-black text-emerald-600 mt-1" id="sales-total">RM 0.00</div>
-            </div>
-            <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm">
-              <div class="text-xs font-bold uppercase text-slate-400">Total Orders</div>
-              <div class="text-xl font-black text-slate-800 mt-1" id="sales-orders">0</div>
-            </div>
-            <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm">
-              <div class="text-xs font-bold uppercase text-slate-400">Items Sold</div>
-              <div class="text-xl font-black text-slate-800 mt-1" id="sales-items">0</div>
-            </div>
-            <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm">
-              <div class="text-xs font-bold uppercase text-slate-400">Avg Order Value</div>
-              <div class="text-xl font-black text-purple-600 mt-1" id="sales-aov">RM 0.00</div>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm">
-              <div class="text-xs font-bold uppercase text-purple-600 mb-1">Best-Selling Dessert</div>
-              <div id="sales-best-dessert" class="text-lg font-extrabold text-slate-800">-</div>
-            </div>
-            <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm">
-              <div class="text-xs font-bold uppercase text-emerald-600 mb-1">Top Performing Vendor</div>
-              <div id="sales-top-vendor" class="text-lg font-extrabold text-slate-800">-</div>
-            </div>
-          </div>
-
-          <!-- Product Performance Table -->
-          <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-            <div class="p-4 border-b border-slate-100 font-bold text-slate-800 text-xs uppercase tracking-wider">Product Sales Performance</div>
-            <div class="overflow-x-auto">
-              <table class="w-full text-left text-xs">
-                <thead class="bg-slate-50 text-slate-500 font-bold border-b border-slate-100">
-                  <tr>
-                    <th class="p-3">Product ID</th>
-                    <th class="p-3">Product Name</th>
-                    <th class="p-3">Vendor</th>
-                    <th class="p-3">Units Sold</th>
-                    <th class="p-3">Total Revenue</th>
-                  </tr>
-                </thead>
-                <tbody id="sales-product-perf-table" class="divide-y divide-slate-100"></tbody>
-              </table>
-            </div>
-          </div>
-
-          <!-- Vendor Performance Table -->
-          <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-            <div class="p-4 border-b border-slate-100 font-bold text-slate-800 text-xs uppercase tracking-wider">Vendor Performance Overview</div>
-            <div class="overflow-x-auto">
-              <table class="w-full text-left text-xs">
-                <thead class="bg-slate-50 text-slate-500 font-bold border-b border-slate-100">
-                  <tr>
-                    <th class="p-3">Vendor ID</th>
-                    <th class="p-3">Vendor Name</th>
-                    <th class="p-3">Total Orders</th>
-                    <th class="p-3">Items Sold</th>
-                    <th class="p-3">Total Revenue</th>
-                  </tr>
-                </thead>
-                <tbody id="sales-vendor-perf-table" class="divide-y divide-slate-100"></tbody>
-              </table>
-            </div>
-          </div>
-
-          <!-- Transaction Details Table -->
-          <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-            <div class="p-4 border-b border-slate-100 font-bold text-slate-800 text-xs uppercase tracking-wider">Line Item Sales Transaction Log</div>
-            <div class="overflow-x-auto">
-              <table class="w-full text-left text-xs">
-                <thead class="bg-slate-50 text-slate-500 font-bold border-b border-slate-100">
-                  <tr>
-                    <th class="p-3">Order ID</th>
-                    <th class="p-3">Date</th>
-                    <th class="p-3">Product</th>
-                    <th class="p-3">Vendor</th>
-                    <th class="p-3">Qty</th>
-                    <th class="p-3">Unit Price</th>
-                    <th class="p-3">Subtotal</th>
-                    <th class="p-3">Status</th>
-                  </tr>
-                </thead>
-                <tbody id="sales-details-table" class="divide-y divide-slate-100"></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 4. DELIVERIES MANAGEMENT VIEW -->
-      <div id="view-deliveries" class="view-section space-y-6">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
-          <div class="flex items-center gap-3">
-            <div class="w-12 h-12 bg-purple-700 text-white rounded-xl flex items-center justify-center font-bold text-xl shadow-md shadow-purple-700/20"><i class="fa-solid fa-truck-fast"></i></div>
-            <div><h2 class="text-xl font-bold text-slate-900">Deliveries Management</h2><p id="deliveries-subtitle" class="text-xs text-slate-500">Track customer orders and delivery progress</p></div>
-          </div>
-          <div class="px-3 py-2 bg-purple-50 text-purple-700 rounded-xl text-xs font-bold border border-purple-100"><i class="fa-solid fa-database mr-1"></i> Digital Delivery Tracking</div>
-        </div>
-        <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
-          <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm"><div class="text-xs font-bold uppercase text-slate-400">Total</div><div id="delivery-kpi-total" class="text-2xl font-black text-slate-800 mt-1">0</div></div>
-          <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm"><div class="text-xs font-bold uppercase text-amber-500">Pending</div><div id="delivery-kpi-pending" class="text-2xl font-black text-amber-600 mt-1">0</div></div>
-          <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm"><div class="text-xs font-bold uppercase text-blue-500">Preparing</div><div id="delivery-kpi-preparing" class="text-2xl font-black text-blue-600 mt-1">0</div></div>
-          <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm"><div class="text-xs font-bold uppercase text-purple-500">Out for Delivery</div><div id="delivery-kpi-out" class="text-2xl font-black text-purple-600 mt-1">0</div></div>
-          <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm"><div class="text-xs font-bold uppercase text-emerald-600">Delivered</div><div id="delivery-kpi-delivered" class="text-2xl font-black text-emerald-600 mt-1">0</div></div>
-        </div>
-        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-          <div class="p-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3"><div><h3 class="font-bold text-slate-800 text-sm">Delivery Tracking List</h3><p class="text-[10px] text-slate-500 mt-0.5">Admin sees all deliveries; vendors see only deliveries linked to their vendor ID.</p></div><select id="delivery-filter-status" onchange="renderDeliveries()" class="text-xs p-2 bg-slate-50 border border-slate-200 rounded-lg"><option value="ALL">All Statuses</option><option value="Pending">Pending</option><option value="Preparing">Preparing</option><option value="Out for Delivery">Out for Delivery</option><option value="Delivered">Delivered</option><option value="Cancelled">Cancelled</option></select></div>
-          <div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead class="bg-slate-50 text-slate-500 uppercase font-bold border-b border-slate-100"><tr><th class="p-3.5">Delivery ID</th><th class="p-3.5">Order ID</th><th class="p-3.5">Customer</th><th class="p-3.5">Phone</th><th class="p-3.5">Delivery Address</th><th class="p-3.5">Vendor</th><th class="p-3.5">Order Date</th><th class="p-3.5">Delivery Date</th><th class="p-3.5">Status</th><th class="p-3.5">Action</th></tr></thead><tbody id="deliveries-table" class="divide-y divide-slate-100 font-medium"></tbody></table></div>
-        </div>
-      </div>
-
-
-      <!-- 5. RETURNS MANAGEMENT VIEW -->
-      <div id="view-returns" class="view-section space-y-6">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
-          <div class="flex items-center gap-3">
-            <div class="w-12 h-12 bg-amber-500 text-white rounded-xl flex items-center justify-center font-bold text-xl shadow-md shadow-amber-500/20"><i class="fa-solid fa-rotate-left"></i></div>
-            <div><h2 class="text-xl font-bold text-slate-900">Returns Management</h2><p id="returns-subtitle" class="text-xs text-slate-500">Track and process customer return requests.</p></div>
-          </div>
-          <button id="record-return-btn" onclick="openRecordReturnModal()" class="px-4 py-2 bg-purple-700 hover:bg-purple-800 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center gap-2">
-            <i class="fa-solid fa-plus"></i> Record Return
-          </button>
-        </div>
-
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm"><div class="text-xs font-bold uppercase text-slate-400">Total Returns</div><div id="returns-kpi-total" class="text-2xl font-black text-slate-800 mt-1">0</div></div>
-          <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm"><div class="text-xs font-bold uppercase text-amber-500">Pending</div><div id="returns-kpi-pending" class="text-2xl font-black text-amber-600 mt-1">0</div></div>
-          <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm"><div class="text-xs font-bold uppercase text-blue-500">Approved</div><div id="returns-kpi-approved" class="text-2xl font-black text-blue-600 mt-1">0</div></div>
-          <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm"><div class="text-xs font-bold uppercase text-emerald-600">Completed</div><div id="returns-kpi-completed" class="text-2xl font-black text-emerald-600 mt-1">0</div></div>
-        </div>
-
-        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-          <div class="p-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div><h3 class="font-bold text-slate-800 text-sm">Return Records</h3><p class="text-[10px] text-slate-500 mt-0.5">Admin sees all returns; vendors see only returns linked to their vendor ID.</p></div>
-            <select id="returns-filter-status" onchange="renderReturns()" class="text-xs p-2 bg-slate-50 border border-slate-200 rounded-lg"><option value="ALL">All Statuses</option><option value="Pending">Pending</option><option value="Approved">Approved</option><option value="Rejected">Rejected</option><option value="Completed">Completed</option></select>
-          </div>
-          <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs"><thead class="bg-slate-50 text-slate-500 uppercase font-bold border-b border-slate-100"><tr>
-              <th class="p-3.5">Return ID</th><th class="p-3.5">Order ID</th><th class="p-3.5">Product</th><th class="p-3.5">Vendor</th><th class="p-3.5">Customer</th><th class="p-3.5">Qty</th><th class="p-3.5">Reason</th><th class="p-3.5">Status</th><th class="p-3.5">Date</th><th class="p-3.5">Action</th>
-            </tr></thead><tbody id="returns-table" class="divide-y divide-slate-100 font-medium"></tbody></table>
-          </div>
-        </div>
-      </div>
-
-      <!-- 6. WHATSAPP COMMUNICATION VIEW -->
-      <div id="view-whatsapp" class="view-section space-y-6">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
-          <div class="flex items-center gap-3">
-            <div class="w-12 h-12 bg-green-600 text-white rounded-xl flex items-center justify-center font-bold text-xl shadow-md shadow-green-600/20">
-              <i class="fa-brands fa-whatsapp"></i>
-            </div>
-            <div>
-              <h2 class="text-xl font-bold text-slate-900">WhatsApp Communication</h2>
-              <p id="whatsapp-subtitle" class="text-xs text-slate-500">Send order and delivery updates directly to customers.</p>
-            </div>
-          </div>
-          <div class="px-3 py-2 bg-green-50 text-green-700 rounded-xl text-xs font-bold border border-green-100">
-            <i class="fa-brands fa-whatsapp mr-1"></i> WhatsApp Dispatch
-          </div>
-        </div>
-
-        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-          <div class="p-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
-              <h3 class="font-bold text-slate-800 text-sm">Customer Communication</h3>
-              <p class="text-[10px] text-slate-500 mt-0.5">Prepare a message and open WhatsApp with the customer's phone number.</p>
-            </div>
-            <span id="whatsapp-record-count" class="px-2.5 py-1 bg-slate-100 text-slate-600 rounded-full text-[10px] font-bold">0 records</span>
-          </div>
-          <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs">
-              <thead class="bg-slate-50 text-slate-500 uppercase font-bold border-b border-slate-100">
-                <tr>
-                  <th class="p-3.5">Order ID</th>
-                  <th class="p-3.5">Customer</th>
-                  <th class="p-3.5">Phone</th>
-                  <th class="p-3.5">Vendor</th>
-                  <th class="p-3.5">Delivery Status</th>
-                  <th class="p-3.5">Message</th>
-                  <th class="p-3.5">Action</th>
-                </tr>
-              </thead>
-              <tbody id="whatsapp-table" class="divide-y divide-slate-100 font-medium"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <!-- 5. VENDOR DASHBOARD VIEW -->
-      <div id="view-vendor" class="view-section space-y-6">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
-          <div class="flex items-center gap-3">
-            <div class="w-12 h-12 bg-purple-700 text-white rounded-xl flex items-center justify-center font-bold text-xl shadow-md shadow-purple-700/20">
-              <i class="fa-solid fa-shop"></i>
-            </div>
-            <div>
-              <h2 class="text-xl font-bold text-slate-900">Vendor Portal — <span id="vendor-title-name" class="text-purple-700"></span></h2>
-              <p class="text-xs text-slate-500">Isolated Kitchen Operations & Product Management</p>
-            </div>
-          </div>
-          <button onclick="logout()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-all flex items-center gap-2 self-start sm:self-auto">
-            <i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out
-          </button>
-        </div>
-
-        <!-- Navigation Tabs for Vendor Sections -->
-        <div class="flex border-b border-slate-200 gap-2">
-          <button onclick="switchVendorTab('inventory')" id="vendor-tab-inventory" class="vendor-tab-btn py-2.5 px-4 font-bold text-xs uppercase tracking-wider border-b-2 border-purple-600 text-purple-700 flex items-center gap-2">
-            <i class="fa-solid fa-boxes-stacked"></i> My Inventory
-          </button>
-          <button onclick="switchVendorTab('payments')" id="vendor-tab-payments" class="vendor-tab-btn py-2.5 px-4 font-bold text-xs uppercase tracking-wider border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2">
-            <i class="fa-solid fa-file-invoice-dollar"></i> My Product Payments
-          </button>
-          <button onclick="switchVendorTab('sales')" id="vendor-tab-sales" class="vendor-tab-btn py-2.5 px-4 font-bold text-xs uppercase tracking-wider border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2">
-            <i class="fa-solid fa-chart-line"></i> My Sales
-          </button>
-        </div>
-
-        <!-- VENDOR TAB 1: INVENTORY -->
-        <div id="vendor-sec-inventory" class="vendor-sec space-y-6">
-          <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-            <div class="p-4 border-b border-slate-100 font-bold text-slate-800 text-sm">
-              My Product Inventory & Stock Adjustments
-            </div>
-            <div class="overflow-x-auto">
-              <table class="w-full text-left text-xs">
-                <thead class="bg-slate-50 text-slate-500 uppercase font-bold border-b border-slate-100">
-                  <tr>
-                    <th class="p-3.5">Product</th>
-                    <th class="p-3.5">Current Stock</th>
-                    <th class="p-3.5">Sold</th>
-                    <th class="p-3.5">Returned</th>
-                    <th class="p-3.5">Expired</th>
-                    <th class="p-3.5">Damaged</th>
-                    <th class="p-3.5">Status</th>
-                    <th class="p-3.5">Action</th>
-                  </tr>
-                </thead>
-                <tbody id="vendor-inv-table" class="divide-y divide-slate-100 font-medium"></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <!-- VENDOR TAB 2: PAYMENTS -->
-        <div id="vendor-sec-payments" class="vendor-sec space-y-6 hidden">
-          <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-            <div class="p-4 border-b border-slate-100 font-bold text-slate-800 text-sm">
-              Payments Received for My Products
-            </div>
-            <div class="overflow-x-auto">
-              <table class="w-full text-left text-xs">
-                <thead class="bg-slate-50 text-slate-500 uppercase font-bold border-b border-slate-100">
-                  <tr>
-                    <th class="p-3.5">Payment ID</th>
-                    <th class="p-3.5">Order ID</th>
-                    <th class="p-3.5">Customer</th>
-                    <th class="p-3.5">Amount</th>
-                    <th class="p-3.5">Status</th>
-                  </tr>
-                </thead>
-                <tbody id="vendor-pay-table" class="divide-y divide-slate-100 font-medium"></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <!-- VENDOR TAB 3: SALES -->
-        <div id="vendor-sec-sales" class="vendor-sec space-y-6 hidden">
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm">
-              <div class="text-xs font-bold uppercase text-slate-400">My Total Revenue</div>
-              <div class="text-2xl font-black text-purple-700 mt-1" id="vendor-kpi-sales">RM 0.00</div>
-            </div>
-            <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm">
-              <div class="text-xs font-bold uppercase text-slate-400">My Items Sold</div>
-              <div class="text-2xl font-black text-slate-800 mt-1" id="vendor-kpi-items">0</div>
-            </div>
-            <div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm">
-              <div class="text-xs font-bold uppercase text-slate-400">My Top Product</div>
-              <div class="text-base font-extrabold text-slate-800 mt-1 truncate" id="vendor-kpi-best">-</div>
-            </div>
-          </div>
-
-          <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-            <div class="p-4 border-b border-slate-100 font-bold text-slate-800 text-xs uppercase tracking-wider">Product Performance Breakdown</div>
-            <div class="overflow-x-auto">
-              <table class="w-full text-left text-xs">
-                <thead class="bg-slate-50 text-slate-500 font-bold border-b border-slate-100">
-                  <tr>
-                    <th class="p-3">Product ID</th>
-                    <th class="p-3">Product Name</th>
-                    <th class="p-3">Units Sold</th>
-                    <th class="p-3">Total Sales</th>
-                  </tr>
-                </thead>
-                <tbody id="vendor-sales-prod-table" class="divide-y divide-slate-100"></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-
-    </main>
-  </div>
-
-  <!-- CART MODAL -->
-  <div id="cart-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-2xl max-w-lg w-full max-h-[85vh] flex flex-col shadow-2xl overflow-hidden border border-slate-100">
-      <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-        <h3 class="font-bold text-slate-900 flex items-center gap-2">
-          <i class="fa-solid fa-cart-shopping text-purple-600"></i> Your Shopping Basket
-        </h3>
-        <button onclick="closeCartModal()" class="w-8 h-8 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-600 flex items-center justify-center font-bold text-xs transition-all">✕</button>
-      </div>
-
-      <div class="p-4 overflow-y-auto flex-1">
-        <table class="w-full text-left text-xs">
-          <thead class="text-slate-400 uppercase font-bold border-b border-slate-100">
-            <tr>
-              <th class="pb-2">Product</th>
-              <th class="pb-2">Price</th>
-              <th class="pb-2">Qty</th>
-              <th class="pb-2">Subtotal</th>
-              <th class="pb-2 text-right">Action</th>
-            </tr>
-          </thead>
-          <tbody id="cart-table-body" class="divide-y divide-slate-100"></tbody>
-        </table>
-      </div>
-
-      <div class="p-4 border-t border-slate-100 bg-slate-50 flex items-center justify-between">
-        <div>
-          <span class="text-xs text-slate-500 block font-semibold">Total Amount</span>
-          <span id="cart-modal-total" class="text-xl font-black text-purple-700">RM 0.00</span>
-        </div>
-        <button id="checkout-btn" onclick="openCheckoutModal()" class="px-5 py-2.5 bg-purple-700 hover:bg-purple-800 text-white font-bold text-xs rounded-xl shadow-md shadow-purple-700/20 transition-all flex items-center gap-2">
-          Proceed to Checkout <i class="fa-solid fa-arrow-right"></i>
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- CHECKOUT MODAL -->
-  <div id="checkout-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-100">
-      <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50 sticky top-0">
-        <h3 class="font-bold text-slate-900">Order Checkout & Payment</h3>
-        <button onclick="closeCheckoutModal()" class="w-8 h-8 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-600 flex items-center justify-center font-bold text-xs transition-all">✕</button>
-      </div>
-
-      <form id="checkout-form" class="p-5 space-y-4">
-        <div>
-          <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Full Name</label>
-          <input type="text" id="cust-name" class="w-full text-xs p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-purple-500 focus:outline-none" required placeholder="e.g. Sarah Ahmad">
-        </div>
-        <div>
-          <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Phone Number</label>
-          <input type="tel" id="cust-phone" class="w-full text-xs p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-purple-500 focus:outline-none" required placeholder="e.g. 012-3456789">
-        </div>
-        <div>
-          <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Email Address</label>
-          <input type="email" id="cust-email" class="w-full text-xs p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-purple-500 focus:outline-none" required placeholder="e.g. sarah@example.com">
-        </div>
-        <div>
-          <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Delivery Address</label>
-          <textarea id="cust-address" rows="2" class="w-full text-xs p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-purple-500 focus:outline-none" required placeholder="Enter full delivery address"></textarea>
-        </div>
-        <div>
-          <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Payment Method</label>
-          <select id="cust-paymethod" class="w-full text-xs p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-purple-500 focus:outline-none" required>
-            <option value="Online Banking">Online Banking</option>
-            <option value="E-Wallet (TNG)">E-Wallet (TNG)</option>
-            <option value="Credit/Debit Card">Credit/Debit Card</option>
-            <option value="Cash on Delivery">Cash on Delivery</option>
-          </select>
-        </div>
-
-        <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
-          <div>
-            <span class="text-[10px] uppercase font-bold text-slate-400 block">Order Total</span>
-            <span id="checkout-total-amt" class="text-xl font-black text-purple-700">RM 0.00</span>
-          </div>
-          <button type="submit" id="place-order-btn" class="px-5 py-2.5 bg-purple-700 hover:bg-purple-800 text-white font-bold text-xs rounded-xl shadow-md shadow-purple-700/20 transition-all">
-            Confirm & Place Order
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- INVENTORY ACTION MODAL -->
-  <div id="inv-action-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-2xl max-w-sm w-full shadow-2xl border border-slate-100 overflow-hidden">
-      <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-        <h3 class="font-bold text-slate-900 text-sm">Inventory Adjustment</h3>
-        <button onclick="closeInvModal()" class="w-7 h-7 rounded-lg bg-slate-200 text-slate-600 flex items-center justify-center font-bold text-xs">✕</button>
-      </div>
-
-      <form id="inv-action-form" class="p-4 space-y-3">
-        <input type="hidden" id="inv-prod-id">
-        <div>
-          <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Product</label>
-          <input type="text" id="inv-prod-name" class="w-full text-xs p-2 bg-slate-100 border border-slate-200 rounded-lg text-slate-700 font-bold" readonly>
-        </div>
-        <div>
-          <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Action Type</label>
-          <select id="inv-action-type" class="w-full text-xs p-2 bg-slate-50 border border-slate-200 rounded-lg" required>
-            <option value="Return">Customer Return (+)</option>
-            <option value="Damaged">Damaged Stock (-)</option>
-            <option value="Expired">Expired Stock (-)</option>
-            <option value="Adjustment">Manual Adjustment (+/-)</option>
-          </select>
-        </div>
-        <div>
-          <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Quantity</label>
-          <input type="number" id="inv-action-qty" class="w-full text-xs p-2 bg-slate-50 border border-slate-200 rounded-lg" min="1" required value="1">
-        </div>
-        <div>
-          <label class="block text-[10px] font-bold uppercase text-slate-500 mb-1">Reason / Note</label>
-          <input type="text" id="inv-action-reason" class="w-full text-xs p-2 bg-slate-50 border border-slate-200 rounded-lg" required placeholder="e.g. Returned unopened">
-        </div>
-        <button type="submit" class="w-full py-2 bg-purple-700 hover:bg-purple-800 text-white font-bold text-xs rounded-lg shadow-sm transition-all mt-2">
-          Apply Adjustment
-        </button>
-      </form>
-    </div>
-  </div>
-
-  <!-- RETURNS MODAL -->
-  <div id="record-return-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl relative">
-      <button onclick="closeRecordReturnModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
-      <div class="flex items-center gap-3 mb-5"><div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-lg"><i class="fa-solid fa-rotate-left"></i></div><div><h3 class="text-lg font-extrabold text-slate-900">Record Return</h3><p class="text-xs text-slate-500">Create a customer return record.</p></div></div>
-      <form id="record-return-form" onsubmit="saveReturn(event)" class="space-y-4">
-        <div><label class="block text-xs font-bold text-slate-700 mb-1">Order *</label><select id="return-order" onchange="populateReturnProducts()" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold"><option value="">-- Select Order --</option></select></div>
-        <div><label class="block text-xs font-bold text-slate-700 mb-1">Product *</label><select id="return-product" required disabled class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold"><option value="">-- Select Product --</option></select></div>
-        <div class="grid grid-cols-2 gap-3"><div><label class="block text-xs font-bold text-slate-700 mb-1">Quantity *</label><input id="return-qty" type="number" min="1" value="1" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold"></div><div><label class="block text-xs font-bold text-slate-700 mb-1">Status *</label><select id="return-status" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold"><option>Pending</option><option>Approved</option><option>Rejected</option><option>Completed</option></select></div></div>
-        <div><label class="block text-xs font-bold text-slate-700 mb-1">Return Reason *</label><select id="return-reason" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold"><option>Quality Issue / Spoiled</option><option>Packaging Damaged</option><option>Wrong Item Delivered</option><option>Customer Cancellation</option><option>Expired Product</option></select></div>
-        <div class="flex justify-end gap-2 pt-3 border-t border-slate-100"><button type="button" onclick="closeRecordReturnModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl">Cancel</button><button type="submit" class="px-5 py-2 bg-purple-700 hover:bg-purple-800 text-white font-bold text-xs rounded-xl">Save Return</button></div>
-      </form>
-    </div>
-  </div>
-
-  <!-- SCRIPT INTEGRATION -->
-  <script>
-    /* ===================================================
-       GLOBAL CONSTANTS & DATA STRUCTURES
-       =================================================== */
-    const DEFAULT_PRODUCTS = [
-      { productId: 'P001', name: 'Kek Batik Classic', category: 'Kek Batik', description: 'Rich fudge classic Malaysian biscuit cake.', price: 7.00, vendorId: 'VND01', vendorName: 'Vendor A', stock: 50, expiryDate: '2026-10-15' },
-      { productId: 'P002', name: 'Kek Batik Oreo Crunch', category: 'Kek Batik', description: 'Topped with crushed crunchy Oreo biscuits.', price: 8.00, vendorId: 'VND01', vendorName: 'Vendor A', stock: 40, expiryDate: '2026-10-12' },
-      { productId: 'P003', name: 'Kek Batik Biscoff Deluxe', category: 'Kek Batik', description: 'Layered with caramelized Lotus Biscoff spread.', price: 9.00, vendorId: 'VND01', vendorName: 'Vendor A', stock: 30, expiryDate: '2026-10-10' },
-      { productId: 'P004', name: 'Fudge Chocolate Brownie', category: 'Brownies', description: 'Dense fudgy chocolate brownie square.', price: 8.50, vendorId: 'VND02', vendorName: 'Vendor B', stock: 45, expiryDate: '2026-10-14' },
-      { productId: 'P005', name: 'Matcha Dessert Cup', category: 'Dessert Cups', description: 'Layered authentic Uji green tea dessert cup.', price: 7.50, vendorId: 'VND02', vendorName: 'Vendor B', stock: 35, expiryDate: '2026-10-08' },
-      { productId: 'P006', name: 'Kinder Bueno Cake Slice', category: 'Cakes', description: 'Hazelnut cream mousse cake with Kinder wafers.', price: 9.50, vendorId: 'VND02', vendorName: 'Vendor B', stock: 25, expiryDate: '2026-10-05' }
-    ];
-
-    const USERS = [
-      { username: 'admin', password: 'admin123', role: 'ADMIN', name: 'System Admin' },
-      { username: 'vendor', password: 'vendor123', role: 'VENDOR', vendorId: 'VND01', name: 'Vendor A' },
-      { username: 'vendor2', password: 'vendor2123', role: 'VENDOR', vendorId: 'VND02', name: 'Vendor B' }
-    ];
-
-    /* UI Toast Helper */
-    function showToast(message, type = 'info') {
-      const container = document.getElementById('toast-container');
-      const toast = document.createElement('div');
-      
-      let bg = 'bg-slate-900 text-white';
-      if (type === 'success') bg = 'bg-emerald-600 text-white';
-      if (type === 'error') bg = 'bg-rose-600 text-white';
-
-      toast.className = `${bg} px-4 py-3 rounded-xl shadow-lg text-xs font-bold transition-all duration-300 transform translate-y-2 pointer-events-auto flex items-center justify-between gap-3`;
-      toast.innerHTML = `<span>${message}</span><button onclick="this.parentElement.remove()" class="opacity-70 hover:opacity-100">✕</button>`;
-      
-      container.appendChild(toast);
-      setTimeout(() => {
-        toast.style.opacity = '0';
-        setTimeout(() => toast.remove(), 300);
-      }, 3500);
-    }
-
-    /* Mobile Sidebar Toggle Logic */
-    function toggleMobileSidebar() {
-      const sidebar = document.getElementById('main-sidebar');
-      const backdrop = document.getElementById('sidebar-backdrop');
-      sidebar.classList.toggle('sidebar-open');
-      backdrop.classList.toggle('hidden');
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      initDatabase();
-      renderStorefront();
-      updateCartBadge();
-      checkSession();
-      renderSalesOverviewChart();
-    });
-
-    function initDatabase() {
-      if (!localStorage.getItem('krave_products')) {
-        localStorage.setItem('krave_products', JSON.stringify(DEFAULT_PRODUCTS));
-      }
-      if (!localStorage.getItem('krave_orders')) {
-        localStorage.setItem('krave_orders', JSON.stringify([]));
-      }
-      if (!localStorage.getItem('krave_payments')) {
-        localStorage.setItem('krave_payments', JSON.stringify([]));
-      }
-      if (!localStorage.getItem('krave_inventory')) {
-        const products = JSON.parse(localStorage.getItem('krave_products'));
-        const inv = products.map((p, idx) => ({
-          inventoryId: `INV-2026-${String(idx + 1).padStart(4, '0')}`,
-          productId: p.productId,
-          productName: p.name,
-          vendorId: p.vendorId,
-          vendorName: p.vendorName,
-          openingStock: p.stock,
-          currentStock: p.stock,
-          soldQuantity: 0,
-          returnedQuantity: 0,
-          expiredQuantity: 0,
-          damagedQuantity: 0,
-          adjustmentQuantity: 0,
-          expiryDate: p.expiryDate,
-          reorderLevel: 10,
-          status: 'Available',
-          lastUpdated: new Date().toISOString()
-        }));
-        localStorage.setItem('krave_inventory', JSON.stringify(inv));
-      }
-      if (!localStorage.getItem('krave_inventory_history')) {
-        localStorage.setItem('krave_inventory_history', JSON.stringify([]));
-      }
-      if (!localStorage.getItem('krave_deliveries')) {
-        localStorage.setItem('krave_deliveries', JSON.stringify([]));
-      }
-      if (!localStorage.getItem('krave_returns')) {
-        localStorage.setItem('krave_returns', JSON.stringify([]));
-      }
-      migrateExistingOrdersToDeliveries();
-    }
-
-    /* DELIVERIES MODULE */
-    function getDeliveries() { return JSON.parse(localStorage.getItem('krave_deliveries') || '[]'); }
-    function saveDeliveries(deliveries) { localStorage.setItem('krave_deliveries', JSON.stringify(deliveries)); }
-
-    function migrateExistingOrdersToDeliveries() {
-      const orders = JSON.parse(localStorage.getItem('krave_orders') || '[]');
-      const deliveries = getDeliveries(); let changed = false;
-      orders.forEach(order => {
-        if (deliveries.some(d => d.orderId === order.orderId)) return;
-        const vendorIds = [...new Set((order.items || []).map(i => i.vendorId).filter(Boolean))];
-        const vendorNames = [...new Set((order.items || []).map(i => i.vendorName).filter(Boolean))];
-        deliveries.push({ deliveryId:`DEL-2026-${String(deliveries.length+1).padStart(4,'0')}`, orderId:order.orderId,
-          customerName:order.customer?.fullName || 'Customer', phone:order.customer?.phone || '-',
-          deliveryAddress:order.customer?.address || '-', vendorIds, vendorNames, orderDate:order.orderDate,
-          deliveryDate:'', status:'Pending', updatedAt:new Date().toISOString() }); changed = true;
-      });
-      if (changed) saveDeliveries(deliveries);
-    }
-
-    function handleDeliveriesClick() {
-      const u = getCurrentUser();
-      if (!u) { showToast('Please sign in to access delivery management.', 'info'); switchView('login'); return; }
-      if (u.role !== 'ADMIN' && u.role !== 'VENDOR') { showToast('You do not have permission to access deliveries.', 'error'); return; }
-      switchView('deliveries');
-    }
-
-    function updateDeliveryStatus(deliveryId, newStatus) {
-      const user=getCurrentUser(); if (!user) return;
-      const deliveries=getDeliveries(); const d=deliveries.find(x=>x.deliveryId===deliveryId); if(!d) return;
-      if(user.role==='VENDOR' && !(d.vendorIds||[]).includes(user.vendorId)){ showToast('You can only update deliveries for your own vendor.','error'); return; }
-      d.status=newStatus; d.updatedAt=new Date().toISOString();
-      d.deliveryDate = newStatus==='Delivered' ? (d.deliveryDate || new Date().toISOString()) : '';
-      saveDeliveries(deliveries); renderDeliveries(); if (document.getElementById('view-whatsapp')?.classList.contains('active')) renderWhatsApp(); showToast(`Delivery ${deliveryId} updated to ${newStatus}.`,'success');
-    }
-
-    function renderDeliveries() {
-      const user=getCurrentUser(), tbody=document.getElementById('deliveries-table'); if(!tbody || !user) return;
-      let all=getDeliveries(); if(user.role==='VENDOR') all=all.filter(d=>(d.vendorIds||[]).includes(user.vendorId));
-      const filter=document.getElementById('delivery-filter-status')?.value || 'ALL';
-      const visible=filter==='ALL' ? all : all.filter(d=>d.status===filter);
-      const counts={Pending:0,Preparing:0,'Out for Delivery':0,Delivered:0}; all.forEach(d=>{if(counts[d.status]!==undefined)counts[d.status]++;});
-      document.getElementById('delivery-kpi-total').innerText=all.length;
-      document.getElementById('delivery-kpi-pending').innerText=counts.Pending;
-      document.getElementById('delivery-kpi-preparing').innerText=counts.Preparing;
-      document.getElementById('delivery-kpi-out').innerText=counts['Out for Delivery'];
-      document.getElementById('delivery-kpi-delivered').innerText=counts.Delivered;
-      tbody.innerHTML='';
-      if(!visible.length){tbody.innerHTML='<tr><td colspan="10" class="p-8 text-center text-slate-400">No delivery records found.</td></tr>';return;}
-      visible.forEach(d=>{
-        const cls=d.status==='Delivered'?'bg-emerald-100 text-emerald-700':d.status==='Cancelled'?'bg-rose-100 text-rose-700':d.status==='Out for Delivery'?'bg-purple-100 text-purple-700':d.status==='Preparing'?'bg-blue-100 text-blue-700':'bg-amber-100 text-amber-700';
-        const od=d.orderDate?new Date(d.orderDate).toLocaleDateString('en-MY'):'-'; const dd=d.deliveryDate?new Date(d.deliveryDate).toLocaleDateString('en-MY'):'-';
-        const vendors=(d.vendorNames||[]).join(', ')||'-';
-        const opts=['Pending','Preparing','Out for Delivery','Delivered','Cancelled'].map(st=>`<option value="${st}" ${d.status===st?'selected':''}>${st}</option>`).join('');
-        tbody.innerHTML+=`<tr><td class="p-3.5 font-bold text-slate-800">${d.deliveryId}</td><td class="p-3.5 text-slate-600">${d.orderId}</td><td class="p-3.5">${d.customerName}</td><td class="p-3.5">${d.phone}</td><td class="p-3.5 max-w-xs">${d.deliveryAddress}</td><td class="p-3.5">${vendors}</td><td class="p-3.5 whitespace-nowrap">${od}</td><td class="p-3.5 whitespace-nowrap">${dd}</td><td class="p-3.5"><span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${cls}">${d.status}</span></td><td class="p-3.5"><select onchange="updateDeliveryStatus('${d.deliveryId}',this.value)" class="text-[10px] p-1.5 bg-slate-50 border border-slate-200 rounded-lg font-bold">${opts}</select></td></tr>`;
-      });
-    }
-
-    /* AUTH MODULE */
-    function getCurrentUser() {
-      const u = localStorage.getItem('krave_currentUser');
-      return u ? JSON.parse(u) : null;
-    }
-
-    function login(username, password) {
-      const user = USERS.find(u => u.username === username && u.password === password);
-      if (user) {
-        const session = { username: user.username, role: user.role, vendorId: user.vendorId || null, name: user.name };
-        localStorage.setItem('krave_currentUser', JSON.stringify(session));
-        return { success: true, user: session };
-      }
-      return { success: false, message: 'Invalid credentials. Please verify your login details.' };
-    }
-
-    function logout() {
-      localStorage.removeItem('krave_currentUser');
-      checkSession();
-      switchView('storefront');
-      showToast('You have signed out successfully.', 'info');
-    }
-
-    function checkSession() {
-      const u = getCurrentUser();
-      const topBtnContainer = document.getElementById('top-profile-container');
-      const sideUserName = document.getElementById('side-user-name');
-      const sideUserRole = document.getElementById('side-user-role');
-      const sideLogoutBtn = document.getElementById('side-logout-btn');
-      const sidePortalLabel = document.getElementById('side-portal-label');
-      const sideAccountLabel = document.getElementById('side-account-label');
-
-      if (u) {
-        sideUserName.innerText = u.name;
-        sideUserRole.innerText = `${u.role} Account`;
-        sideLogoutBtn.classList.remove('hidden');
-        sidePortalLabel.innerText = `${u.role} Portal`;
-        sideAccountLabel.innerText = `Sign Out (${u.name})`;
-
-        topBtnContainer.innerHTML = `
-          <div class="flex items-center gap-2 bg-purple-50 px-3 py-1.5 rounded-xl border border-purple-200/80">
-            <div class="w-7 h-7 rounded-lg bg-purple-700 text-white font-bold text-xs flex items-center justify-center">
-              ${u.name.charAt(0)}
-            </div>
-            <div class="hidden md:block text-left">
-              <span class="text-xs font-bold text-purple-900 block leading-none">${u.name}</span>
-              <span class="text-[10px] text-purple-600 font-semibold uppercase">${u.role}</span>
-            </div>
-            <button onclick="logout()" class="ml-1 text-slate-400 hover:text-red-500 text-xs p-1" title="Logout">
-              <i class="fa-solid fa-right-from-bracket"></i>
-            </button>
-          </div>
-        `;
-      } else {
-        sideUserName.innerText = 'Guest Customer';
-        sideUserRole.innerText = 'Public Storefront';
-        sideLogoutBtn.classList.add('hidden');
-        sidePortalLabel.innerText = 'Portal Login';
-        sideAccountLabel.innerText = 'Login Account';
-
-        topBtnContainer.innerHTML = `
-          <button id="top-login-btn" onclick="handlePortalClick()" class="px-3.5 py-2 bg-brand-950 hover:bg-purple-900 text-white font-bold text-xs rounded-xl shadow-sm transition-all flex items-center gap-2">
-            <i class="fa-solid fa-user-lock text-xs text-purple-400"></i>
-            <span>Portal Sign In</span>
-          </button>
-        `;
-      }
-    }
-
-    function handlePortalClick() {
-      const u = getCurrentUser();
-      if (!u) {
-        switchView('login');
-      } else if (u.role === 'ADMIN') {
-        switchView('admin');
-      } else {
-        switchView('vendor');
-      }
-    }
-
-    function handleSideNavTab(tab) {
-      const u = getCurrentUser();
-      if (!u) {
-        showToast('Please sign in to access management controls.', 'info');
-        switchView('login');
-        return;
-      }
-      if (u.role === 'ADMIN') {
-        switchView('admin');
-        switchAdminTab(tab);
-      } else if (u.role === 'VENDOR') {
-        switchView('vendor');
-        switchVendorTab(tab);
-      }
-    }
-
-    /* VIEW ROUTER */
-    function switchView(viewName) {
-      document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-      document.querySelectorAll('.sidebar-btn').forEach(el => el.classList.remove('bg-purple-700', 'text-white', 'shadow-lg'));
-
-      const topTitle = document.getElementById('top-bar-title');
-      const topSubtitle = document.getElementById('top-bar-subtitle');
-
-      // Close mobile sidebar if open
-      document.getElementById('main-sidebar').classList.remove('sidebar-open');
-      document.getElementById('sidebar-backdrop').classList.add('hidden');
-
-      if (viewName === 'storefront') {
-        document.getElementById('view-storefront').classList.add('active');
-        document.getElementById('nav-side-storefront').classList.add('bg-purple-700', 'text-white', 'shadow-lg');
-        topTitle.innerHTML = `<i class="fa-solid fa-store text-purple-600"></i> <span>Gourmet Dessert Storefront</span>`;
-        topSubtitle.innerText = 'Browse artisanal desserts & place instant online orders';
-        renderStorefront();
-      } else if (viewName === 'login') {
-        document.getElementById('view-login').classList.add('active');
-        topTitle.innerHTML = `<i class="fa-solid fa-user-shield text-purple-600"></i> <span>Workspace Sign In</span>`;
-        topSubtitle.innerText = 'Enter your credentials to manage products, sales & inventory';
-      } else if (viewName === 'admin') {
-        const u = getCurrentUser();
-        if (!u || u.role !== 'ADMIN') { switchView('login'); return; }
-        document.getElementById('view-admin').classList.add('active');
-        document.getElementById('nav-side-portal').classList.add('bg-purple-700', 'text-white', 'shadow-lg');
-        topTitle.innerHTML = `<i class="fa-solid fa-crown text-amber-500"></i> <span>System Admin Workspace</span>`;
-        topSubtitle.innerText = 'Global operations, payments verification & MOV progress targets';
-        renderAdminDashboard();
-      } else if (viewName === 'deliveries') {
-        const u = getCurrentUser();
-        if (!u || (u.role !== 'ADMIN' && u.role !== 'VENDOR')) { switchView('login'); return; }
-        document.getElementById('view-deliveries').classList.add('active');
-        document.querySelector('[onclick="handleDeliveriesClick()"]')?.classList.add('bg-purple-700', 'text-white', 'shadow-lg');
-        topTitle.innerHTML = `<i class="fa-solid fa-truck-fast text-purple-600"></i> <span>Deliveries Management</span>`;
-        topSubtitle.innerText = u.role === 'ADMIN' ? 'Global delivery tracking and status management' : `${u.name} delivery tracking`;
-        document.getElementById('deliveries-subtitle').innerText = u.role === 'ADMIN' ? 'Track and manage all customer deliveries across vendors' : `Track deliveries linked to ${u.name} (${u.vendorId})`;
-        renderDeliveries();
-      } else if (viewName === 'returns') {
-        const u = getCurrentUser();
-        if (!u || (u.role !== 'ADMIN' && u.role !== 'VENDOR')) { switchView('login'); return; }
-        document.getElementById('view-returns').classList.add('active');
-        document.querySelector('[onclick="handleReturnsClick()"]')?.classList.add('bg-purple-700', 'text-white', 'shadow-lg');
-        topTitle.innerHTML = `<i class="fa-solid fa-rotate-left text-amber-500"></i> <span>Returns Management</span>`;
-        topSubtitle.innerText = u.role === 'ADMIN' ? 'Global return tracking and processing' : `${u.name} return tracking`;
-        document.getElementById('returns-subtitle').innerText = u.role === 'ADMIN' ? 'Track and process all customer returns across vendors.' : `Track returns linked to ${u.name} (${u.vendorId}).`;
-        document.getElementById('record-return-btn').classList.toggle('hidden', u.role !== 'ADMIN');
-        renderReturns();
-      } else if (viewName === 'whatsapp') {
-        const u = getCurrentUser();
-        if (!u || (u.role !== 'ADMIN' && u.role !== 'VENDOR')) { switchView('login'); return; }
-        document.getElementById('view-whatsapp').classList.add('active');
-        document.querySelector('[onclick="handleWhatsAppClick()"]')?.classList.add('bg-purple-700', 'text-white', 'shadow-lg');
-        topTitle.innerHTML = `<i class="fa-brands fa-whatsapp text-green-600"></i> <span>WhatsApp Communication</span>`;
-        topSubtitle.innerText = u.role === 'ADMIN' ? 'Customer communication for all orders' : `${u.name} customer communication`;
-        document.getElementById('whatsapp-subtitle').innerText = u.role === 'ADMIN'
-          ? 'Send order and delivery updates directly to customers.'
-          : `Send updates for orders linked to ${u.name} (${u.vendorId}).`;
-        renderWhatsApp();
-      } else if (viewName === 'vendor') {
-        const u = getCurrentUser();
-        if (!u || u.role !== 'VENDOR') { switchView('login'); return; }
-        document.getElementById('view-vendor').classList.add('active');
-        document.getElementById('nav-side-portal').classList.add('bg-purple-700', 'text-white', 'shadow-lg');
-        topTitle.innerHTML = `<i class="fa-solid fa-shop text-purple-600"></i> <span>${u.name} Kitchen Dashboard</span>`;
-        topSubtitle.innerText = 'Isolated vendor inventory adjustments & sales tracking';
-        renderVendorDashboard();
-      }
-    }
-
-    function switchAdminTab(tab) {
-      document.querySelectorAll('.admin-sec').forEach(el => el.classList.add('hidden'));
-      document.querySelectorAll('.admin-tab-btn').forEach(el => {
-        el.classList.remove('border-purple-600', 'text-purple-700');
-        el.classList.add('border-transparent', 'text-slate-500');
-      });
-      
-      document.getElementById(`admin-sec-${tab}`).classList.remove('hidden');
-      const activeBtn = document.getElementById(`admin-tab-${tab}`);
-      if (activeBtn) {
-        activeBtn.classList.remove('border-transparent', 'text-slate-500');
-        activeBtn.classList.add('border-purple-600', 'text-purple-700');
-      }
-    }
-
-    function switchVendorTab(tab) {
-      document.querySelectorAll('.vendor-sec').forEach(el => el.classList.add('hidden'));
-      document.querySelectorAll('.vendor-tab-btn').forEach(el => {
-        el.classList.remove('border-purple-600', 'text-purple-700');
-        el.classList.add('border-transparent', 'text-slate-500');
-      });
-
-      document.getElementById(`vendor-sec-${tab}`).classList.remove('hidden');
-      const activeBtn = document.getElementById(`vendor-tab-${tab}`);
-      if (activeBtn) {
-        activeBtn.classList.remove('border-transparent', 'text-slate-500');
-        activeBtn.classList.add('border-purple-600', 'text-purple-700');
-      }
-    }
-
-
-    /* RETURNS MANAGEMENT MODULE */
-    function getReturns() { return JSON.parse(localStorage.getItem('krave_returns') || '[]'); }
-    function saveReturns(items) { localStorage.setItem('krave_returns', JSON.stringify(items)); }
-
-    function handleReturnsClick() {
-      const u = getCurrentUser();
-      if (!u) { showToast('Please sign in to access returns management.', 'info'); switchView('login'); return; }
-      if (u.role !== 'ADMIN' && u.role !== 'VENDOR') { showToast('You do not have permission to access returns.', 'error'); return; }
-      switchView('returns');
-    }
-
-    function renderReturns() {
-      const tbody = document.getElementById('returns-table');
-      if (!tbody) return;
-      const user = getCurrentUser();
-      if (!user) return;
-      let records = getReturns();
-      if (user.role === 'VENDOR') records = records.filter(r => r.vendorId === user.vendorId);
-      const filter = document.getElementById('returns-filter-status')?.value || 'ALL';
-      if (filter !== 'ALL') records = records.filter(r => r.status === filter);
-      const all = user.role === 'VENDOR' ? getReturns().filter(r => r.vendorId === user.vendorId) : getReturns();
-      document.getElementById('returns-kpi-total').innerText = all.length;
-      document.getElementById('returns-kpi-pending').innerText = all.filter(r => r.status === 'Pending').length;
-      document.getElementById('returns-kpi-approved').innerText = all.filter(r => r.status === 'Approved').length;
-      document.getElementById('returns-kpi-completed').innerText = all.filter(r => r.status === 'Completed').length;
-      tbody.innerHTML = '';
-      if (!records.length) { tbody.innerHTML = '<tr><td colspan="10" class="p-8 text-center text-slate-400">No return records found.</td></tr>'; return; }
-      records.forEach(r => {
-        const cls = r.status === 'Completed' ? 'bg-emerald-100 text-emerald-700' : r.status === 'Rejected' ? 'bg-rose-100 text-rose-700' : r.status === 'Approved' ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700';
-        const action = user.role === 'ADMIN' ? `<select onchange="updateReturnStatus('${r.returnId}', this.value)" class="text-[10px] p-1.5 bg-white border border-slate-200 rounded-lg"><option value="Pending" ${r.status==='Pending'?'selected':''}>Pending</option><option value="Approved" ${r.status==='Approved'?'selected':''}>Approved</option><option value="Rejected" ${r.status==='Rejected'?'selected':''}>Rejected</option><option value="Completed" ${r.status==='Completed'?'selected':''}>Completed</option></select>` : '<span class="text-slate-400">View only</span>';
-        tbody.innerHTML += `<tr><td class="p-3.5 font-bold text-slate-800">${r.returnId}</td><td class="p-3.5">${r.orderId}</td><td class="p-3.5 font-semibold">${r.productName}</td><td class="p-3.5">${r.vendorName}</td><td class="p-3.5">${r.customerName}</td><td class="p-3.5 font-bold">${r.quantity}</td><td class="p-3.5 text-slate-500">${r.reason}</td><td class="p-3.5"><span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${cls}">${r.status}</span></td><td class="p-3.5">${r.date || '-'}</td><td class="p-3.5">${action}</td></tr>`;
-      });
-    }
-
-    function openRecordReturnModal() {
-      const u = getCurrentUser();
-      if (!u || u.role !== 'ADMIN') { showToast('Only Admin can record returns.', 'error'); return; }
-      const select = document.getElementById('return-order');
-      const orders = JSON.parse(localStorage.getItem('krave_orders') || '[]');
-      select.innerHTML = '<option value="">-- Select Order --</option>' + orders.map(o => `<option value="${o.orderId}">${o.orderId} - ${o.customer?.fullName || o.customerName || 'Customer'}</option>`).join('');
-      document.getElementById('return-product').innerHTML = '<option value="">-- Select Product --</option>';
-      document.getElementById('return-product').disabled = true;
-      document.getElementById('record-return-form').reset();
-      document.getElementById('return-product').innerHTML = '<option value="">-- Select Product --</option>';
-      document.getElementById('return-product').disabled = true;
-      document.getElementById('record-return-modal').classList.remove('hidden');
-    }
-    function closeRecordReturnModal() { document.getElementById('record-return-modal').classList.add('hidden'); }
-    function populateReturnProducts() {
-      const orderId = document.getElementById('return-order').value;
-      const orders = JSON.parse(localStorage.getItem('krave_orders') || '[]');
-      const order = orders.find(o => o.orderId === orderId);
-      const select = document.getElementById('return-product');
-      select.innerHTML = '<option value="">-- Select Product --</option>';
-      if (!order) { select.disabled = true; return; }
-      (order.items || []).forEach((item, idx) => { select.innerHTML += `<option value="${idx}">${item.name}</option>`; });
-      select.disabled = false;
-    }
-    function saveReturn(e) {
-      e.preventDefault();
-      const orderId = document.getElementById('return-order').value;
-      const idx = parseInt(document.getElementById('return-product').value, 10);
-      const qty = parseInt(document.getElementById('return-qty').value, 10);
-      const orders = JSON.parse(localStorage.getItem('krave_orders') || '[]');
-      const order = orders.find(o => o.orderId === orderId);
-      const item = order?.items?.[idx];
-      if (!order || !item || qty < 1 || qty > item.quantity) { showToast('Please select a valid order, product and quantity.', 'error'); return; }
-      const returns = getReturns();
-      const next = returns.length + 1;
-      returns.push({ returnId:`RET-2026-${String(next).padStart(4,'0')}`, orderId, productId:item.productId, productName:item.name, vendorId:item.vendorId, vendorName:item.vendorName, customerName:order.customer?.fullName || order.customerName || 'Customer', quantity:qty, reason:document.getElementById('return-reason').value, status:document.getElementById('return-status').value, date:new Date().toISOString().slice(0,10) });
-      saveReturns(returns);
-      closeRecordReturnModal();
-      renderReturns();
-      showToast('Return record saved successfully.', 'success');
-    }
-    function updateReturnStatus(returnId, status) {
-      const u = getCurrentUser(); if (!u || u.role !== 'ADMIN') return;
-      const records = getReturns(); const record = records.find(r => r.returnId === returnId); if (!record) return;
-      record.status = status; saveReturns(records); renderReturns(); showToast(`${returnId} updated to ${status}.`, 'success');
-    }
-
-    /* WHATSAPP COMMUNICATION MODULE */
-    function handleWhatsAppClick() {
-      const u = getCurrentUser();
-      if (!u) {
-        showToast('Please sign in to access WhatsApp communication.', 'info');
-        switchView('login');
-        return;
-      }
-      if (u.role !== 'ADMIN' && u.role !== 'VENDOR') {
-        showToast('You do not have permission to access WhatsApp communication.', 'error');
-        return;
-      }
-      switchView('whatsapp');
-    }
-
-    function getWhatsAppRecords() {
-      const deliveries = getDeliveries();
-      const orders = JSON.parse(localStorage.getItem('krave_orders') || '[]');
-      const user = getCurrentUser();
-
-      let records = deliveries.map(d => {
-        const order = orders.find(o => o.orderId === d.orderId);
-        return {
-          deliveryId: d.deliveryId,
-          orderId: d.orderId,
-          customerName: d.customerName || order?.customer?.fullName || 'Customer',
-          phone: d.phone || order?.customer?.phone || '',
-          vendorIds: d.vendorIds || [],
-          vendorNames: d.vendorNames || [],
-          status: d.status || 'Pending'
-        };
-      });
-
-      if (user?.role === 'VENDOR') {
-        records = records.filter(r => r.vendorIds.includes(user.vendorId));
-      }
-      return records;
-    }
-
-    function buildWhatsAppMessage(record) {
-      return `Hello ${record.customerName}, your KraVe Licious order ${record.orderId} is currently ${record.status}. Thank you for ordering with us!`;
-    }
-
-    function openWhatsApp(record) {
-      if (!record.phone) {
-        showToast('Customer phone number is not available.', 'error');
-        return;
-      }
-      const phone = String(record.phone).replace(/[^0-9]/g, '');
-      if (!phone) {
-        showToast('Customer phone number is invalid.', 'error');
-        return;
-      }
-
-      // Malaysia-friendly handling: 0123456789 -> 60123456789.
-      const normalizedPhone = phone.startsWith('60')
-        ? phone
-        : (phone.startsWith('0') ? `6${phone}` : phone);
-
-      const message = buildWhatsAppMessage(record);
-      const url = `https://wa.me/${normalizedPhone}?text=${encodeURIComponent(message)}`;
-      window.open(url, '_blank', 'noopener,noreferrer');
-    }
-
-    function renderWhatsApp() {
-      const tbody = document.getElementById('whatsapp-table');
-      const count = document.getElementById('whatsapp-record-count');
-      if (!tbody) return;
-
-      const records = getWhatsAppRecords();
-      count.innerText = `${records.length} record${records.length === 1 ? '' : 's'}`;
-      tbody.innerHTML = '';
-
-      if (!records.length) {
-        tbody.innerHTML = '<tr><td colspan="7" class="p-8 text-center text-slate-400">No customer order records available.</td></tr>';
-        return;
-      }
-
-      records.forEach(record => {
-        const vendors = record.vendorNames.join(', ') || '-';
-        const message = buildWhatsAppMessage(record);
-        const statusClass =
-          record.status === 'Delivered' ? 'bg-emerald-100 text-emerald-700' :
-          record.status === 'Cancelled' ? 'bg-rose-100 text-rose-700' :
-          record.status === 'Out for Delivery' ? 'bg-purple-100 text-purple-700' :
-          record.status === 'Preparing' ? 'bg-blue-100 text-blue-700' :
-          'bg-amber-100 text-amber-700';
-
-        tbody.innerHTML += `
-          <tr>
-            <td class="p-3.5 font-bold text-slate-800">${record.orderId}</td>
-            <td class="p-3.5">${record.customerName}</td>
-            <td class="p-3.5">${record.phone || '-'}</td>
-            <td class="p-3.5">${vendors}</td>
-            <td class="p-3.5">
-              <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${statusClass}">${record.status}</span>
-            </td>
-            <td class="p-3.5 max-w-sm text-slate-500">${message}</td>
-            <td class="p-3.5">
-              <button onclick='openWhatsApp(${JSON.stringify(record).replace(/'/g, "&#39;")})'
-                class="px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg text-[10px] transition-all flex items-center gap-1.5">
-                <i class="fa-brands fa-whatsapp"></i> Open WhatsApp
-              </button>
-            </td>
-          </tr>
-        `;
-      });
-    }
-
-    /* STOREFRONT & CART MODULE */
-    function getProducts() { return JSON.parse(localStorage.getItem('krave_products') || '[]'); }
-    function getCart() { return JSON.parse(localStorage.getItem('krave_cart') || '[]'); }
-    function saveCart(cart) { localStorage.setItem('krave_cart', JSON.stringify(cart)); updateCartBadge(); }
-
-    function updateCartBadge() {
-      const cart = getCart();
-      const count = cart.reduce((s, i) => s + i.quantity, 0);
-      document.getElementById('cart-count').innerText = count;
-    }
-
-    function renderStorefront() {
-      const products = getProducts();
-      const grid = document.getElementById('product-grid');
-      grid.innerHTML = '';
-
-      products.forEach(p => {
-        const isOut = p.stock <= 0;
-        grid.innerHTML += `
-          <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden hover:shadow-md transition-all flex flex-col group">
-            <div class="p-5 flex-1 flex flex-col justify-between">
-              <div>
-                <div class="flex justify-between items-start gap-2 mb-2">
-                  <span class="text-[10px] font-bold uppercase tracking-wider bg-purple-50 text-purple-700 px-2.5 py-1 rounded-md border border-purple-100">
-                    <i class="fa-solid fa-cookie"></i> ${p.category}
-                  </span>
-                  <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${isOut ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700'}">
-                    ${isOut ? 'Out of Stock' : `Stock: ${p.stock}`}
-                  </span>
-                </div>
-                <h3 class="font-bold text-slate-900 text-base group-hover:text-purple-700 transition-colors">${p.name}</h3>
-                <p class="text-xs text-amber-600 font-semibold mb-2">by ${p.vendorName}</p>
-                <p class="text-xs text-slate-500 leading-relaxed">${p.description}</p>
-              </div>
-
-              <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
-                <div>
-                  <span class="text-[10px] text-slate-400 block font-bold uppercase">Price</span>
-                  <span class="text-lg font-black text-slate-900">RM ${p.price.toFixed(2)}</span>
-                </div>
-                <button ${isOut ? 'disabled' : ''} onclick="addToCart('${p.productId}')" 
-                        class="px-4 py-2 bg-purple-700 hover:bg-purple-800 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed text-white font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 shadow-sm">
-                  <i class="fa-solid fa-cart-plus"></i> ${isOut ? 'Sold Out' : 'Add to Cart'}
-                </button>
-              </div>
-            </div>
-          </div>
-        `;
-      });
-    }
-
-    function addToCart(productId) {
-      const products = getProducts();
-      const p = products.find(x => x.productId === productId);
-      if (!p || p.stock <= 0) return showToast('Item is currently out of stock.', 'error');
-
-      let cart = getCart();
-      const exist = cart.find(x => x.productId === productId);
-      if (exist) {
-        if (exist.quantity + 1 > p.stock) return showToast('Cannot add more than available stock limit.', 'error');
-        exist.quantity++;
-        exist.subtotal = exist.quantity * exist.price;
-      } else {
-        cart.push({
-          productId: p.productId,
-          name: p.name,
-          price: p.price,
-          quantity: 1,
-          subtotal: p.price,
-          vendorId: p.vendorId,
-          vendorName: p.vendorName
-        });
-      }
-      saveCart(cart);
-      showToast(`Added "${p.name}" to cart!`, 'success');
-    }
-
-    function openCartModal() {
-      renderCartModal();
-      document.getElementById('cart-modal').classList.remove('hidden');
-    }
-    function closeCartModal() { document.getElementById('cart-modal').classList.add('hidden'); }
-
-    function renderCartModal() {
-      const cart = getCart();
-      const tbody = document.getElementById('cart-table-body');
-      tbody.innerHTML = '';
-
-      if (cart.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" class="p-6 text-center text-slate-400 font-medium">Your shopping basket is empty.</td></tr>';
-        document.getElementById('cart-modal-total').innerText = 'RM 0.00';
-        document.getElementById('checkout-btn').style.display = 'none';
-        return;
-      }
-
-      document.getElementById('checkout-btn').style.display = 'inline-flex';
-      let total = 0;
-      cart.forEach(item => {
-        total += item.subtotal;
-        tbody.innerHTML += `
-          <tr class="font-medium">
-            <td class="py-3 font-semibold text-slate-800">${item.name}</td>
-            <td class="py-3">RM ${item.price.toFixed(2)}</td>
-            <td class="py-3">
-              <input type="number" min="1" value="${item.quantity}" class="w-12 text-center p-1 bg-slate-100 border border-slate-200 rounded text-xs font-bold" onchange="updateCartQty('${item.productId}', this.value)">
-            </td>
-            <td class="py-3 font-bold text-slate-900">RM ${item.subtotal.toFixed(2)}</td>
-            <td class="py-3 text-right">
-              <button class="text-rose-500 hover:text-rose-700 p-1" onclick="removeFromCart('${item.productId}')"><i class="fa-solid fa-trash-can"></i></button>
-            </td>
-          </tr>
-        `;
-      });
-      document.getElementById('cart-modal-total').innerText = `RM ${total.toFixed(2)}`;
-    }
-
-    function updateCartQty(productId, qty) {
-      let cart = getCart();
-      const item = cart.find(x => x.productId === productId);
-      const p = getProducts().find(x => x.productId === productId);
-
-      if (item) {
-        const val = parseInt(qty, 10);
-        if (val > p.stock) { showToast('Exceeds available kitchen stock.', 'error'); renderCartModal(); return; }
-        if (val <= 0) { removeFromCart(productId); return; }
-        item.quantity = val;
-        item.subtotal = item.quantity * item.price;
-        saveCart(cart);
-        renderCartModal();
-      }
-    }
-
-    function removeFromCart(productId) {
-      let cart = getCart().filter(x => x.productId !== productId);
-      saveCart(cart);
-      renderCartModal();
-    }
-
-    function openCheckoutModal() {
-      closeCartModal();
-      const cart = getCart();
-      if (cart.length === 0) return showToast('Cart is empty.', 'error');
-      const total = cart.reduce((s, i) => s + i.subtotal, 0);
-      document.getElementById('checkout-total-amt').innerText = `RM ${total.toFixed(2)}`;
-      document.getElementById('checkout-modal').classList.remove('hidden');
-    }
-    function closeCheckoutModal() { document.getElementById('checkout-modal').classList.add('hidden'); }
-
-    /* CHECKOUT SUBMISSION */
-    document.getElementById('checkout-form').addEventListener('submit', function(e) {
-      e.preventDefault();
-      
-      const cart = getCart();
-      if (cart.length === 0) return showToast('Cart is empty.', 'error');
-
-      const customer = {
-        fullName: document.getElementById('cust-name').value,
-        phone: document.getElementById('cust-phone').value,
-        email: document.getElementById('cust-email').value,
-        address: document.getElementById('cust-address').value
-      };
-      const payMethod = document.getElementById('cust-paymethod').value;
-
-      // 1. Create Order
-      const orders = JSON.parse(localStorage.getItem('krave_orders') || '[]');
-      const orderId = `ORD-2026-${String(orders.length + 1).padStart(4, '0')}`;
-      const totalAmount = cart.reduce((s, i) => s + i.subtotal, 0);
-
-      const newOrder = {
-        orderId,
-        orderDate: new Date().toISOString(),
-        customer,
-        items: cart,
-        totalAmount,
-        status: 'Pending'
-      };
-      orders.push(newOrder);
-      localStorage.setItem('krave_orders', JSON.stringify(orders));
-
-      // 1B. Create Delivery Record
-      const deliveries = getDeliveries();
-      const deliveryId = `DEL-2026-${String(deliveries.length + 1).padStart(4, '0')}`;
-      deliveries.push({
-        deliveryId, orderId, customerName: customer.fullName, phone: customer.phone, deliveryAddress: customer.address,
-        vendorIds: [...new Set(cart.map(i => i.vendorId).filter(Boolean))],
-        vendorNames: [...new Set(cart.map(i => i.vendorName).filter(Boolean))],
-        orderDate: newOrder.orderDate, deliveryDate: '', status: 'Pending', updatedAt: new Date().toISOString()
-      });
-      saveDeliveries(deliveries);
-
-      // 2. Create Payment Record
-      const payments = JSON.parse(localStorage.getItem('krave_payments') || '[]');
-      const paymentId = `PAY-2026-${String(payments.length + 1).padStart(4, '0')}`;
-      const vendorIds = [...new Set(cart.map(i => i.vendorId))];
-
-      payments.push({
-        paymentId,
-        orderId,
-        customerName: customer.fullName,
-        customerEmail: customer.email,
-        amount: totalAmount,
-        paymentMethod: payMethod,
-        paymentStatus: 'Pending',
-        vendorIds,
-        createdAt: new Date().toISOString()
-      });
-      localStorage.setItem('krave_payments', JSON.stringify(payments));
-
-      // 3. Deduct Stock & Update Inventory
-      const inventory = JSON.parse(localStorage.getItem('krave_inventory'));
-      const products = getProducts();
-
-      cart.forEach(item => {
-        const p = products.find(x => x.productId === item.productId);
-        if (p) p.stock = Math.max(0, p.stock - item.quantity);
-
-        const inv = inventory.find(x => x.productId === item.productId);
-        if (inv) {
-          inv.currentStock = Math.max(0, inv.currentStock - item.quantity);
-          inv.soldQuantity += item.quantity;
-          inv.status = inv.currentStock <= 0 ? 'Out of Stock' : (inv.currentStock <= inv.reorderLevel ? 'Low Stock' : 'Available');
-          inv.lastUpdated = new Date().toISOString();
-        }
-      });
-
-      localStorage.setItem('krave_products', JSON.stringify(products));
-      localStorage.setItem('krave_inventory', JSON.stringify(inventory));
-
-      // Clear cart & close checkout
-      localStorage.removeItem('krave_cart');
-      updateCartBadge();
-      closeCheckoutModal();
-
-      showToast(`Order ${orderId} placed successfully!`, 'success');
-      renderStorefront();
-      renderSalesOverviewChart();
-    });
-
-    /* ADMIN DASHBOARD MODULE */
-    function renderAdminDashboard() {
-      renderAdminPayments();
-      renderAdminInventory();
-      renderAdminSales();
-      renderSalesOverviewChart();
-    }
-
-    function renderAdminPayments() {
-      const payments = JSON.parse(localStorage.getItem('krave_payments') || '[]');
-      const tbody = document.getElementById('admin-pay-table');
-      tbody.innerHTML = '';
-
-      let totalAmt = 0, pending = 0, verified = 0;
-      payments.forEach(p => {
-        totalAmt += p.amount;
-        if (p.paymentStatus === 'Pending') pending++;
-        if (p.paymentStatus === 'Verified') verified++;
-
-        const isVerified = p.paymentStatus === 'Verified';
-
-        tbody.innerHTML += `
-          <tr>
-            <td class="p-3.5 font-bold text-slate-800">${p.paymentId}</td>
-            <td class="p-3.5 text-slate-600">${p.orderId}</td>
-            <td class="p-3.5">${p.customerName}</td>
-            <td class="p-3.5 font-bold">RM ${p.amount.toFixed(2)}</td>
-            <td class="p-3.5">${p.paymentMethod}</td>
-            <td class="p-3.5">
-              <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${isVerified ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">
-                ${p.paymentStatus}
-              </span>
-            </td>
-            <td class="p-3.5">
-              <button class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded text-[10px] transition-all" onclick="togglePaymentStatus('${p.paymentId}')">
-                Toggle Status
-              </button>
-            </td>
-          </tr>
-        `;
-      });
-
-      document.getElementById('admin-pay-count').innerText = payments.length;
-      document.getElementById('admin-pay-pending').innerText = pending;
-      document.getElementById('admin-pay-verified').innerText = verified;
-      document.getElementById('admin-pay-amount').innerText = `RM ${totalAmt.toFixed(2)}`;
-    }
-
-    function togglePaymentStatus(paymentId) {
-      const payments = JSON.parse(localStorage.getItem('krave_payments') || '[]');
-      const p = payments.find(x => x.paymentId === paymentId);
-      if (p) {
-        p.paymentStatus = p.paymentStatus === 'Pending' ? 'Verified' : 'Pending';
-        localStorage.setItem('krave_payments', JSON.stringify(payments));
-        renderAdminPayments();
-        showToast(`Payment ${paymentId} status updated.`, 'info');
-      }
-    }
-
-    function renderAdminInventory() {
-      const inv = JSON.parse(localStorage.getItem('krave_inventory') || '[]');
-      const tbody = document.getElementById('admin-inv-table');
-      tbody.innerHTML = '';
-
-      inv.forEach(i => {
-        const isLow = i.currentStock <= 0;
-        tbody.innerHTML += `
-          <tr>
-            <td class="p-3.5 font-bold text-slate-800">${i.productName}</td>
-            <td class="p-3.5 text-slate-600">${i.vendorName}</td>
-            <td class="p-3.5">${i.openingStock}</td>
-            <td class="p-3.5 font-black text-slate-900">${i.currentStock}</td>
-            <td class="p-3.5">${i.soldQuantity}</td>
-            <td class="p-3.5 text-blue-600">${i.returnedQuantity}</td>
-            <td class="p-3.5 text-rose-600">${i.expiredQuantity}</td>
-            <td class="p-3.5 text-amber-600">${i.damagedQuantity}</td>
-            <td class="p-3.5">
-              <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${isLow ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700'}">
-                ${i.status}
-              </span>
-            </td>
-          </tr>
-        `;
-      });
-    }
-
-    /* SALES REPORTING & CALCULATIONS */
-    function getSalesData() {
-      const orders = JSON.parse(localStorage.getItem('krave_orders') || '[]');
-      const lineItems = [];
-
-      orders.forEach(order => {
-        if (order.status !== 'Cancelled') {
-          order.items.forEach(item => {
-            lineItems.push({
-              orderId: order.orderId,
-              orderDate: order.orderDate,
-              productId: item.productId,
-              productName: item.name,
-              price: item.price,
-              quantity: item.quantity,
-              subtotal: item.subtotal,
-              vendorId: item.vendorId,
-              vendorName: item.vendorName,
-              status: order.status
-            });
-          });
-        }
-      });
-      return lineItems;
-    }
-
-    function renderAdminSales(filteredSales = null) {
-      let sales = filteredSales || getSalesData();
-
-      const totalSales = sales.reduce((s, i) => s + i.subtotal, 0);
-      const uniqueOrders = new Set(sales.map(i => i.orderId)).size;
-      const totalItems = sales.reduce((s, i) => s + i.quantity, 0);
-      const aov = uniqueOrders > 0 ? totalSales / uniqueOrders : 0;
-
-      document.getElementById('sales-total').innerText = `RM ${totalSales.toFixed(2)}`;
-      document.getElementById('sales-orders').innerText = uniqueOrders;
-      document.getElementById('sales-items').innerText = totalItems;
-      document.getElementById('sales-aov').innerText = `RM ${aov.toFixed(2)}`;
-
-      const prodMap = {};
-      sales.forEach(s => {
-        if (!prodMap[s.productName]) prodMap[s.productName] = 0;
-        prodMap[s.productName] += s.quantity;
-      });
-      let bestProd = '-', maxQty = 0;
-      Object.keys(prodMap).forEach(k => {
-        if (prodMap[k] > maxQty) { maxQty = prodMap[k]; bestProd = `${k} (${maxQty} sold)`; }
-      });
-      document.getElementById('sales-best-dessert').innerText = bestProd;
-
-      const vendorMap = {};
-      sales.forEach(s => {
-        if (!vendorMap[s.vendorName]) vendorMap[s.vendorName] = 0;
-        vendorMap[s.vendorName] += s.subtotal;
-      });
-      let topVend = '-', maxVendAmt = 0;
-      Object.keys(vendorMap).forEach(k => {
-        if (vendorMap[k] > maxVendAmt) { maxVendAmt = vendorMap[k]; topVend = `${k} (RM ${maxVendAmt.toFixed(2)})`; }
-      });
-      document.getElementById('sales-top-vendor').innerText = topVend;
-
-      const prodPerfMap = {};
-      sales.forEach(s => {
-        if (!prodPerfMap[s.productId]) {
-          prodPerfMap[s.productId] = { name: s.productName, vendor: s.vendorName, units: 0, sales: 0 };
-        }
-        prodPerfMap[s.productId].units += s.quantity;
-        prodPerfMap[s.productId].sales += s.subtotal;
-      });
-
-      const prodTable = document.getElementById('sales-product-perf-table');
-      prodTable.innerHTML = '';
-      Object.keys(prodPerfMap).sort((a,b) => prodPerfMap[b].units - prodPerfMap[a].units).forEach(pid => {
-        const item = prodPerfMap[pid];
-        prodTable.innerHTML += `
-          <tr class="font-medium">
-            <td class="p-3 font-bold text-slate-800">${pid}</td>
-            <td class="p-3">${item.name}</td>
-            <td class="p-3 text-slate-500">${item.vendor}</td>
-            <td class="p-3 font-bold">${item.units}</td>
-            <td class="p-3 font-bold text-emerald-600">RM ${item.sales.toFixed(2)}</td>
-          </tr>
-        `;
-      });
-
-      const vendPerfMap = {};
-      sales.forEach(s => {
-        if (!vendPerfMap[s.vendorId]) {
-          vendPerfMap[s.vendorId] = { name: s.vendorName, orders: new Set(), units: 0, sales: 0 };
-        }
-        vendPerfMap[s.vendorId].orders.add(s.orderId);
-        vendPerfMap[s.vendorId].units += s.quantity;
-        vendPerfMap[s.vendorId].sales += s.subtotal;
-      });
-
-      const vendTable = document.getElementById('sales-vendor-perf-table');
-      vendTable.innerHTML = '';
-      Object.keys(vendPerfMap).forEach(vid => {
-        const item = vendPerfMap[vid];
-        vendTable.innerHTML += `
-          <tr class="font-medium">
-            <td class="p-3 font-bold text-slate-800">${vid}</td>
-            <td class="p-3">${item.name}</td>
-            <td class="p-3">${item.orders.size}</td>
-            <td class="p-3 font-bold">${item.units}</td>
-            <td class="p-3 font-bold text-emerald-600">RM ${item.sales.toFixed(2)}</td>
-          </tr>
-        `;
-      });
-
-      const detailsTable = document.getElementById('sales-details-table');
-      detailsTable.innerHTML = '';
-      sales.forEach(s => {
-        detailsTable.innerHTML += `
-          <tr class="font-medium">
-            <td class="p-3 font-bold text-slate-800">${s.orderId}</td>
-            <td class="p-3 text-slate-500">${new Date(s.orderDate).toLocaleDateString()}</td>
-            <td class="p-3">${s.productName}</td>
-            <td class="p-3 text-slate-500">${s.vendorName}</td>
-            <td class="p-3">${s.quantity}</td>
-            <td class="p-3">RM ${s.price.toFixed(2)}</td>
-            <td class="p-3 font-bold">RM ${s.subtotal.toFixed(2)}</td>
-            <td class="p-3"><span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded-full text-[10px] font-bold uppercase">${s.status}</span></td>
-          </tr>
-        `;
-      });
-    }
-
-    function applySalesFilter() {
-      const start = document.getElementById('sales-filter-start').value;
-      const end = document.getElementById('sales-filter-end').value;
-      const vendorId = document.getElementById('sales-filter-vendor').value;
-
-      let sales = getSalesData();
-
-      if (start) {
-        const sDate = new Date(start);
-        sales = sales.filter(s => new Date(s.orderDate) >= sDate);
-      }
-      if (end) {
-        const eDate = new Date(end);
-        eDate.setHours(23, 59, 59);
-        sales = sales.filter(s => new Date(s.orderDate) <= eDate);
-      }
-      if (vendorId !== 'ALL') {
-        sales = sales.filter(s => s.vendorId === vendorId);
-      }
-
-      renderAdminSales(sales);
-      showToast('Sales filter applied.', 'info');
-    }
-
-    function clearSalesFilter() {
-      document.getElementById('sales-filter-start').value = '';
-      document.getElementById('sales-filter-end').value = '';
-      document.getElementById('sales-filter-vendor').value = 'ALL';
-      renderAdminSales();
-      showToast('Sales filter cleared.', 'info');
-    }
-
-    function exportSalesReport() {
-      const sales = getSalesData();
-      let csv = 'Order ID,Order Date,Product ID,Product Name,Quantity,Unit Price (RM),Subtotal (RM),Vendor ID,Vendor Name,Status\n';
-
-      sales.forEach(row => {
-        csv += `"${row.orderId}","${row.orderDate}","${row.productId}","${row.productName}",${row.quantity},${row.price.toFixed(2)},${row.subtotal.toFixed(2)},"${row.vendorId}","${row.vendorName}","${row.status}"\n`;
-      });
-
-      const blob = new Blob([csv], { type: 'text/csv' });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `KraVe_Sales_Report_${new Date().toISOString().split('T')[0]}.csv`;
-      a.click();
-      window.URL.revokeObjectURL(url);
-      showToast('Sales CSV exported successfully!', 'success');
-    }
-
-    /* Interactive Canvas Bar Chart Renderer for Sales Overview */
-    function renderSalesOverviewChart() {
-      const canvas = document.getElementById('salesOverviewChart');
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d');
-
-      // Set resolution
-      const dpr = window.devicePixelRatio || 1;
-      const rect = canvas.getBoundingClientRect();
-      canvas.width = (rect.width || 400) * dpr;
-      canvas.height = (rect.height || 180) * dpr;
-      ctx.scale(dpr, dpr);
-
-      const w = rect.width || 400;
-      const h = rect.height || 180;
-
-      ctx.clearRect(0, 0, w, h);
-
-      // Aggregate category data from products or sales
-      const products = getProducts();
-      const sales = getSalesData();
-      const categories = ['Kek Batik', 'Brownies', 'Dessert Cups', 'Cakes'];
-      
-      const catTotals = { 'Kek Batik': 0, 'Brownies': 0, 'Dessert Cups': 0, 'Cakes': 0 };
-
-      // Add base product stock value + live sales subtotal
-      sales.forEach(s => {
-        const p = products.find(prod => prod.productId === s.productId);
-        const cat = p ? p.category : 'Kek Batik';
-        if (catTotals[cat] !== undefined) catTotals[cat] += s.subtotal;
-      });
-
-      // Default visual demo values if sales are zero
-      if (Object.values(catTotals).reduce((a,b)=>a+b, 0) === 0) {
-        catTotals['Kek Batik'] = 140;
-        catTotals['Brownies'] = 85;
-        catTotals['Dessert Cups'] = 110;
-        catTotals['Cakes'] = 95;
-      }
-
-      const maxVal = Math.max(...Object.values(catTotals), 100);
-      const padding = { top: 20, bottom: 30, left: 40, right: 20 };
-      const chartW = w - padding.left - padding.right;
-      const chartH = h - padding.top - padding.bottom;
-
-      // Draw Grid Lines
-      ctx.strokeStyle = '#f1f5f9';
-      ctx.lineWidth = 1;
-      for (let i = 0; i <= 3; i++) {
-        const y = padding.top + (chartH / 3) * i;
-        ctx.beginPath();
-        ctx.moveTo(padding.left, y);
-        ctx.lineTo(w - padding.right, y);
-        ctx.stroke();
-
-        ctx.fillStyle = '#94a3b8';
-        ctx.font = '10px Plus Jakarta Sans';
-        ctx.textAlign = 'right';
-        const labelVal = Math.round(maxVal - (maxVal / 3) * i);
-        ctx.fillText(`RM ${labelVal}`, padding.left - 6, y + 3);
-      }
-
-      // Draw Bars
-      const barWidth = Math.min(45, (chartW / categories.length) - 16);
-      const barGradients = [
-        ['#8b5cf6', '#6d28d9'], // Kek Batik
-        ['#f59e0b', '#d97706'], // Brownies
-        ['#10b981', '#059669'], // Dessert Cups
-        ['#3b82f6', '#2563eb']  // Cakes
-      ];
-
-      categories.forEach((cat, idx) => {
-        const val = catTotals[cat] || 0;
-        const barHeight = (val / maxVal) * chartH;
-        const x = padding.left + (idx * (chartW / categories.length)) + ((chartW / categories.length) - barWidth) / 2;
-        const y = padding.top + (chartH - barHeight);
-
-        // Bar Gradient
-        const grad = ctx.createLinearGradient(0, y, 0, y + barHeight);
-        grad.addColorStop(0, barGradients[idx % barGradients.length][0]);
-        grad.addColorStop(1, barGradients[idx % barGradients.length][1]);
-
-        ctx.fillStyle = grad;
-        // Rounded top corners
-        const radius = 6;
-        ctx.beginPath();
-        ctx.moveTo(x, y + radius);
-        ctx.arcTo(x, y, x + radius, y, radius);
-        ctx.arcTo(x + barWidth, y, x + barWidth, y + radius, radius);
-        ctx.lineTo(x + barWidth, padding.top + chartH);
-        ctx.lineTo(x, padding.top + chartH);
-        ctx.closePath();
-        ctx.fill();
-
-        // Value Label on top
-        ctx.fillStyle = '#334155';
-        ctx.font = 'bold 10px Plus Jakarta Sans';
-        ctx.textAlign = 'center';
-        ctx.fillText(`RM ${val.toFixed(0)}`, x + barWidth / 2, y - 5);
-
-        // Category X Label
-        ctx.fillStyle = '#64748b';
-        ctx.font = '500 10px Plus Jakarta Sans';
-        ctx.fillText(cat, x + barWidth / 2, padding.top + chartH + 16);
-      });
-    }
-
-    /* VENDOR DASHBOARD MODULE */
-    function renderVendorDashboard() {
-      const user = getCurrentUser();
-      if (!user || user.role !== 'VENDOR') return;
-
-      document.getElementById('vendor-title-name').innerText = `${user.name} (${user.vendorId})`;
-
-      // 1. Isolated Inventory
-      const inv = JSON.parse(localStorage.getItem('krave_inventory') || '[]').filter(i => i.vendorId === user.vendorId);
-      const invBody = document.getElementById('vendor-inv-table');
-      invBody.innerHTML = '';
-      inv.forEach(i => {
-        invBody.innerHTML += `
-          <tr>
-            <td class="p-3.5 font-bold text-slate-800">${i.productName}</td>
-            <td class="p-3.5 font-black text-slate-900">${i.currentStock}</td>
-            <td class="p-3.5">${i.soldQuantity}</td>
-            <td class="p-3.5 text-blue-600">${i.returnedQuantity}</td>
-            <td class="p-3.5 text-rose-600">${i.expiredQuantity}</td>
-            <td class="p-3.5 text-amber-600">${i.damagedQuantity}</td>
-            <td class="p-3.5">
-              <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${i.currentStock <= 0 ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700'}">
-                ${i.status}
-              </span>
-            </td>
-            <td class="p-3.5">
-              <button class="px-2.5 py-1 bg-purple-700 hover:bg-purple-800 text-white font-bold rounded text-[10px] transition-all" onclick="openInvModal('${i.productId}', '${i.productName}')">
-                Adjust Stock
-              </button>
-            </td>
-          </tr>
-        `;
-      });
-
-      // 2. Isolated Payments
-      const payments = JSON.parse(localStorage.getItem('krave_payments') || '[]').filter(p => p.vendorIds && p.vendorIds.includes(user.vendorId));
-      const payBody = document.getElementById('vendor-pay-table');
-      payBody.innerHTML = '';
-      payments.forEach(p => {
-        payBody.innerHTML += `
-          <tr>
-            <td class="p-3.5 font-bold text-slate-800">${p.paymentId}</td>
-            <td class="p-3.5 text-slate-600">${p.orderId}</td>
-            <td class="p-3.5">${p.customerName}</td>
-            <td class="p-3.5 font-bold">RM ${p.amount.toFixed(2)}</td>
-            <td class="p-3.5">
-              <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${p.paymentStatus === 'Verified' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">
-                ${p.paymentStatus}
-              </span>
-            </td>
-          </tr>
-        `;
-      });
-
-      // 3. Isolated Sales Report
-      const sales = getSalesData().filter(s => s.vendorId === user.vendorId);
-      const totalSales = sales.reduce((s, i) => s + i.subtotal, 0);
-      const totalItems = sales.reduce((s, i) => s + i.quantity, 0);
-
-      document.getElementById('vendor-kpi-sales').innerText = `RM ${totalSales.toFixed(2)}`;
-      document.getElementById('vendor-kpi-items').innerText = totalItems;
-
-      const prodMap = {};
-      sales.forEach(s => {
-        if (!prodMap[s.productName]) prodMap[s.productName] = 0;
-        prodMap[s.productName] += s.quantity;
-      });
-      let best = '-', maxQty = 0;
-      Object.keys(prodMap).forEach(k => {
-        if (prodMap[k] > maxQty) { maxQty = prodMap[k]; best = `${k} (${maxQty} sold)`; }
-      });
-      document.getElementById('vendor-kpi-best').innerText = best;
-
-      const prodBreakdown = {};
-      sales.forEach(s => {
-        if (!prodBreakdown[s.productId]) prodBreakdown[s.productId] = { name: s.productName, units: 0, sales: 0 };
-        prodBreakdown[s.productId].units += s.quantity;
-        prodBreakdown[s.productId].sales += s.subtotal;
-      });
-
-      const prodTable = document.getElementById('vendor-sales-prod-table');
-      prodTable.innerHTML = '';
-      Object.keys(prodBreakdown).forEach(pid => {
-        const item = prodBreakdown[pid];
-        prodTable.innerHTML += `
-          <tr class="font-medium">
-            <td class="p-3 font-bold text-slate-800">${pid}</td>
-            <td class="p-3">${item.name}</td>
-            <td class="p-3 font-bold">${item.units}</td>
-            <td class="p-3 font-bold text-emerald-600">RM ${item.sales.toFixed(2)}</td>
-          </tr>
-        `;
-      });
-    }
-
-    /* INVENTORY ADJUSTMENT ACTION */
-    function openInvModal(productId, productName) {
-      document.getElementById('inv-prod-id').value = productId;
-      document.getElementById('inv-prod-name').value = productName;
-      document.getElementById('inv-action-modal').classList.remove('hidden');
-    }
-    function closeInvModal() { document.getElementById('inv-action-modal').classList.add('hidden'); }
-
-    document.getElementById('inv-action-form').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const pid = document.getElementById('inv-prod-id').value;
-      const action = document.getElementById('inv-action-type').value;
-      const qty = parseInt(document.getElementById('inv-action-qty').value, 10);
-
-      const inventory = JSON.parse(localStorage.getItem('krave_inventory'));
-      const products = getProducts();
-
-      const item = inventory.find(x => x.productId === pid);
-      const prod = products.find(x => x.productId === pid);
-
-      if (item && prod) {
-        if (action === 'Return') {
-          item.returnedQuantity += qty;
-          item.currentStock += qty;
-        } else if (action === 'Damaged') {
-          if (item.currentStock < qty) return showToast('Cannot mark damaged more than available stock.', 'error');
-          item.damagedQuantity += qty;
-          item.currentStock -= qty;
-        } else if (action === 'Expired') {
-          item.expiredQuantity += qty;
-          item.currentStock = Math.max(0, item.currentStock - qty);
-        } else if (action === 'Adjustment') {
-          item.adjustmentQuantity += qty;
-          item.currentStock = Math.max(0, item.currentStock + qty);
-        }
-
-        item.status = item.currentStock <= 0 ? 'Out of Stock' : 'Available';
-        item.lastUpdated = new Date().toISOString();
-        prod.stock = item.currentStock;
-
-        localStorage.setItem('krave_inventory', JSON.stringify(inventory));
-        localStorage.setItem('krave_products', JSON.stringify(products));
-
-        closeInvModal();
-        showToast('Inventory adjustment successfully recorded.', 'success');
-        renderVendorDashboard();
-        renderSalesOverviewChart();
-      }
-    });
-
-    /* LOGIN SUBMISSION */
-    document.getElementById('login-form').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const u = document.getElementById('login-username').value;
-      const p = document.getElementById('login-password').value;
-
-      const res = login(u, p);
-      if (res.success) {
-        checkSession();
-        handlePortalClick();
-        showToast(`Welcome back, ${res.user.name}!`, 'success');
-      } else {
-        showToast(res.message, 'error');
-      }
-    });
-  </script>
-</body>
-</html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>KraVe Licious Supply Portal</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;700&display=swap">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#5E3023;--sf:#67382A;--ink:#F3E9DC;--mu:#cdb7a3;--ln:rgba(243,233,220,.13);--ac:#F3E9DC;--aw:#b8977d;--ok:#8fd1a8;--wn:#f0c27a;--bd:#ffb0a5;--soft:rgba(243,233,220,.07);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#5E3023;--sf:#67382A;--ink:#F3E9DC;--mu:#cdb7a3;--ln:rgba(243,233,220,.13);--ac:#F3E9DC;--aw:#b8977d;--ok:#8fd1a8;--wn:#f0c27a;--bd:#ffb0a5;--soft:rgba(243,233,220,.07)}}
+:root[data-theme="dark"]{--bg:#5E3023;--sf:#67382A;--ink:#F3E9DC;--mu:#cdb7a3;--ln:rgba(243,233,220,.13);--ac:#F3E9DC;--aw:#b8977d;--ok:#8fd1a8;--wn:#f0c27a;--bd:#ffb0a5;--soft:rgba(243,233,220,.07)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 'Bricolage Grotesque',system-ui,-apple-system,'Segoe UI',sans-serif}
+.awn{height:40px;background:repeating-linear-gradient(90deg,var(--ac) 0 32px,var(--aw) 32px 64px);-webkit-mask:linear-gradient(#000,#000) 0 0/100% 24px no-repeat,radial-gradient(circle 16px at 16px 0,#000 98%,#0000) 0 24px/32px 16px repeat-x;mask:linear-gradient(#000,#000) 0 0/100% 24px no-repeat,radial-gradient(circle 16px at 16px 0,#000 98%,#0000) 0 24px/32px 16px repeat-x}
+.w{max-width:1040px;margin:0 auto;padding-left:16px;padding-right:16px}
+header{display:flex;align-items:center;gap:12px;padding-top:14px;padding-bottom:6px}
+.brand{font-weight:700;font-size:22px;letter-spacing:-.03em}
+.sp{flex:1}
+nav{display:flex;gap:4px;overflow-x:auto;padding-top:8px;padding-bottom:8px;border-bottom:1px solid var(--ln)}
+.tab,.btn{font:inherit;color:var(--ink);background:none;border:1px solid transparent;padding:7px 14px;border-radius:8px;cursor:pointer;white-space:nowrap}
+.tab.on{border-color:var(--ink);font-weight:700}
+.btn{border-color:var(--ln);background:var(--sf)}
+.btn.p{background:var(--ac);border-color:var(--ac);color:var(--bg)}
+.btn.s{padding:3px 10px;font-size:13px;margin:2px 0}
+.btn:disabled{opacity:.4;cursor:default}
+a.btn{text-decoration:none;display:inline-block}
+:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+h1{font-size:clamp(30px,6vw,50px);line-height:1.04;letter-spacing:-.035em;margin:24px 0 10px;max-width:15em;font-weight:700}
+h2{font-size:21px;letter-spacing:-.02em;margin:30px 0 4px}
+.sub{color:var(--mu);margin:0 0 14px;max-width:64ch}
+small{color:var(--mu)}
+.box{background:var(--sf);border:1px solid var(--ln);border-radius:10px;padding:14px}
+.fx{border-top:1px solid var(--ln);margin-top:18px}
+.fx button{display:grid;grid-template-columns:minmax(150px,1fr) 2fr;gap:12px;width:100%;text-align:left;font:inherit;color:inherit;background:none;border:0;border-bottom:1px solid var(--ln);padding:12px 4px;cursor:pointer}
+.fx button:hover{background:var(--soft)}
+.fx span{color:var(--mu)}
+.kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--ln);border:1px solid var(--ln);border-radius:10px;overflow:hidden;margin:22px 0}
+.kp div{background:var(--sf);padding:14px 16px}
+.kp b{display:block;font-size:26px;letter-spacing:-.03em}
+.kp span{color:var(--mu);font-size:13px}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:16px}
+.tw{overflow-x:auto;border:1px solid var(--ln);border-radius:10px;background:var(--sf)}
+table{border-collapse:collapse;width:100%;min-width:600px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--ln);font-size:14px;vertical-align:top}
+th{color:var(--mu);font-weight:500;font-size:13px}
+tr:last-child td{border-bottom:0}
+.c{display:inline-block;padding:1px 9px;border-radius:99px;font-size:12px;font-weight:500;background:var(--soft);color:var(--mu)}
+.c.ok{color:var(--ok)}.c.wn{color:var(--wn)}.c.bd{color:var(--bd)}
+.br{display:grid;grid-template-columns:125px 1fr 80px;gap:10px;align-items:center;font-size:14px;margin:7px 0}
+.br div{height:10px;background:var(--soft);border-radius:9px;overflow:hidden}
+.br i{display:block;height:100%;background:var(--ac);border-radius:9px}
+.br i.bd{background:var(--bd)}
+.br b{text-align:right;font-weight:500}
+.tr{display:flex;gap:5px;height:150px}
+.tr div{flex:1;display:flex;flex-direction:column;align-items:center;font-size:11px;color:var(--mu)}
+.tr u{flex:1;display:flex;align-items:flex-end;width:100%;text-decoration:none}
+.tr i{width:100%;background:var(--ac);border-radius:4px 4px 0 0;min-height:2px}
+.f{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}
+.g{display:grid;gap:10px}
+label{display:grid;gap:3px;font-size:13px;color:var(--mu)}
+input,select{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--ln);border-radius:8px;padding:7px 9px}
+input[type=number]{width:76px}
+.foot{color:var(--mu);font-size:13px;margin:36px auto 24px}
+#msg{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translate(-50%,16px);opacity:0;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;transition:.2s;pointer-events:none;z-index:9}
+#msg.on{opacity:1;transform:translate(-50%,0)}
+@media(max-width:560px){.fx button{grid-template-columns:1fr;gap:2px}}
+@media(prefers-reduced-motion:reduce){#msg{transition:none}}
+/* ===== Upgrade: SaaS look (cards, shadows, badges, timeline, dialogs, print) ===== */
+:root{--sh:0 1px 3px rgba(0,0,0,.35),0 4px 14px rgba(0,0,0,.25);--sh2:0 12px 32px rgba(0,0,0,.5);--pu:#d2b6ff}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--pu:#c3a3f0;--sh:0 1px 3px rgba(0,0,0,.4);--sh2:0 12px 32px rgba(0,0,0,.55)}}
+:root[data-theme="dark"]{--pu:#c3a3f0;--sh:0 1px 3px rgba(0,0,0,.4);--sh2:0 12px 32px rgba(0,0,0,.55)}
+[hidden]{display:none!important}
+.box,.tw,.kp{border-radius:14px;box-shadow:var(--sh)}
+th{background:var(--soft)}td{vertical-align:middle}tr:hover td{background:var(--soft)}
+.btn,.tab{transition:transform .12s,background .15s,box-shadow .15s}.btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:var(--sh)}.tab:hover{background:var(--soft)}
+.c{padding:2px 10px}.c.ok{background:color-mix(in srgb,var(--ok) 16%,transparent)}.c.wn{background:color-mix(in srgb,var(--wn) 16%,transparent)}.c.bd{background:color-mix(in srgb,var(--bd) 16%,transparent)}
+.c.in{color:var(--ac);background:color-mix(in srgb,var(--ac) 16%,transparent)}.c.pr{color:var(--pu);background:color-mix(in srgb,var(--pu) 16%,transparent)}
+header{flex-wrap:wrap}.sr{position:relative;flex:1 1 220px;max-width:340px}.sr input{width:100%;border-radius:99px;padding-left:14px}
+#sres{position:absolute;left:0;right:0;top:100%;margin-top:6px;background:var(--sf);border:1px solid var(--ln);border-radius:12px;box-shadow:var(--sh2);z-index:15;max-height:320px;overflow:auto}
+#sres button{display:block;width:100%;text-align:left;font:inherit;color:inherit;background:none;border:0;border-bottom:1px solid var(--ln);padding:9px 12px;cursor:pointer}#sres button:hover{background:var(--soft)}#sres small{display:block}
+#nb{background:var(--bd);color:var(--bg);border-radius:99px;font-size:11px;padding:0 6px;margin-left:5px}#nb:empty{display:none}
+.kg{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:22px 0}
+.kc{background:var(--sf);border:1px solid var(--ln);border-radius:14px;padding:14px 16px;box-shadow:var(--sh);transition:transform .15s,box-shadow .15s}.kc:hover{transform:translateY(-2px);box-shadow:var(--sh2)}
+.kc em{font-style:normal;font-size:20px;margin-right:6px}.kc span{color:var(--mu);font-size:13px}.kc b{display:block;font-size:24px;letter-spacing:-.03em}
+.tr i{transition:height .3s}.tr i.bd{background:var(--bd)}.tr i.wn{background:var(--wn)}
+.lk{font:inherit;font-weight:700;color:var(--ac);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline}
+.sg{display:flex;gap:3px;margin-top:6px;min-width:80px}.sg i{flex:1;height:4px;border-radius:2px;background:var(--ln)}.sg i.on{background:var(--ok)}
+.pb{height:6px;background:var(--soft);border-radius:9px;overflow:hidden;margin-top:5px;min-width:70px}.pb i{display:block;height:100%;background:var(--ok);border-radius:9px}
+.ph{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:10px;background:var(--soft);vertical-align:middle}
+.em{text-align:center;color:var(--mu);padding:26px 12px;font-size:34px}.em p{font-size:14px;margin:6px 0 0}
+#dlg{position:fixed;inset:0;z-index:20;display:flex;justify-content:center;align-items:flex-start;background:rgba(20,8,4,.62);overflow:auto;padding:calc(24px + env(safe-area-inset-top,0px)) 12px calc(24px + env(safe-area-inset-bottom,0px))}
+.mc{background:var(--sf);border:1px solid var(--ln);border-radius:16px;box-shadow:var(--sh2);padding:20px;width:100%;max-width:780px;animation:pop .18s ease-out}.mc.sm{max-width:430px}
+.mh{display:flex;align-items:center;gap:10px}.mh h2{margin:0}
+.nt{display:block;width:100%;text-align:left;font:inherit;color:inherit;background:none;border:0;border-bottom:1px solid var(--ln);padding:12px 4px;cursor:pointer}.nt:hover{background:var(--soft)}
+.tl{list-style:none;display:flex;margin:18px 0;padding:0}
+.tl li{flex:1;text-align:center;font-size:13px;color:var(--mu);position:relative;padding-top:26px}
+.tl li:before{content:'';position:absolute;top:4px;left:50%;width:14px;height:14px;margin-left:-7px;border-radius:50%;background:var(--ln);z-index:1}
+.tl li:after{content:'';position:absolute;top:10px;left:-50%;width:100%;height:2px;background:var(--ln)}.tl li:first-child:after{display:none}
+.tl li.dn,.tl li.cu{color:var(--ink);font-weight:500}.tl li.dn:before,.tl li.dn:after,.tl li.cu:after{background:var(--ok)}.tl li.cu:before{background:var(--ac);box-shadow:0 0 0 4px var(--aw)}
+.ih{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;border-bottom:2px solid var(--ink);padding-bottom:12px}.lg{font-size:22px;letter-spacing:-.03em}
+table.sm2{width:280px;min-width:0;margin:12px 0 0 auto}
+#ld{position:fixed;inset:0;z-index:30;display:grid;place-items:center;background:color-mix(in srgb,var(--bg) 80%,transparent)}
+#ld i{width:38px;height:38px;border-radius:50%;border:4px solid var(--aw);border-top-color:var(--ac);animation:sp .7s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}@keyframes pop{from{opacity:0;transform:translateY(8px) scale(.98)}}
+@media(prefers-reduced-motion:reduce){.mc{animation:none}.btn,.kc,.tr i{transition:none}#ld i{animation-duration:2.4s}}
+@media print{body>*:not(#dlg){display:none!important}#dlg{position:static;background:none;padding:0}.np{display:none!important}.mc{box-shadow:none;border:0;max-width:none;animation:none}}
+/* ===== v4: sortable columns and tidy-up ===== */
+th.so{cursor:pointer;user-select:none}th.so:hover{color:var(--ink)}
+th.so:after{content:'⇅';margin-left:5px;opacity:.35;font-size:11px}
+th.so[aria-sort=ascending]:after{content:'▲';opacity:1;color:var(--ac)}th.so[aria-sort=descending]:after{content:'▼';opacity:1;color:var(--ac)}
+th.n,td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.qg{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px}
+.br{grid-template-columns:minmax(120px,170px) 1fr 84px}
+h2+.tw,h2+.box,h2+.two,h2+.f{margin-top:10px}.two h2{margin-top:6px}
+.mc h2{margin:20px 0 6px}.mc .mh h2{margin:0}
+.btn.s{margin:2px 4px 2px 0}
+.il{list-style:none;margin:6px 0 0;padding:0;font-size:13px;line-height:1.45;min-width:170px}
+.il li{display:flex;justify-content:space-between;gap:14px}.il li b{font-weight:500;color:var(--mu);white-space:nowrap}
+select.ps{border-radius:99px;padding:3px 10px;font-size:13px;font-weight:500;cursor:pointer}.ps.ok{color:var(--ok)}.ps.wn{color:var(--wn)}.ps.bd{color:var(--bd)}
+:root{color-scheme:dark}
+/* ===== v7: minimal redesign (flat surfaces, hairlines, serif headings, generous space) ===== */
+*{scrollbar-width:thin;scrollbar-color:rgba(243,233,220,.25) transparent}
+body{font:15px/1.6 Inter,'Segoe UI',system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
+.w{max-width:1100px;padding-left:28px;padding-right:28px}
+h1,h2,.brand,.kc b,.kp b,.lg{font-family:Georgia,'Iowan Old Style','Times New Roman',serif;font-weight:400}
+h1{font-size:clamp(34px,5vw,54px);line-height:1.08;letter-spacing:-.02em;margin:48px 0 14px;max-width:16em}
+h2{font-size:22px;letter-spacing:-.01em;margin:56px 0 10px}.two h2{font-size:17px;margin:26px 0 12px}
+.sub{max-width:60ch;margin-bottom:24px}
+.awn{height:3px;background:var(--ac);opacity:.85;-webkit-mask:none;mask:none}
+header{padding-top:22px;padding-bottom:12px;gap:14px}.brand{font-size:24px;letter-spacing:-.01em}
+nav{gap:6px;padding:12px 0}
+.tab{border:0;border-radius:99px;color:var(--mu);padding:7px 16px}.tab:hover{background:var(--soft);color:var(--ink)}.tab.on{background:var(--ink);color:var(--bg);font-weight:600}
+.btn{border:1px solid var(--ln);background:transparent;border-radius:99px;padding:8px 18px;font-weight:500}.btn:hover:not(:disabled){background:var(--soft);transform:none;box-shadow:none}
+.btn.p{background:var(--ink);border-color:var(--ink);color:var(--bg)}.btn.p:hover:not(:disabled){background:var(--ink);opacity:.9}.btn.s{padding:4px 12px}
+input,select{background:var(--soft);border:1px solid transparent;border-radius:12px;padding:9px 12px}input:focus,select:focus{outline:0;border-color:var(--ink)}input::placeholder{color:var(--mu)}
+.sr input{border-radius:99px;padding:9px 18px}
+.box,.tw,.kc,.mc,#sres{background:var(--sf);border:0;border-radius:20px;box-shadow:none}
+.tw{padding:6px 12px}.box{padding:22px}.mc{border-radius:24px;padding:28px}
+table{border-collapse:separate;border-spacing:0;min-width:560px}
+th{background:none;color:var(--mu);font-size:11px;font-weight:500;letter-spacing:.09em;text-transform:uppercase;padding:14px 12px 10px;border-bottom:1px solid var(--ln)}
+td{padding:14px 12px}td:first-child{border-radius:12px 0 0 12px}td:last-child{border-radius:0 12px 12px 0}
+.kg{grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin:36px 0 14px}
+.kc{padding:22px}.kc:hover{transform:none;box-shadow:none;background:#6d3c2e}.kc em{display:none}
+.kc span{display:block;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mu);margin-bottom:6px}.kc b{font-size:32px;letter-spacing:-.02em}
+.kp{background:none;border:0;border-radius:0;gap:14px;margin:0;overflow:visible}.kp div{background:var(--sf);border-radius:20px;padding:18px 22px}
+.kp b{font-size:26px}.kp span{font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.two{gap:22px}
+.br{gap:14px;margin:12px 0}.br div{height:6px}.br i{background:var(--ink);opacity:.9}.tr i{background:var(--ink);opacity:.85;border-radius:6px 6px 0 0}
+.fx{border-top:0;margin-top:24px}.fx button{padding:18px 6px}.fx button:hover{background:none}.fx button:hover b{text-decoration:underline}
+.c{font-size:11.5px;font-weight:600}
+#dlg{backdrop-filter:blur(6px)}
+#sres{box-shadow:0 20px 50px rgba(0,0,0,.4)}#sres button:hover{background:var(--soft)}
+#msg{border-radius:99px;padding:11px 22px;font-size:14px}
+.em{font-size:26px;opacity:.7}.foot{opacity:.7;margin:64px auto 40px}
+@media(max-width:560px){.w{padding-left:16px;padding-right:16px}h1{margin-top:32px}h2{margin-top:40px}}
+@media print{:root:root{--bg:#fff;--sf:#fff;--ink:#1a1a1a;--mu:#555;--ln:#ccc;--soft:#f1f1f1;--ac:#1a1a1a;--ok:#1d6b45;--wn:#8a5a00;--bd:#a82a1f}body{background:#fff;color:#1a1a1a}}
+/* ===== v8: Gen Z glow-up (glass bento, gradients, sticker badges, springy motion) ===== */
+:root{--g1:linear-gradient(135deg,#fff3e6,#ffd1dc 55%,#f3c9a5);--glass:rgba(243,233,220,.07);--glassb:rgba(243,233,220,.14)}
+html{scroll-behavior:smooth}::selection{background:#ffd1dc;color:#3d1c12}:focus-visible{outline-color:#ffd1dc}
+body{font-family:'Bricolage Grotesque',Inter,system-ui,sans-serif;background:radial-gradient(800px 480px at 8% -8%,rgba(255,159,181,.26),transparent 60%),radial-gradient(760px 480px at 96% 2%,rgba(243,201,165,.22),transparent 60%),radial-gradient(700px 560px at 55% 112%,rgba(195,166,255,.18),transparent 60%),var(--bg);background-attachment:fixed}
+body:before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.07;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+h1,h2,.brand,.kc b,.kp b,.lg{font-family:'Bricolage Grotesque','Arial Rounded MT Bold','Trebuchet MS',system-ui,sans-serif;font-weight:800;letter-spacing:-.035em}
+h1{font-size:clamp(40px,7vw,76px);line-height:1;margin:44px 0 16px;max-width:12em;background:var(--g1);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+h2{font-size:24px}.two h2{font-size:18px}.brand:before{content:'🧁';margin-right:8px}
+.awn{height:5px;background:linear-gradient(90deg,#ffd1dc,#f3c9a5,#d7f0c2,#e4d4ff);opacity:1}
+nav{position:sticky;top:10px;z-index:8;margin-top:8px;padding-top:6px;padding-bottom:6px;border:1px solid var(--glassb);border-radius:99px;background:rgba(94,48,35,.72);backdrop-filter:blur(16px)}
+.tab{font-weight:600}.tab.on{background:var(--g1);color:#3d1c12}
+.btn{font-weight:600;transition:transform .25s cubic-bezier(.34,1.56,.64,1),background .2s,box-shadow .25s}
+.btn:hover:not(:disabled){transform:translateY(-2px) scale(1.03)}.btn:active:not(:disabled){transform:scale(.96)}
+.btn.p{background:var(--g1);color:#3d1c12;border:0;box-shadow:0 8px 24px rgba(255,159,181,.28)}.btn.p:hover:not(:disabled){background:var(--g1);opacity:1;box-shadow:0 12px 32px rgba(255,159,181,.42)}
+input:focus,select:focus{border-color:#ffd1dc;box-shadow:0 0 0 4px rgba(255,209,220,.16)}
+.box,.tw,.kc,.kp div{background:var(--glass);border:1px solid var(--glassb);border-radius:28px;backdrop-filter:blur(14px)}
+.mc{background:rgba(70,34,24,.9);backdrop-filter:blur(22px);border:1px solid var(--glassb);border-radius:32px}
+#sres{background:#5a2d20;border:1px solid var(--glassb);border-radius:22px}
+.kg{grid-template-columns:repeat(2,1fr)}@media(min-width:900px){.kg{grid-template-columns:repeat(4,1fr)}}
+.kc{padding:20px;transition:transform .3s cubic-bezier(.34,1.56,.64,1),box-shadow .3s}.kc:hover{transform:translateY(-4px) rotate(-.4deg);box-shadow:0 18px 40px rgba(0,0,0,.28);background:var(--glass)}
+.kc em{display:grid;place-items:center;width:46px;height:46px;border-radius:16px;background:rgba(243,233,220,.12);font-size:23px;margin:0 0 16px}.kc b{font-size:34px}
+.kc:nth-child(1),.kc:nth-child(6),.kc:nth-child(8),.kc:nth-child(11){--ink:#3d1c12;--mu:#6b3f2d;color:var(--ink);border:0}
+.kc:nth-child(1){background:linear-gradient(145deg,#f8d9bd,#e8a87c)}.kc:nth-child(6){background:linear-gradient(145deg,#ffdbe4,#ff9fb5)}.kc:nth-child(8){background:linear-gradient(145deg,#eadfff,#c3a6ff)}.kc:nth-child(11){background:linear-gradient(145deg,#e0f5cf,#a6d98f)}
+.kp b{font-size:28px}tr:hover td{background:rgba(255,209,220,.08)}
+.tr i{background:linear-gradient(180deg,#ffd1dc,#ff9fb5);opacity:1;border-radius:8px 8px 0 0}.tr i.bd{background:linear-gradient(180deg,#ffc2b8,#ff8f7a)}.tr i.wn{background:linear-gradient(180deg,#ffe3a3,#f0b34a)}
+.br i{background:linear-gradient(90deg,#f3c9a5,#ff9fb5);opacity:1}.br div{height:8px}
+.pb i,.sg i.on{background:linear-gradient(90deg,#a6d98f,#d7f0c2)}
+.c{padding:3px 11px;font-size:11.5px;font-weight:700}.c.ok{background:#bdf0d2;color:#0f3d27}.c.wn{background:#ffe3a3;color:#5c3b00}.c.bd{background:#ffc2b8;color:#6b1a10}.c.in{background:#cfe3ff;color:#123a6b}.c.pr{background:#e3d0ff;color:#3b1a73}
+select.ps{border:0;font-weight:700}.ps.ok{background:#bdf0d2;color:#0f3d27}.ps.wn{background:#ffe3a3;color:#5c3b00}.ps.bd{background:#ffc2b8;color:#6b1a10}
+select option{background:#5E3023;color:#F3E9DC}#nb{background:#ff9fb5;color:#3d1c12;font-weight:700}
+.tl li.cu:before{background:#ffd1dc;box-shadow:0 0 0 5px rgba(255,209,220,.28);animation:pls 1.8s ease-in-out infinite}.tl li.dn:before,.tl li.dn:after,.tl li.cu:after{background:#a6d98f}
+.fx button{border:1px solid var(--glassb);background:var(--glass);border-radius:20px;padding:18px 16px;margin-bottom:8px;transition:transform .25s cubic-bezier(.34,1.56,.64,1),background .2s}.fx button:hover{background:rgba(255,209,220,.1);transform:translateX(4px)}
+#msg{background:var(--g1);color:#3d1c12;font-weight:600;box-shadow:0 12px 32px rgba(0,0,0,.35)}.em{opacity:1;font-size:40px}
+@keyframes pls{50%{box-shadow:0 0 0 9px rgba(255,209,220,.1)}}@keyframes up{from{opacity:0;transform:translateY(16px)}}
+#v.ent>*{animation:up .6s cubic-bezier(.2,.8,.2,1) both}#v.ent>*:nth-child(2){animation-delay:.06s}#v.ent>*:nth-child(3){animation-delay:.12s}#v.ent>*:nth-child(4){animation-delay:.18s}#v.ent>*:nth-child(n+5){animation-delay:.24s}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
+@media print{*,*:before{background:none!important;box-shadow:none!important;backdrop-filter:none!important}h1{-webkit-text-fill-color:#1a1a1a}.c{border:1px solid #999}.awn,nav{display:none}}
+</style></head>
+<body>
+<div class="awn"></div>
+<div id="top" hidden><header class="w"><span class="brand">KraVe Licious</span><span class="sp"></span><div class="sr"><input id="gs" type="search" placeholder="Search orders, shops, products, invoices" aria-label="Global search" autocomplete="off"><div id="sres" hidden></div></div><button class="btn s" data-a="bell" aria-label="Notifications">🔔<span id="nb"></span></button><small id="who"></small><button class="btn s" data-a="out">Sign out</button></header><nav id="nav" class="w"></nav></div>
+<main id="v" class="w"></main>
+<p class="foot w">Demo prototype: accounts and data live in this browser only. WhatsApp numbers are placeholders.</p>
+<div id="msg" role="status" aria-live="polite"></div>
+<div id="dlg" role="dialog" aria-modal="true" hidden></div>
+<div id="ld" hidden><i></i></div>
+<script>
+const VN=[['Sweet Tide Bakery','sweettide','sweet123','60121000001'],['Dapur Kak Mah','kakmah','kuih123','60121000002']];
+const CAT=[['mg',0,'Mango Sago Cup',3.2,5.5,3,'Fruit cup'],['pc',0,'Pandan Chiffon Slice',2.8,5,2,'Cake'],['cp',0,'Coconut Panna Cotta',3.5,6,3,'Cream dessert'],['kl',1,'Kuih Lapis Box',4,7,2,'Kuih'],['sm',1,'Seri Muka Slice',2.5,4.5,2,'Kuih'],['oo',1,'Onde-Onde Box',3.8,6.5,2,'Kuih'],['lv',0,'Choc Lava Cake',4.2,7.5,2,'Cake'],['bb',0,'Brownie Bites',3,5.5,4,'Brownie'],['tc',0,'Tiramisu Cup',4.5,8,3,'Cream dessert'],['cd',1,'Cendol Cup',2.6,4.5,2,'Shaved ice and cendol'],['ak',1,'Ais Kacang Cup',2.4,4.5,2,'Shaved ice and cendol'],['sg',1,'Sago Gula Melaka',2.8,5,3,'Sago dessert']];
+const KW='60120000000';
+const iso=n=>{const d=new Date();d.setDate(d.getDate()+n);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+const today=iso(0),$=id=>document.getElementById(id);
+const rm=n=>'RM '+n.toFixed(2),sum=o=>Object.values(o).reduce((a,b)=>a+b,0);
+const fd=s=>new Date(s+'T12:00:00').toLocaleDateString('en-GB',{day:'2-digit',month:'short'});
+const ft=t=>new Date(t).toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+const cl=s=>String(s).replace(/[<>&"'`]/g,'').trim().slice(0,30);
+/* Tax rate on invoices (0.06 = 6%). */
+const TAX=0,sub=x=>Object.keys(x.got).reduce((a,k)=>a+((x.got[k]||0)-(x.ret[k]||0))*x.pr[k],0),bill=x=>sub(x)*(1+TAX);
+const due=x=>Math.max(0,bill(x)-x.paid);
+const wa=(n,t)=>'https://wa.me/'+n+'?text='+encodeURIComponent(t);
+const bars=(rows,f=v=>v,c='')=>{const m=Math.max(1,...rows.map(r=>r[1]));return rows.map(([a,v])=>`<div class="br"><span>${a}</span><div><i class="${c}" style="width:${v/m*100}%"></i></div><b>${f(v)}</b></div>`).join('')};
+function seed(){let s=11;const r=()=>(s=(s*9301+49297)%233280)/233280,C={},O=[],T={},Sa=[],L=[],A=[];
+CAT.forEach(([k,v,n,c,p,h,g],i)=>{C[k]={n,v,c,p,s:h,g,on:1};T[k]={q:6+i*7%15,e:iso(i%5-1)}});
+const ks=Object.keys(C),a=(d,u,x)=>A.push({t:d+'T09:00:00',u,k:'in',x});let id=2000;
+for(let o=-12;o<=0;o+=2)VN.forEach((vn,v)=>{if(r()<.25)return;
+const it={},pr={};ks.filter(k=>C[k].v===v).forEach(k=>{it[k]=10+Math.floor(r()*20);pr[k]=C[k].c});
+const x={id:++id,v,d:iso(o),items:it,pr,sent:{},got:{},ret:{},st:o<=-4?'received':o<=-2?'dispatched':'ordered',paid:0,dp:''};
+a(x.d,'admin','Placed order #'+id+' with '+vn[0]);
+if(x.st!=='ordered'){x.sent={...it};a(x.d,vn[1],'Dispatched order #'+id)}
+if(x.st==='received'){Object.keys(it).forEach(k=>{x.got[k]=Math.max(0,it[k]-(r()<.2?1+Math.floor(r()*3):0));x.ret[k]=r()<.25?Math.min(x.got[k],1+Math.floor(r()*3)):0});
+const b=bill(x),y=r();x.paid=(o<-8&&y<.85)||y<.3?b:y<.55?Math.round(b/2):0;x.dp=y>.93?'Vendor':'';
+a(x.d,'admin','Received order #'+id);if(x.paid)a(x.d,'admin','Paid '+rm(x.paid)+' on order #'+id)}
+O.push(x)});
+for(let o=-13;o<=0;o++)ks.forEach((k,i)=>{const q=1+Math.floor(r()*(3+i%5*2));Sa.push({d:iso(o),k,q})});
+L.push({d:iso(-3),k:'mg',q:3,w:'Expired'},{d:iso(-6),k:'lv',q:2,w:'Spoiled'},{d:iso(-2),k:'cd',q:4,w:'Expired'});
+return{C,O,T,Sa,L,A}}
+function load(){try{const j=localStorage.getItem('krave3');return j?JSON.parse(j):null}catch(e){return null}}
+function save(){try{localStorage.setItem('krave3',JSON.stringify(S))}catch(e){}}
+let S=load();if(!S||!S.C||!S.O||!S.T||!S.Sa||!S.L||!S.A)S=seed();
+let me=null,cur='dash';const fl={ov:0,u:'all',k:'all',os:'all',op:'all',ovf:'all',od:'',sq:'',pq:''};
+const lg=(x,k='in',u)=>{S.A.push({t:new Date().toISOString(),u:u||(me?me.u:'guest'),k,x});if(S.A.length>400)S.A.splice(0,S.A.length-400)};
+function msg(t){const m=$('msg');m.textContent=(/^(Wrong|Enter|Only|That|This)/.test(t)?'⚠️ ':'✅ ')+t;m.classList.add('on');clearTimeout(msg.t);msg.t=setTimeout(()=>m.classList.remove('on'),3200)}
+const mine=()=>me.r==='a'?S.O:S.O.filter(x=>x.v===me.i);
+const dk=()=>Object.keys(S.C);
+const opts=()=>VN.map((v,i)=>`<optgroup label="${v[0]}">${dk().filter(k=>S.C[k].v===i).map(k=>`<option value="${k}">${S.C[k].n}</option>`).join('')}</optgroup>`).join('');
+const itx=x=>Object.keys(x.items).map(k=>S.C[k].n+': '+x.items[k]+(x.st!=='ordered'?' sent '+x.sent[k]:'')+(x.st==='received'?', got '+x.got[k]+(x.ret[k]?', returned '+x.ret[k]:''):'')).join('<br>');
+const TB={a:[['dash','Dashboard'],['ord','Orders'],['shop','Suppliers'],['prod','Products'],['pay','Payments'],['ret','Sold vs returned'],['stk','Inventory'],['aud','Audit log']],v:[['ord','Orders'],['menu','Menu'],['pay','Payments'],['ret','Sold vs returned']]};
+const FIX=[['Missing delivery records','Orders are tracked from placed to dispatched to received, with quantities from both sides.','ord'],['Payment disputes','Invoices use the price locked at order time, and either side can flag a dispute.','pay'],['Sold vs returned items','Received, sold, returned and wasted counts for every dessert.','ret'],['Food losses','Expiry warnings and a write-off log valued at cost.','stk'],['No sales visibility','Daily sales, best-selling desserts and top vendors.','dash']];
+const V={
+login(){return `<p class="brand" style="margin:16px 0 0">KraVe Licious</p><h1>Dessert supply, tracked from vendor to shelf.</h1><p class="sub">Sign in as the KraVe admin or as a vendor shop. Vendors see only their own menu, orders and payments. The admin sees everything, including a full audit log.</p>
+<div class="box" style="max-width:420px"><div class="g"><label>Username<input id="lu" autocomplete="username"></label><label>Password<input id="lp" type="password" autocomplete="current-password"></label><button class="btn p" data-a="login">Sign in</button></div></div>
+<h2>Demo accounts</h2><div class="tw"><table><tr><th>Account</th><th>Username</th><th>Password</th><th></th></tr>${[['KraVe admin','admin','krave123'],...VN.map(v=>[v[0],v[1],v[2]])].map(a=>`<tr><td>${a[0]}</td><td>${a[1]}</td><td>${a[2]}</td><td><button class="btn s" data-a="fill" data-u="${a[1]}" data-p="${a[2]}">Fill in</button></td></tr>`).join('')}</table></div>
+<p><button class="btn s" data-a="reset">Reset sample data</button></p>`},
+dash(){const rev=q=>q.reduce((a,s)=>a+s.q*S.C[s.k].p,0),rc=S.O.filter(x=>x.st==='received'),g=rc.reduce((a,x)=>a+sum(x.got),0),rt=rc.reduce((a,x)=>a+sum(x.ret),0),ow=rc.reduce((a,x)=>a+due(x),0),lq=S.L.reduce((a,l)=>a+l.q,0),lo=S.L.reduce((a,l)=>a+l.q*S.C[l.k].c,0),cnt=n=>S.O.filter(x=>si(x)===n).length,mo=today.slice(0,7);
+const days=[...Array(14)].map((_,i)=>iso(i-13)),dl=days.map(d=>new Date(d+'T12:00:00').toLocaleDateString('en-GB',{weekday:'narrow'}));
+const bp=dk().map(k=>[S.C[k].n,S.Sa.filter(s=>s.k===k).reduce((a,s)=>a+s.q,0)]).sort((a,b)=>b[1]-a[1]).slice(0,6),bv=VN.map((v,i)=>[v[0],rev(S.Sa.filter(s=>S.C[s.k].v===i))]).sort((a,b)=>b[1]-a[1]);
+const K=[['🧾','Total orders',S.O.length],['🕒','Pending orders',cnt(0)],['🍰','Preparing orders',cnt(1)],['🚚','Delivered orders',cnt(2)],['✅','Completed orders',cnt(3)],['💰',"Today's sales",rm(rev(S.Sa.filter(s=>s.d===today)))],['📅','Monthly sales',rm(rev(S.Sa.filter(s=>s.d.slice(0,7)===mo)))],['💳','Outstanding payments',rm(ow)],['↩️','Total returns',rt+' units'],['🗑️','Food losses',rm(lo)],['📦','Inventory value',rm(dk().reduce((a,k)=>a+S.T[k].q*S.C[k].c,0))],['⚠️','Low stock products',dk().filter(lowk).length]];
+const SS=[['Average order value',rm(rc.length?rc.reduce((a,x)=>a+bill(x),0)/rc.length:0)],['Return rate',(g?rt/g*100:0).toFixed(1)+'%'],['Food loss rate',(g?lq/g*100:0).toFixed(1)+'%'],['Outstanding balance',rm(ow)]];
+const cd=(t,h)=>`<div><h2>${t}</h2><div class="box">${h}</div></div>`;
+return `<h1>Every dessert delivery, payment and return in one place.</h1><p class="sub">Vendors send desserts to KraVe. Each problem below has its own place in the portal.</p>
+<div class="kg">${K.map(k=>`<div class="kc"><em>${k[0]}</em><span>${k[1]}</span><b>${k[2]}</b></div>`).join('')}</div>
+<div class="kp">${SS.map(k=>`<div><span>${k[0]}</span><b>${k[1]}</b></div>`).join('')}</div>
+<div class="two">${cd('Sales trend, last 14 days',trend(days.map(d=>rev(S.Sa.filter(s=>s.d===d))),dl,rm))}${cd('Orders per day',trend(days.map(d=>S.O.filter(x=>x.d===d).length),dl,n=>n+' orders','wn'))}${cd('Best-selling desserts',bars(bp,v=>v+' sold'))}${cd('Inventory levels',bars(dk().map(k=>[S.C[k].n,S.T[k].q]).sort((a,b)=>b[1]-a[1]).slice(0,8),v=>v+' units'))}${cd('Food loss trend (at cost)',trend(days.map(d=>S.L.filter(l=>l.d===d).reduce((a,l)=>a+l.q*S.C[l.k].c,0)),dl,rm,'bd'))}${cd('Unpaid balance by order date',trend(days.map(d=>rc.filter(x=>x.d===d).reduce((a,x)=>a+due(x),0)),dl,rm,'wn'))}${cd('Top suppliers by sales',bars(bv,rm))}</div>
+<h2>How the portal solves each problem</h2><div class="fx">${FIX.map(f=>`<button data-a="tab" data-t="${f[2]}"><b>${f[0]}</b><span>${f[1]}</span></button>`).join('')}</div>`},
+ord(){const a=me.r==='a',os=[...mine()].filter(x=>(fl.os==='all'||si(x)==fl.os)&&(fl.op==='all'||pst(x)[0]===fl.op)&&(fl.ovf==='all'||x.v==fl.ovf)&&(!fl.od||x.d>=fl.od)).sort((p,q)=>q.id-p.id),vs=dk().filter(k=>S.C[k].v==fl.ov&&S.C[k].on),sel=(c,o)=>`<select data-c="${c}"><option value="all">All</option>${o.map(([v,n])=>`<option value="${v}"${fl[c]==v?' selected':''}>${n}</option>`).join('')}</select>`;
+return `<h2>Orders</h2><p class="sub">${a?'Every order moves from pending to preparing, delivered and completed, with the vendor and the shop each recording their own quantities.':'Orders placed by KraVe. Accept them, prepare and deliver, then the shop confirms what arrived.'} Select an order number to see its timeline, payments, returns and activity log.</p>
+${a?`<div class="box"><div class="f"><label>Supplier<select data-c="ov">${VN.map((v,i)=>`<option value="${i}"${fl.ov==i?' selected':''}>${v[0]}</option>`).join('')}</select></label>${vs.map(k=>`<label>${S.C[k].n} (${rm(S.C[k].c)})<input class="qi" data-k="${k}" type="number" min="0" value="0"></label>`).join('')||'<small>This supplier has no available desserts.</small>'}<b>Total <span id="ot">${rm(0)}</span></b><button class="btn p" data-a="order">Place order</button></div></div>`:''}
+<div class="f" style="margin:14px 0 10px"><label>Status${sel('os',ST.map((s,i)=>[i,s[0]]))}</label><label>Payment${sel('op',['Unpaid','Outgoing','Paid','Disputed'].map(s=>[s,s]))}</label>${a?`<label>Supplier${sel('ovf',VN.map((v,i)=>[i,v[0]]))}</label>`:''}<label>From date<input type="date" data-c="od" value="${fl.od}"></label></div>
+<div class="tw"><table><tr><th>Order</th><th>Supplier</th><th>Items</th><th>Total</th><th>Status</th><th>Payment</th><th></th></tr>${os.map(x=>{const[s,c]=stl(x),[p,pc]=pst(x),sh=x.st==='received'?sum(x.sent)-sum(x.got):0;
+return `<tr><td><button class="lk" data-a="open" data-id="${x.id}">#${x.id}</button><br><small>${fd(x.d)}</small></td><td>${VN[x.v][0]}</td><td data-v="${sum(x.items)}">${a&&x.st==='dispatched'?`<div class="qg">${Object.keys(x.items).map(k=>`<label>${S.C[k].n}<small>sent ${x.sent[k]}</small><input class="rq" data-o="${x.id}" data-k="${k}" type="number" min="0" max="${x.sent[k]}" value="${x.sent[k]}"></label>`).join('')}</div>`:`<ul class="il" style="margin:0">${Object.keys(x.items).map(k=>`<li><span>${S.C[k].n}</span><b>×${x.items[k]}</b></li>`).join('')}</ul><small>Total ${sum(x.items)} units</small>`}</td><td>${rm(tot(x))}</td><td><span class="c ${c}">${s}</span>${sh?' <span class="c bd">Short '+sh+'</span>':''}<div class="sg">${ST.map((_,i)=>`<i class="${i<=si(x)?'on':''}"></i>`).join('')}</div></td><td><span class="c ${pc}">${p}</span></td><td>${!a&&x.st==='ordered'?`<button class="btn s" data-a="prep" data-id="${x.id}">Accept and prepare</button> `:''}${!a&&x.st==='preparing'?`<button class="btn s" data-a="ship" data-id="${x.id}">Mark delivered</button> `:''}${a&&x.st==='dispatched'?`<button class="btn s" data-a="recv" data-id="${x.id}">Confirm receipt</button> `:''}<a class="btn s" data-a="log" data-m="WhatsApp about order #${x.id} sent to ${a?VN[x.v][0]:'KraVe'}" target="_blank" rel="noopener" href="${wa(a?VN[x.v][3]:KW,'Hi, about order #'+x.id+' ('+fd(x.d)+'):\n'+itx(x).replace(/<br>/g,'\n'))}">WhatsApp</a></td></tr>`}).join('')||empty('No orders match these filters.')}</table></div>`},
+shop(){const q=fl.sq.toLowerCase(),rc=S.O.filter(x=>x.st==='received');
+return `<h2>Suppliers</h2><p class="sub">Contact details, balances and status for each dessert supplier. Inactive suppliers cannot receive new orders.</p>
+<div class="f" style="margin-bottom:10px"><label>Search suppliers<input type="search" data-s="sq" value="${fl.sq}" placeholder="Name, address or contact"></label></div>
+<div class="tw"><table><tr><th>Supplier</th><th>Address</th><th>Phone</th><th>Contact person</th><th>Outstanding</th><th>Orders</th><th>Status</th><th></th></tr>${VN.map((v,i)=>[v,shd(i),i]).filter(([v,h])=>(v[0]+' '+h.a+' '+h.c).toLowerCase().includes(q)).map(([v,h,i])=>`<tr><td><b>${v[0]}</b><ul class="il">${dk().filter(k=>S.C[k].v===i).map(k=>`<li><span>${S.C[k].n}</span><b>${kind(k)}</b></li>`).join('')}</ul></td><td>${h.a}</td><td>+${v[3]}</td><td>${h.c}</td><td>${rm(rc.filter(x=>x.v===i).reduce((s,x)=>s+due(x),0))}</td><td>${S.O.filter(x=>x.v===i).length}</td><td><span class="c ${h.on?'ok':'wn'}">${h.on?'Active':'Inactive'}</span></td><td><button class="btn s" data-a="sedit" data-i="${i}">Edit</button></td></tr>`).join('')||empty('No suppliers match your search.',8)}</table></div>`},
+prod(){const q=fl.pq.toLowerCase(),ks=dk().filter(k=>(S.C[k].n+' '+kind(k)).toLowerCase().includes(q));
+return `<h2>Products</h2><p class="sub">Every dessert from every supplier. Manage prices, minimum stock and availability here. A new price applies to new orders only.</p>
+<div class="f" style="margin-bottom:10px"><label>Search products<input type="search" data-s="pq" value="${fl.pq}" placeholder="Name or category"></label><button class="btn p" data-a="pedit">Add product</button></div>
+<div class="tw"><table><tr><th>Product</th><th>Category</th><th>Supplier price</th><th>Selling price</th><th>Stock</th><th>Minimum</th><th>Expiry</th><th>Status</th><th></th></tr>${ks.map(k=>{const d=S.C[k],t=S.T[k];return `<tr><td><span class="ph">🍮</span> <b>${d.n}</b><br><small>${VN[d.v][0]}</small></td><td>${kind(k)}</td><td>${rm(d.c)}</td><td>${rm(d.p)}</td><td>${t.q}</td><td>${d.m??MIN}</td><td>${d.s} days</td><td><span class="c ${d.on?'ok':'wn'}">${d.on?'Active':'Paused'}</span>${lowk(k)?' <span class="c bd">'+(t.q?'Low stock':'Out of stock')+'</span>':''}</td><td><button class="btn s" data-a="pedit" data-k="${k}">Edit</button> <button class="btn s" data-a="mon" data-k="${k}">${d.on?'Pause':'Resume'}</button> <button class="btn s" data-a="pdel" data-k="${k}">Delete</button></td></tr>`}).join('')||empty('No products match your search.',9)}</table></div>`},
+menu(){const ks=dk().filter(k=>S.C[k].v===me.i);
+return `<h2>Menu</h2><p class="sub">Your desserts, which no other vendor can see. A new price applies to new orders only; existing orders keep the price they were placed at.</p>
+<div class="tw"><table><tr><th>Dessert</th><th>Your price (RM)</th><th>KraVe sells at</th><th>Shelf life</th><th>Status</th><th></th></tr>${ks.map(k=>{const d=S.C[k];return `<tr><td>${d.n}</td><td><input class="pc" data-k="${k}" type="number" min="0" step=".1" value="${d.c}"></td><td>${rm(d.p)}</td><td>${d.s} days</td><td><span class="c ${d.on?'ok':'wn'}">${d.on?'Available':'Paused'}</span></td><td><button class="btn s" data-a="mpr" data-k="${k}">Save price</button> <button class="btn s" data-a="mon" data-k="${k}">${d.on?'Pause':'Resume'}</button></td></tr>`}).join('')}</table></div>
+<h2>Add a dessert</h2><div class="box"><div class="f"><label>Name<input id="an" maxlength="30" style="width:200px"></label><label>Your price (RM)<input id="ac" type="number" min="0" step=".1" value="3"></label><label>Shelf life (days)<input id="as" type="number" min="1" value="2"></label><button class="btn p" data-a="madd">Add dessert</button></div></div>`},
+pay(){const a=me.r==='a',rc=mine().filter(x=>x.st==='received').sort((p,q)=>q.id-p.id),vs=VN.map((v,i)=>i).filter(i=>a||i===me.i),
+stt=x=>x.dp?['Disputed by '+x.dp,'bd']:due(x)<.005?['Paid','ok']:x.paid>0?['Part-paid','wn']:['Unpaid','wn'];
+return `<h2>Payments</h2><p class="sub">Solves payment disputes: shop and vendor see the same billed amount, which is received minus returned at the price locked when the order was placed.</p>
+<div class="kp">${['Unpaid','Outgoing','Paid'].map(s=>`<div><span>${s} invoices</span><b>${rc.filter(x=>pst(x)[0]===s).length}</b></div>`).join('')}</div>
+<div class="tw"><table><tr><th>Vendor</th><th>Unpaid invoices</th><th>Balance due</th><th></th></tr>${vs.map(i=>{const o=rc.filter(x=>x.v===i&&(x.dp||due(x)>.005)),t=o.reduce((s,x)=>s+due(x),0),txt=(a?'Hi '+VN[i][0]+', KraVe statement:':'Hi KraVe, statement from '+VN[i][0]+':')+'\n'+o.map(x=>'#'+x.id+' ('+fd(x.d)+') '+rm(due(x))).join('\n')+'\nTotal due: '+rm(t);
+return `<tr><td>${VN[i][0]}</td><td>${o.length}</td><td>${rm(t)}</td><td>${o.length?`<a class="btn s" data-a="log" data-m="WhatsApp statement of ${rm(t)} sent for ${VN[i][0]}" target="_blank" rel="noopener" href="${wa(a?VN[i][3]:KW,txt)}">Send statement on WhatsApp</a>`:'<span class="c ok">Settled</span>'}</td></tr>`}).join('')}</table></div>
+<h2>Invoices</h2><div class="f" style="margin-bottom:10px"><label>Show<select data-c="ip">${['all','Paid','Outgoing','Unpaid'].map(o=>`<option value="${o}"${fl.ip===o?' selected':''}>${o==='all'?'All invoices':o}</option>`).join('')}</select></label></div><div class="tw"><table><tr><th>Invoice</th><th>Supplier</th><th>Billed</th><th>Paid</th><th>Balance</th><th>Status</th><th></th></tr>${rc.filter(x=>fl.ip==='all'||pay3(x)===fl.ip).map(x=>{const[s,c]=pst(x);return `<tr><td><button class="lk" data-a="open" data-id="${x.id}">${inv(x)}</button><br><small>${fd(x.d)}</small></td><td>${VN[x.v][0]}</td><td>${rm(bill(x))}</td><td>${rm(x.paid)}<div class="pb"><i style="width:${bill(x)?Math.min(100,x.paid/bill(x)*100):0}%"></i></div></td><td>${rm(due(x))}</td><td data-v="${pay3(x)}">${psel(x)}</td><td><button class="btn s" data-a="inv" data-id="${x.id}">Invoice</button> <button class="btn s" data-a="dis" data-id="${x.id}">${x.dp?'Resolve':'Dispute'}</button></td></tr>`}).join('')||empty('No invoices to show.')}</table></div>
+<h2>Payment history</h2><div class="tw"><table><tr><th>Date</th><th>Invoice</th><th>Supplier</th><th>Method</th><th>Amount</th></tr>${rc.flatMap(x=>phs(x).map(p=>({...p,x}))).sort((p,q)=>q.d.localeCompare(p.d)).slice(0,12).map(p=>`<tr><td>${fd(p.d)}</td><td>${inv(p.x)}</td><td>${VN[p.x.v][0]}</td><td>${p.m}</td><td>${rm(p.a)}</td></tr>`).join('')||empty('No payments recorded yet.',5)}</table></div>`},
+ret(){const a=me.r==='a',ks=dk().filter(k=>a||S.C[k].v===me.i),ro=S.O.filter(x=>x.st==='received'),rc=[...ro].sort((p,q)=>q.id-p.id).slice(0,15);
+const row=k=>{const g=ro.reduce((s,x)=>s+(x.got[k]||0),0),r=ro.reduce((s,x)=>s+(x.ret[k]||0),0),sd=S.Sa.filter(s=>s.k===k).reduce((s,e)=>s+e.q,0),w=S.L.filter(l=>l.k===k).reduce((s,l)=>s+l.q,0),t=g?Math.min(100,Math.round(sd/g*100)):0;
+return `<tr><td>${S.C[k].n}</td>${a?`<td>${VN[S.C[k].v][0]}</td>`:''}<td>${g}</td><td>${sd}</td><td>${r}</td><td>${w}</td><td><span class="c ${t<60?'bd':t<80?'wn':'ok'}">${t}%</span></td></tr>`};
+return `<h2>Sold vs returned</h2><p class="sub">${a?'Solves sold vs returned tracking: record what goes back to a vendor, and see sell-through for every dessert.':'See how your desserts perform at KraVe: received, sold, returned to you and wasted.'}</p>
+${a?`<div class="box"><div class="f"><label>Order<select id="rd">${rc.map(x=>`<option value="${x.id}">#${x.id} - ${fd(x.d)} - ${VN[x.v][0]}</option>`).join('')}</select></label><label>Dessert<select id="rp">${opts()}</select></label><label>Quantity<input id="rq" type="number" min="1" value="1"></label><label>Reason<select id="rr"><option>Damaged</option><option>Wrong item</option><option>Near expiry</option><option>Customer complaint</option></select></label><button class="btn p" data-a="ret">Record return</button></div></div>`:''}
+<div class="tw" style="margin-top:14px"><table><tr><th>Dessert</th>${a?'<th>Vendor</th>':''}<th>Received</th><th>Sold</th><th>Returned</th><th>Wasted</th><th>Sell-through</th></tr>${ks.map(row).join('')}</table></div>`},
+stk(){const soon=dk().filter(k=>S.T[k].q>0&&S.T[k].e<=iso(2)),by=VN.map((v,i)=>[v[0],S.L.filter(l=>S.C[l.k].v===i).reduce((a,l)=>a+l.q*S.C[l.k].c,0)]),
+st=k=>{const t=S.T[k];return !t.q?['Out of stock','bd']:t.e<today?['Expired','bd']:t.e<=iso(2)?['Use first','wn']:lowk(k)?['Low stock','wn']:['Fresh','ok']};
+return `<h2>Inventory</h2><p class="sub">Solves food loss and sales blind spots: record sales, watch best-before dates and write off spoiled food at cost.</p>
+${soon.length?`<div class="box" style="border-color:var(--wn);margin-bottom:12px">${soon.length} dessert${soon.length>1?'s':''} expired or expiring within 2 days: ${soon.map(k=>S.C[k].n).join(', ')}. Sell or discount these first.</div>`:''}
+<div class="box"><div class="f"><label>Dessert<select id="sk">${opts()}</select></label><label>Sold<input id="sq" type="number" min="1" value="1"></label><button class="btn p" data-a="sale">Record sale</button></div></div>
+<div class="tw" style="margin-top:14px"><table><tr><th>Dessert</th><th>Vendor</th><th>On hand</th><th>Best before</th><th>Status</th><th></th></tr>${dk().map(k=>{const t=S.T[k],[s,c]=st(k);return `<tr><td>${S.C[k].n}</td><td>${VN[S.C[k].v][0]}</td><td>${t.q}</td><td>${t.q?fd(t.e):'-'}</td><td><span class="c ${c}">${s}</span></td><td><button class="btn s" data-a="off" data-k="${k}"${t.q?'':' disabled'}>Write off</button></td></tr>`}).join('')}</table></div>
+<h2>Losses by vendor</h2><div class="box">${bars(by,rm,'bd')}</div>
+<h2>Recent write-offs</h2><div class="tw"><table><tr><th>Date</th><th>Dessert</th><th>Quantity</th><th>Reason</th><th>Cost</th></tr>${[...S.L].sort((a,b)=>b.d.localeCompare(a.d)).slice(0,8).map(l=>`<tr><td>${fd(l.d)}</td><td>${S.C[l.k].n}</td><td>${l.q}</td><td>${l.w}</td><td>${rm(l.q*S.C[l.k].c)}</td></tr>`).join('')}</table></div>`},
+aud(){const us=['admin','guest',...VN.map(v=>v[1])],rows=S.A.filter(a=>(fl.u==='all'||a.u===fl.u)&&(fl.k==='all'||a.k===fl.k)).sort((a,b)=>b.t.localeCompare(a.t)).slice(0,80);
+return `<h2>Audit log</h2><p class="sub">Every input (sign-ins, orders, receipts, returns, sales, payments, menu changes) and output (WhatsApp messages) with who did it and when. ${S.A.length} entries recorded.</p>
+<div class="f" style="margin-bottom:10px"><label>User<select data-c="u"><option value="all">Everyone</option>${us.map(u=>`<option${fl.u===u?' selected':''}>${u}</option>`).join('')}</select></label><label>Type<select data-c="k"><option value="all">Inputs and outputs</option><option value="in"${fl.k==='in'?' selected':''}>Inputs</option><option value="out"${fl.k==='out'?' selected':''}>Outputs</option></select></label></div>
+<div class="tw"><table><tr><th>Time</th><th>User</th><th>Type</th><th>Action</th></tr>${rows.map(a=>`<tr><td>${ft(a.t)}</td><td>${a.u}</td><td><span class="c ${a.k==='in'?'':'wn'}">${a.k==='in'?'Input':'Output'}</span></td><td>${a.x}</td></tr>`).join('')}</table></div>`}
+};
+/* ===== v3 modules: status model, dialogs, order details, invoice, notifications, search ===== */
+const MIN=10,DC=['Cake','Brownie','Cream dessert','Fruit cup','Kuih','Shaved ice and cendol','Sago dessert'],ST=[['Pending','wn'],['Preparing','pr'],['Delivered','in'],['Completed','ok']];
+const si=x=>x.st==='ordered'?0:x.st==='preparing'?1:(x.st==='dispatched'||due(x)>.005)?2:3,stl=x=>ST[si(x)],inv=x=>'INV-'+x.id;
+const lowk=k=>S.T[k].q<=(S.C[k].m??MIN),est=x=>Object.keys(x.items).reduce((a,k)=>a+x.items[k]*x.pr[k],0)*(1+TAX),tot=x=>x.st==='received'?bill(x):est(x);
+const pst=x=>x.st!=='received'?['Not invoiced','']:x.dp?['Disputed','bd']:due(x)<.005?['Paid','ok']:x.paid>0?['Outgoing','wn']:['Unpaid','bd'];
+const phs=x=>{const h=[...(x.ph||[])],r=x.paid-h.reduce((a,p)=>a+p.a,0);if(r>.005)h.unshift({d:x.d,a:r,m:'Recorded earlier'});return h};
+const shd=i=>({a:'Not set',c:'Not set',on:1,...(S.H||{})[i]});
+Object.entries(S.H||{}).forEach(([i,h])=>{if(h.p)VN[i][3]=h.p});
+const trend=(v,l,f=n=>n,c='')=>{const m=Math.max(1,...v);return `<div class="tr">${v.map((a,i)=>`<div title="${l[i]}: ${f(a)}"><u><i class="${c}" style="height:${a/m*100}%"></i></u>${l[i]}</div>`).join('')}</div>`};
+const empty=(t,c=7)=>`<tr><td colspan="${c}"><div class="em">🧁<p>${t}</p></div></td></tr>`;
+const busy=fn=>{$('ld').hidden=false;setTimeout(()=>{$('ld').hidden=true;fn()},450)};
+let dg=null,okf=null;
+const show=f=>{dg=f;const d=$('dlg');d.innerHTML=f();d.hidden=false},hide=()=>{dg=null;$('dlg').hidden=true};
+const ask=(t,fn)=>{okf=fn;show(()=>`<div class="mc sm"><h2 style="margin-top:0">Are you sure?</h2><p>${t}</p><div class="f"><button class="btn p" data-a="yes">Yes, continue</button><button class="btn" data-a="close">Cancel</button></div></div>`)};
+/* Order details: timeline, products, payment, returns, sales, activity log */
+const od=id=>{const x=F(id),[sl,sc]=stl(x),[pl,pc]=pst(x),rg=new RegExp('#'+x.id+'(?!\\d)'),ls=S.A.filter(e=>rg.test(e.x)).sort((p,q)=>q.t.localeCompare(p.t)),ks=Object.keys(x.items),r=x.st==='received',h=phs(x),n=si(x);
+return `<div class="mc"><div class="mh"><h2>Order #${x.id}</h2><span class="c ${sc}">${sl}</span><span class="sp"></span><button class="btn s" data-a="close" aria-label="Close">✕</button></div>
+<p class="sub">${VN[x.v][0]}, ordered ${fd(x.d)}. Invoice ${inv(x)}.</p>
+<ol class="tl">${ST.map((s,i)=>`<li class="${i<n?'dn':i===n?(n===3?'dn':'cu'):''}">${s[0]}</li>`).join('')}</ol>
+<h2>Products and sales</h2><div class="tw"><table><tr><th>Dessert</th><th>Ordered</th><th>Delivered</th><th>Returned</th><th>Sold since order</th><th>Unit price</th><th>Subtotal</th></tr>${ks.map(k=>{const g=x.got[k]||0,rt=x.ret[k]||0;return `<tr><td>${S.C[k].n}</td><td>${x.items[k]}</td><td>${r?g:x.sent[k]??'-'}</td><td>${rt}</td><td>${r?S.Sa.filter(s=>s.k===k&&s.d>=x.d).reduce((a,s)=>a+s.q,0):'-'}</td><td>${rm(x.pr[k])}</td><td>${rm((r?g-rt:x.items[k])*x.pr[k])}</td></tr>`}).join('')}<tr><td colspan="6"><b>Total${TAX?' including tax':''}</b></td><td><b>${rm(tot(x))}</b></td></tr></table></div>
+<h2>Payment</h2><p>Billed ${rm(r?bill(x):0)}, paid ${rm(x.paid)}, balance ${rm(due(x))} ${r?psel(x):`<span class="c ${pc}">${pl}</span>`}</p><div class="pb"><i style="width:${r&&bill(x)?Math.min(100,x.paid/bill(x)*100):0}%"></i></div>
+${h.length?`<div class="tw" style="margin-top:10px"><table><tr><th>Date</th><th>Method</th><th>Amount</th></tr>${h.map(p=>`<tr><td>${fd(p.d)}</td><td>${p.m}</td><td>${rm(p.a)}</td></tr>`).join('')}</table></div>`:''}
+${r&&due(x)>.005?`<div class="f" style="margin-top:10px"><label>Amount (RM)<input id="pa" type="number" min="0.01" step=".01" value="${due(x).toFixed(2)}"></label><label>Method<select id="pm"><option>Cash</option><option>Bank Transfer</option><option>QR</option><option>Online Banking</option></select></label><button class="btn p" data-a="rpay" data-id="${x.id}">Record payment</button></div>`:''}
+${r?`<p><button class="btn s" data-a="inv" data-id="${x.id}">View invoice</button></p>`:''}
+<h2>Returns</h2>${ks.filter(k=>x.ret[k]).map(k=>`<p>${S.C[k].n}: ${x.ret[k]} returned</p>`).join('')||'<small>No returns recorded.</small>'}
+<h2>Activity log</h2><div class="tw"><table><tr><th>Time</th><th>User</th><th>Action</th></tr>${ls.map(e=>`<tr><td>${ft(e.t)}</td><td>${e.u}</td><td>${e.x}</td></tr>`).join('')||empty('No activity recorded yet.',3)}</table></div></div>`};
+/* Printable invoice */
+const iv=id=>{const x=F(id),ks=Object.keys(x.got).filter(k=>(x.got[k]||0)-(x.ret[k]||0)>0),[pl,pc]=pst(x),s=sub(x);
+return `<div class="mc"><div class="mh np"><button class="btn p" data-a="print">Print invoice</button><span class="sp"></span><button class="btn s" data-a="close" aria-label="Close">✕</button></div>
+<div class="ih"><div><div class="lg">🧁 <b>KraVe Licious</b></div><small>Supply Portal</small></div><div style="text-align:right"><h2 style="margin:0">Invoice ${inv(x)}</h2><small>Order #${x.id}, ${fd(x.d)}</small></div></div>
+<div class="two" style="margin:14px 0"><div><small>Issued by</small><br><b>${VN[x.v][0]}</b></div><div><small>Customer</small><br><b>KraVe Licious</b></div></div>
+<div class="tw"><table><tr><th>Dessert</th><th>Qty</th><th>Unit price</th><th>Amount</th></tr>${ks.map(k=>{const q=x.got[k]-(x.ret[k]||0);return `<tr><td>${S.C[k].n}</td><td>${q}</td><td>${rm(x.pr[k])}</td><td>${rm(q*x.pr[k])}</td></tr>`}).join('')}</table></div>
+<table class="sm2"><tr><td>Subtotal</td><td>${rm(s)}</td></tr><tr><td>Tax (${TAX*100}%)</td><td>${rm(s*TAX)}</td></tr><tr><td><b>Grand total</b></td><td><b>${rm(bill(x))}</b></td></tr><tr><td>Paid</td><td>${rm(x.paid)}</td></tr><tr><td>Balance due</td><td>${rm(due(x))}</td></tr></table>
+<p>Payment status: <span class="c ${pc}">${pl}</span></p></div>`};
+/* Notifications, global search, header refresh */
+const nots=()=>{const o=mine(),ad=me.r==='a',ow=o.filter(x=>x.st==='received'&&due(x)>.005),lw=ad?dk().filter(lowk):[],ex=ad?dk().filter(k=>S.T[k].q&&S.T[k].e===iso(1)):[],p=o.filter(x=>x.st==='ordered').length,pl=n=>n>1?'s':'';
+return [[p,'🛒',p+' new order'+pl(p)+' waiting for the vendor','ord'],[ow.length,'💳',ow.length+' outstanding payment'+pl(ow.length)+', '+rm(ow.reduce((a,x)=>a+due(x),0)),'pay'],[lw.length,'📦',lw.length+' low stock product'+pl(lw.length),'stk'],[ex.length,'⏰',ex.length+' product'+pl(ex.length)+' expiring tomorrow','stk']].filter(n=>n[0])};
+const gsr=q=>{q=q.trim().toLowerCase();if(!q)return'';const h=mine().filter(x=>['#'+x.id,inv(x),VN[x.v][0],...Object.keys(x.items).map(k=>S.C[k].n)].join(' ').toLowerCase().includes(q)).slice(0,8);
+return h.map(x=>`<button data-a="open" data-id="${x.id}"><b>#${x.id}</b> ${inv(x)}, ${VN[x.v][0]}<small>${Object.keys(x.items).map(k=>S.C[k].n).join('<br>')}</small></button>`).join('')||'<div class="em" style="font-size:24px">🔍<p>No matches</p></div>'};
+const hd=()=>{$('nb').textContent=nots().reduce((a,n)=>a+n[0],0)||'';if(dg)$('dlg').innerHTML=dg()};
+/* ===== v4: sortable table columns (name, amount, date) and tidy pass ===== */
+const SORT={},NUM=/^(?:RM\s*)?-?\d+(?:\.\d+)?(?:\s*(?:%|units?|days?|sold|pcs))?$/i,DT=/^\d{2} [A-Z][a-z]{2}$/;
+const ct=td=>(td.dataset.v||td.innerText).split('\n')[0].replace(/^[^\p{L}\p{N}-]+/u,'').trim().replace(/,/g,'');
+const tbKey=td=>{const t=ct(td);if(NUM.test(t))return parseFloat(t.replace(/^RM\s*/i,''));if(DT.test(t)){const d=Date.parse(t+' '+today.slice(0,4));return d>Date.now()+5e9?d-31557600000:d}return t.toLowerCase()};
+const sortTbl=(t,c,d)=>{const n=t.rows[0].cells.length,all=[...t.rows].slice(1),b=t.rows[0].parentNode;
+all.filter(r=>r.cells.length===n).map(r=>[tbKey(r.cells[c]),r]).sort((p,q)=>typeof p[0]===typeof q[0]?(p[0]>q[0]?d:p[0]<q[0]?-d:0):typeof p[0]==='number'?-1:1).forEach(([,r])=>b.appendChild(r));
+all.filter(r=>r.cells.length!==n).forEach(r=>b.appendChild(r))};
+const tidy=()=>document.querySelectorAll('#v table').forEach((t,i)=>{const h=t.rows[0];if(!h||!h.cells.length||h.cells[0].tagName!=='TH')return;t.dataset.t=i;const o=SORT[cur+i],rs=[...t.rows].slice(1).filter(r=>r.cells.length===h.cells.length);
+[...h.cells].forEach((th,c)=>{if(!th.textContent.trim())return;th.classList.add('so');th.tabIndex=0;th.setAttribute('aria-sort',o&&o.c===c?(o.d>0?'ascending':'descending'):'none');
+if(rs.length&&rs.every(r=>!r.cells[c].dataset.v&&NUM.test(ct(r.cells[c])))){th.classList.add('n');rs.forEach(r=>r.cells[c].classList.add('n'))}});if(o)sortTbl(t,o.c,o.d)});
+const setSort=h=>{const t=h.closest('table'),k=cur+t.dataset.t,c=h.cellIndex,o=SORT[k];SORT[k]={c,d:o&&o.c===c?-o.d:1};tidy()};
+document.addEventListener('click',e=>{const h=e.target.closest('#v th.so');if(h)setSort(h)});
+document.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.matches&&e.target.matches('#v th.so')){e.preventDefault();setSort(e.target)}});
+/* ===== v5: dessert kinds ===== */
+const KIND=[[/cake|chiffon|lava|sponge/i,'Cake'],[/brownie|cookie/i,'Brownie'],[/panna|tiramisu|custard|pudding|cream/i,'Cream dessert'],[/kuih|lapis|onde|seri muka|pulut/i,'Kuih'],[/cendol|kacang|shaved|ice/i,'Shaved ice and cendol'],[/sago/i,'Sago dessert'],[/mango|fruit/i,'Fruit cup']];
+const kind=k=>S.C[k].g||(KIND.find(([r])=>r.test(S.C[k].n))||[0,'Other dessert'])[1];
+const KG={mg:'Fruit cup',pc:'Cake',cp:'Cream dessert',kl:'Kuih',sm:'Kuih',oo:'Kuih',lv:'Cake',bb:'Brownie',tc:'Cream dessert',cd:'Shaved ice and cendol',ak:'Shaved ice and cendol',sg:'Sago dessert'};
+Object.keys(KG).forEach(k=>{const c=S.C[k];if(c&&DC.indexOf(c.g)<0)c.g=KG[k]});
+/* ===== v6: invoice status option (Unpaid / Outgoing / Paid) ===== */
+const pay3=x=>due(x)<.005?'Paid':x.paid>0?'Outgoing':'Unpaid',PC={Paid:'ok',Outgoing:'wn',Unpaid:'bd'};
+const psel=x=>`<select class="ps ${PC[pay3(x)]}" data-ps="${x.id}" aria-label="Payment status of ${inv(x)}">${['Unpaid','Outgoing','Paid'].map(o=>`<option${o===pay3(x)?' selected':''}>${o}</option>`).join('')}</select>${x.dp?' <span class="c bd">Disputed</span>':''}`;
+fl.ip='all';
+document.addEventListener('change',e=>{const t=e.target;if(t.dataset&&t.dataset.ps)A.setps({id:t.dataset.ps,v:t.value})});
+/* ===== v8: page-enter animation after a tab change ===== */
+const enter=()=>{const v=$('v');v.classList.remove('ent');void v.offsetWidth;v.classList.add('ent');clearTimeout(enter.t);enter.t=setTimeout(()=>v.classList.remove('ent'),1000)};
+document.addEventListener('click',e=>{if(e.target.closest('[data-a="tab"],[data-a="goto"]'))enter()});
+const F=id=>S.O.find(x=>x.id==id);
+const A={
+tab:d=>{cur=d.t;render();scrollTo(0,0)},
+fill:d=>{$('lu').value=d.u;$('lp').value=d.p},
+login:()=>{const u=cl($('lu').value),p=$('lp').value,v=VN.findIndex(x=>x[1]===u&&x[2]===p);
+if(u==='admin'&&p==='krave123')me={u,r:'a',n:'KraVe Licious'};else if(v>=0)me={u,r:'v',i:v,n:VN[v][0]};
+else{lg('Failed sign-in as "'+u+'"','in','guest');save();return msg('Wrong username or password')}
+cur=me.r==='a'?'dash':'ord';lg('Signed in');save();busy(render)},
+out:()=>{lg('Signed out');save();me=null;render()},
+reset:()=>{S=seed();save();render();msg('Sample data restored')},
+log:d=>{lg(d.m,'out');save()},
+order:()=>{if(!shd(+fl.ov).on)return msg('This supplier is inactive. Activate it under Suppliers first');const it={},pr={};document.querySelectorAll('.qi').forEach(e=>{const q=Math.floor(+e.value);if(q>0){it[e.dataset.k]=q;pr[e.dataset.k]=S.C[e.dataset.k].c}});
+if(!Object.keys(it).length)return msg('Enter a quantity for at least one dessert');
+const id=Math.max(2000,...S.O.map(x=>x.id))+1;S.O.push({id,v:+fl.ov,d:today,items:it,pr,sent:{},got:{},ret:{},st:'ordered',paid:0,dp:''});
+lg('Placed order #'+id+' with '+VN[fl.ov][0]+': '+Object.keys(it).map(k=>S.C[k].n+' x'+it[k]).join(', '));save();render();msg('Order placed')},
+ship:d=>{const x=F(d.id);x.st='dispatched';x.sent={...x.items};lg('Dispatched order #'+x.id);save();render();msg('Order dispatched')},
+recv:d=>{const x=F(d.id);document.querySelectorAll('.rq[data-o="'+d.id+'"]').forEach(e=>{const k=e.dataset.k;x.got[k]=Math.max(0,Math.min(x.sent[k],Math.floor(+e.value)||0))});
+x.st='received';Object.keys(x.items).forEach(k=>{const g=x.got[k]||0;x.got[k]=g;if(g){S.T[k].q+=g;S.T[k].e=iso(S.C[k].s)}});
+const sh=sum(x.sent)-sum(x.got);lg('Received order #'+x.id+': '+sum(x.got)+' of '+sum(x.sent)+' dispatched'+(sh?' (short '+sh+')':''));save();render();msg(sh?'Shortage of '+sh+' recorded':'Order received')},
+dis:d=>{const x=F(d.id);x.dp=x.dp?'':me.r==='a'?'KraVe':'Vendor';lg((x.dp?'Disputed':'Resolved dispute on')+' order #'+x.id);save();render();msg(x.dp?'Dispute flagged':'Dispute resolved')},
+ret:()=>{const x=F($('rd').value),k=$('rp').value,q=Math.floor(+$('rq').value),left=x&&x.got[k]?x.got[k]-(x.ret[k]||0):0;
+if(!x||q<1||q>left)return msg('That order has '+left+' of this dessert left to return');
+x.ret[k]=(x.ret[k]||0)+q;S.T[k].q=Math.max(0,S.T[k].q-q);lg('Returned '+q+' x '+S.C[k].n+' from order #'+x.id+' ('+$('rr').value+')');save();render();msg('Return recorded')},
+sale:()=>{const k=$('sk').value,q=Math.floor(+$('sq').value);if(q<1||q>S.T[k].q)return msg('Only '+S.T[k].q+' '+S.C[k].n+' in stock');
+S.T[k].q-=q;S.Sa.push({d:today,k,q});lg('Sold '+q+' x '+S.C[k].n+' ('+rm(q*S.C[k].p)+')');save();render();msg('Sale recorded')},
+off:d=>{const t=S.T[d.k];if(!t.q)return;if(!d.y)return ask('Write off '+t.q+' x '+S.C[d.k].n+' at cost?',()=>A.off({k:d.k,y:1}));S.L.push({d:today,k:d.k,q:t.q,w:t.e<today?'Expired':'Spoiled'});lg('Wrote off '+t.q+' x '+S.C[d.k].n+' ('+rm(t.q*S.C[d.k].c)+')');t.q=0;save();render();msg('Written off')},
+mpr:d=>{const c=+document.querySelector('.pc[data-k="'+d.k+'"]').value;if(!(c>0))return msg('Enter a price above 0');
+lg('Changed price of '+S.C[d.k].n+' from '+rm(S.C[d.k].c)+' to '+rm(c));S.C[d.k].c=c;save();render();msg('Price saved')},
+mon:d=>{const x=S.C[d.k];x.on=x.on?0:1;lg((x.on?'Resumed ':'Paused ')+x.n);save();render()},
+madd:()=>{const n=cl($('an').value),c=+$('ac').value,h=Math.floor(+$('as').value)||2;if(!n||!(c>0))return msg('Enter a name and a price above 0');
+const k='n'+Date.now().toString(36);S.C[k]={n,v:me.i,c,p:Math.round(c*1.75*2)/2,s:h,on:1};S.T[k]={q:0,e:today};lg('Added dessert "'+n+'" at '+rm(c));save();render();msg('Dessert added')},
+/* ---- v3 actions: workflow, dialogs, payments, shops, products ---- */
+prep:d=>{const x=F(d.id);x.st='preparing';lg('Vendor accepted order #'+x.id+' and started preparing');save();render();msg('Order is now being prepared')},
+open:d=>{$('sres').hidden=true;$('gs').value='';show(()=>od(d.id))},
+inv:d=>show(()=>iv(d.id)),
+print:()=>window.print(),
+close:()=>hide(),
+yes:()=>{const f=okf;hide();if(f)f()},
+bell:()=>show(()=>`<div class="mc sm"><div class="mh"><h2>Notifications</h2><span class="sp"></span><button class="btn s" data-a="close" aria-label="Close">✕</button></div>${nots().map(n=>`<button class="nt" data-a="goto" data-t="${n[3]}">${n[1]} ${n[2]}</button>`).join('')||'<div class="em">🎉<p>You are all caught up.</p></div>'}</div>`),
+goto:d=>{hide();A.tab(d)},
+rpay:d=>{const x=F(d.id),a=Math.round(+$('pa').value*100)/100,b=due(x);if(!(a>0)||a>b+.005)return msg('Enter an amount between RM 0.01 and '+rm(b));
+const m=$('pm').value;(x.ph=x.ph||[]).push({d:today,a,m});x.paid=Math.min(bill(x),x.paid+a);x.dp='';lg('Payment recorded: '+rm(a)+' by '+m+' on order #'+x.id);save();render();msg('Payment recorded')},
+sedit:d=>show(()=>{const i=+d.i,h=shd(i);return `<div class="mc sm"><h2 style="margin-top:0">Edit ${VN[i][0]}</h2><div class="g"><label>Address<input id="sa" maxlength="30" value="${h.a}"></label><label>Phone, with country code<input id="sph" maxlength="15" inputmode="tel" value="${VN[i][3]}"></label><label>Contact person<input id="sc" maxlength="30" value="${h.c}"></label><label>Status<select id="ss"><option value="1"${h.on?' selected':''}>Active</option><option value="0"${h.on?'':' selected'}>Inactive</option></select></label><div class="f"><button class="btn p" data-a="ssave" data-i="${i}">Save supplier</button><button class="btn" data-a="close">Cancel</button></div></div></div>`}),
+ssave:d=>{const i=+d.i,a=cl($('sa').value),c=cl($('sc').value),p=$('sph').value.replace(/\D/g,'');if(!a||!c||p.length<9)return msg('Enter an address, a contact person and a phone number with country code');
+(S.H=S.H||{})[i]={a,c,p,on:+$('ss').value};VN[i][3]=p;lg('Updated supplier details for '+VN[i][0]);save();hide();render();msg('Supplier saved')},
+pedit:d=>show(()=>{const k=d.k,e=k?S.C[k]:{n:'',v:0,g:'',c:3,p:5.5,m:MIN,s:2};return `<div class="mc sm"><h2 style="margin-top:0">${k?'Edit':'Add'} product</h2><div class="g"><label>Name<input id="pn" maxlength="30" value="${e.n}"></label>${k?'':`<label>Supplier<select id="pv">${VN.map((v,i)=>`<option value="${i}">${v[0]}</option>`).join('')}</select></label>`}<label>Category<select id="pg">${DC.map(c=>`<option${c===(k?kind(k):e.g)?' selected':''}>${c}</option>`).join('')}</select></label><label>Supplier price (RM)<input id="ppc" type="number" min="0" step=".1" value="${e.c}"></label><label>Selling price (RM)<input id="pps" type="number" min="0" step=".1" value="${e.p}"></label><label>Minimum stock<input id="pmn" type="number" min="0" value="${e.m??MIN}"></label><label>Expiry days<input id="pex" type="number" min="1" value="${e.s}"></label><div class="f"><button class="btn p" data-a="psave" data-k="${k||''}">Save product</button><button class="btn" data-a="close">Cancel</button></div></div></div>`}),
+psave:d=>{const n=cl($('pn').value),c=+$('ppc').value,p=+$('pps').value,m=Math.floor(+$('pmn').value),s=Math.floor(+$('pex').value);
+if(!n||!(c>0)||!(p>c)||m<0||!(s>=1))return msg('Enter a name, a supplier price above 0, a higher selling price, and valid stock and expiry values');
+let k=d.k;const e={n,g:cl($('pg').value),c,p,m,s};
+if(k){Object.assign(S.C[k],e);lg('Updated product "'+n+'"')}else{k='n'+Date.now().toString(36);S.C[k]={...e,v:+$('pv').value,on:1};S.T[k]={q:0,e:today};lg('Added product "'+n+'"')}
+save();hide();render();msg('Product saved')},
+pdel:d=>{const k=d.k;if(S.O.some(x=>k in x.items)||S.Sa.some(s=>s.k===k)||S.L.some(l=>l.k===k))return msg('This product has order history. Pause it instead of deleting it');
+ask('Delete '+S.C[k].n+'? This cannot be undone.',()=>{lg('Deleted product "'+S.C[k].n+'"');delete S.C[k];delete S.T[k];save();render();msg('Product deleted')})},
+setps:d=>{const x=F(d.id),v=d.v,now=pay3(x);render();if(v===now)return;
+if(v==='Paid')return show(()=>`<div class="mc sm"><h2 style="margin-top:0">Mark ${inv(x)} as paid?</h2><p>${rm(due(x))} will be recorded as paid.</p><div class="f"><label>Method<select id="pm"><option>Cash</option><option>Bank Transfer</option><option>QR</option><option>Online Banking</option></select></label><input id="pa" type="hidden" value="${due(x).toFixed(2)}"><button class="btn p" data-a="paidfull" data-id="${x.id}">Confirm paid</button><button class="btn" data-a="close">Cancel</button></div></div>`);
+if(v==='Unpaid')return ask('Clear all payments on '+inv(x)+' and mark it unpaid?',()=>{x.paid=0;x.ph=[];lg(inv(x)+' marked unpaid, payments cleared');save();render();msg('Invoice marked unpaid')});
+if(now==='Paid')return msg('That invoice is already paid. Set it to Unpaid first, then record the part payment');
+show(()=>od(x.id));msg('Record the amount paid so far')},
+paidfull:d=>{A.rpay(d);if(due(F(d.id))<.005)hide()}
+};
+function render(){const top=$('top');top.hidden=!me;
+if(!me){hide();$('v').innerHTML=V.login();return}
+$('who').textContent=me.n+(me.r==='a'?' (admin)':'');
+$('nav').innerHTML=TB[me.r].map(([t,n])=>`<button class="tab${t===cur?' on':''}" data-a="tab" data-t="${t}">${n}</button>`).join('');
+$('v').innerHTML=V[cur]();tidy();hd()}
+document.addEventListener('click',e=>{if(e.target.id==='dlg')hide();if(!e.target.closest('.sr'))$('sres').hidden=true;const b=e.target.closest('[data-a]');if(b&&!b.disabled)A[b.dataset.a](b.dataset)});
+document.addEventListener('change',e=>{const c=e.target.dataset.c;if(c){fl[c]=e.target.value;render()}});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.target.id==='lp'||e.target.id==='lu'))A.login();if(e.key==='Escape'){hide();$('sres').hidden=true}});
+document.addEventListener('input',e=>{const t=e.target,k=t.dataset.s;
+if(t.id==='gs'){const r=$('sres');r.innerHTML=gsr(t.value);r.hidden=!t.value.trim()}
+else if(t.classList.contains('qi'))$('ot').textContent=rm([...document.querySelectorAll('.qi')].reduce((a,n)=>a+Math.max(0,Math.floor(+n.value))*S.C[n.dataset.k].c,0)*(1+TAX));
+else if(k){fl[k]=t.value;const p=t.selectionStart;render();const n=document.querySelector('[data-s="'+k+'"]');n.focus();n.setSelectionRange(p,p)}});
+render();
+</script></body></html>
